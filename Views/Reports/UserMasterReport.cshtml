@@ -1,0 +1,427 @@
+﻿@model List<S1947.Models.UserMaster>
+
+@{
+    ViewBag.Title = "User Master Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />*@
+<link href="~/Content/Report.css" rel="stylesheet" />
+<link href="~/Content/vendor/datatables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/vendor/datatables/extras/TableTools/Buttons-1.4.2/css/buttons.dataTables.min.css" rel="stylesheet" />
+<header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm">
+
+    <h3 class="mb-0 font-weight-bold text-white">
+        <i class="fas fa-exchange-alt"></i>
+        User Master Report
+    </h3>
+
+</header>
+<section role="main">
+    <div id="reportContent">
+        <div class="report-card">
+
+            <div class="report-header d-flex justify-content-between align-items-center">
+
+                <h4>
+                    <i class="fa fa-filter"></i>
+                    Search Filters
+                </h4>
+
+                <div id="exportButtons"></div>
+
+            </div>
+
+            <div class="card-body">
+
+                @using (Html.BeginForm("UserMasterReport", "Reports", FormMethod.Get))
+                {
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-2">
+
+                            <label class="form-label">
+                                From Date
+                            </label>
+
+                            <input type="date"
+                                   class="form-control"
+                                   name="FromDate"
+                                   value="@Request["FromDate"]" />
+
+                        </div>
+
+                        <div class="col-md-2">
+
+                            <label class="form-label">
+                                To Date
+                            </label>
+
+                            <input type="date"
+                                   class="form-control"
+                                   name="ToDate"
+                                   value="@Request["ToDate"]" />
+
+                        </div>
+
+                        <div class="col-md-2">
+
+                            <label class="form-label">
+                                Transaction Type
+                            </label>
+
+                            <select class="form-control"
+                                    name="TransactionType">
+
+                                <option value="">All</option>
+
+                                <option value="LOAD"
+                                        @(Request["TransactionType"] == "LOAD" ? "selected" : "")>
+                                    LOAD
+                                </option>
+
+                                <option value="UNLOAD"
+                                        @(Request["TransactionType"] == "UNLOAD" ? "selected" : "")>
+                                    UNLOAD
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+
+                                Material Code
+
+                            </label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Enter Material Code"
+                                   name="MaterialCode"
+                                   value="@Request["MaterialCode"]" />
+
+                        </div>
+
+                        <div class="col-md-3 d-flex align-items-end">
+
+                            <button class="btn btn-search">
+                                <i class="fa fa-search"></i>
+                                Search
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <hr />
+
+                    <table id="tblTransaction"
+                           class="table table-bordered table-hover report-table "
+                           style="width:100%">
+
+                        <thead>
+
+                            <tr>
+
+                                <th class="text-center">Sr No</th>
+
+                                <th class="text-center">Date</th>
+
+                                <th class="text-center">Time</th>
+
+                                <th class="text-center">Type</th>
+
+                                <th class="text-center">Material Code</th>
+
+                                <th>Model</th>
+
+                                <th class="text-center">Qty</th>
+
+                                <th>Location</th>
+
+                                <th class="text-center">Status</th>
+
+                                <th>Operator</th>
+
+                                <th class="text-center">Invoice</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @{
+
+                                int sr = 1;
+
+                            }
+
+                            @foreach (var item in Model)
+                            {
+
+                                <tr>
+
+                                    <td class="text-center">@sr</td>
+
+                                    <td class="text-center">
+                                        @(item.TransactionDate?.ToString("dd-MM-yyyy"))
+                                    </td>
+
+                                    <td class="text-center">
+                                        @item.TransactionTime
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        @if (item.TransactionType == "LOAD")
+                                        {
+                                            <span class="badge badge-success">LOAD</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">UNLOAD</span>
+                                        }
+
+                                    </td>
+
+                                    <td>@item.MaterialCode</td>
+
+                                    <td>@item.FGModel</td>
+
+                                    <td class="text-center">
+                                        @item.Quantity
+                                    </td>
+
+                                    <td>@item.LocationName</td>
+
+                                    <td>@item.Status</td>
+
+                                    <td>
+                                        @(string.IsNullOrEmpty(item.OperatorName)
+                                        ? "-"
+                                        : item.OperatorName)
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrEmpty(item.InvoiceNo)
+                                        ? "-"
+                                        : item.InvoiceNo)
+                                    </td>
+
+                                </tr>
+
+                                sr++;
+
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                }
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        var table = $('#tblTransaction').DataTable({
+
+            pageLength: 10,
+
+            ordering: true,
+
+            responsive: true,
+
+            autoWidth: false,
+
+            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+
+            dom:
+                "<'row mb-3'<'col-md-5'l><'col-md-6 text-right'f>>" +
+                "t" +
+                "<'row mt-3'<'col-md-5'i><'col-md-7'p>>",
+
+          buttons: [
+
+              {
+                  text: '<i class="fa fa-print"></i> Print',
+                  className: 'buttons-print',
+                  action: function () {
+                      printTransactionReport();
+                  }
+              },
+
+{
+    text: '<i class="fa fa-file-pdf"></i> PDF',
+    className: 'buttons-pdf',
+    action: function () {
+
+        window.location='@Url.Action("TransactionReportPdf")';
+
+    }
+},
+
+{
+    extend: 'excelHtml5',
+    text: '<i class="fa fa-file-excel"></i> Excel',
+    className: 'buttons-excel'
+}
+]
+
+        });
+
+        table.buttons().container().appendTo('#exportButtons');
+
+    });
+
+
+    function printTransactionReport() {
+
+        var table = $('#tblTransaction').DataTable();
+
+        var currentLength = table.page.len();
+
+        table.page.len(-1).draw();
+
+        setTimeout(function () {
+
+            var report = document.getElementById("tblTransaction").outerHTML;
+
+            var totalRecords = $('#tblTransaction tbody tr').length;
+
+            var printWindow = window.open('', '', 'width=1200,height=900');
+
+            printWindow.document.write(`
+<html>
+<head>
+
+<title>Transaction Report</title>
+
+<style>
+
+body{
+    font-family:Arial, sans-serif;
+    margin:15px;
+    font-size:10px;
+}
+h2{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.info{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:15px;
+    font-weight:bold;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:auto;
+}
+
+th{
+    background:#333;
+    color:#fff;
+}
+
+th,td{
+    border:1px solid #999;
+    padding:4px;
+    text-align:center;
+    font-size:10px;
+    white-space:nowrap;
+}
+
+.badge{
+    padding:3px 6px;
+    color:#fff;
+    border-radius:3px;
+}
+
+.badge-success{
+    background:#198754;
+}
+
+.badge-danger{
+    background:#dc3545;
+}
+
+thead{
+    display:table-header-group;
+}
+
+tr{
+    page-break-inside:avoid;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Transaction Report</h2>
+
+<div class="info">
+
+<div>
+Generated On : ${new Date().toLocaleString()}
+</div>
+
+<div>
+Total Records : ${totalRecords}
+</div>
+
+</div>
+
+${report}
+
+</body>
+
+</html>
+`);
+
+            printWindow.document.close();
+
+            printWindow.focus();
+
+            setTimeout(function () {
+
+                printWindow.print();
+
+                printWindow.close();
+
+                table.page.len(currentLength).draw();
+
+            }, 500);
+
+        }, 300);
+    }
+
+</script>

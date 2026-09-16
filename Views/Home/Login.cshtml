@@ -1,0 +1,374 @@
+﻿@model S1947.Models.UserMasterValidation
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Login | Creintors Automation</title>
+     <link href="@Url.Content("~/Content/cssfont/all.min.css")" rel="stylesheet" />
+ <link rel="stylesheet" href="~/Content/vendor/bootstrap/css/bootstrap.css" />
+    <style>
+        :root {
+            /* Adjusted background transparency for better legibility */
+            --glass-bg: rgba(0, 0, 0, 0.5); /* Increased opacity to 0.5 */
+            --glass-border: rgba(255, 255, 255, 0.4); /* Stronger border contrast */
+            --accent-color: #2575fc; /* Primary login button color */
+            --input-fill: rgba(255, 255, 255, 0.15); /* Slightly less transparent input */
+            --accent-red: #ff3e3e;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scroll on small screens */
+            background-color: #111; /* Fallback color */
+        }
+
+        body {
+            /* Assuming your custom machine image is in this location: */
+           /*background: url("../../Content/img/LoginImage2.png");*/
+            background: url("../../Scripts/img/ASRS.png");
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            /* Center for small screens */
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px; /* Modern border-radius */
+            padding: 30px; /* Reduced padding for smaller screens */
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9); /* Stronger shadow for depth */
+            animation: borderAnimation 3s infinite linear;
+        }
+
+        /* ----------------------------------
+           RESPONSIVENESS: Move card to the RIGHT on large screens
+           ---------------------------------- */
+        @@media (min-width: 992px) {
+            body {
+                /* On desktop, align the login form to the right side of the screen */
+                justify-content: flex-end;
+                padding-right: 10%;
+                padding-left: 50%; /* Pushes content to the right half */
+                background-position: left center; /* Keeps machine visible on the left */
+            }
+
+            .login-card {
+                max-width: 420px;
+                margin: 0;
+                padding: 40px; /* Restore desktop padding */
+            }
+        }
+
+        @@keyframes borderAnimation {
+            0% {
+                border-color: #ff4d4d;
+                box-shadow: 0 0 10px #ff4d4d;
+            }
+
+            25% {
+                border-color: #ffcc00;
+                box-shadow: 0 0 10px #ffcc00;
+            }
+
+            50% {
+                border-color: #33cc33;
+                box-shadow: 0 0 10px #33cc33;
+            }
+
+            75% {
+                border-color: #3399ff;
+                box-shadow: 0 0 10px #3399ff;
+            }
+
+            100% {
+                border-color: #ff4d4d;
+                box-shadow: 0 0 10px #ff4d4d;
+            }
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ----------------------------------
+           LOGO & BRAND STYLING
+           ---------------------------------- */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .brand-logo {
+            max-width: 250px;
+            height: auto;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)); /* Logo glow */
+        }
+
+        .brand-text {
+            color: #ffffff;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 5px;
+            letter-spacing: 1.5px;
+            font-size: 1.8rem;
+        }
+
+        .brand-sub {
+            display: block;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+        }
+
+
+        /* ----------------------------------
+           FORM & INPUT STYLING
+           ---------------------------------- */
+        .form-group label {
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            display: block;
+        }
+
+        .input-group {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-control {
+            background: var(--input-fill) !important;
+            border: none;
+            color: #fff !important;
+            padding: 14px 18px; /* Adjusted padding */
+            font-size: 0.95rem;
+        }
+
+            .form-control::placeholder {
+                color: rgba(255,255,255,0.5);
+            }
+
+            .form-control:focus {
+                box-shadow: none;
+                background: rgba(255,255,255,0.15) !important;
+            }
+
+        .input-group-text {
+            background: var(--input-fill);
+            border: none;
+            color: #ffffff;
+            min-width: 45px;
+            justify-content: center;
+            font-size: 1.1rem; /* Adjusted icon size */
+        }
+
+        /* -----------------------------------------------------------
+           UPDATED LOGIN BUTTON (Gradient + Attractive Animated Shine)
+           ----------------------------------------------------------- */
+        .btn-login {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-weight: 700;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.4s ease;
+            color: white;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.4);
+        }
+
+            /* Shine animation */
+            .btn-login::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.25);
+                transform: skewX(-20deg);
+                transition: 0.6s;
+            }
+
+            .btn-login:hover::before {
+                left: 100%;
+            }
+
+            .btn-login:hover {
+                transform: translateY(-3px) scale(1.03);
+                box-shadow: 0 12px 25px rgba(37, 117, 252, 0.55);
+                filter: brightness(1.1);
+            }
+
+        .utility-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+        }
+
+            .utility-row i {
+                font-size: 1.6rem;
+                color: #ffffff;
+                cursor: pointer;
+                transition: 0.3s;
+                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+            }
+
+                .utility-row i:hover {
+                    color: var(--accent-red);
+                    transform: scale(1.2);
+                }
+
+        .text-danger {
+            color: #ffcccc !important; /* Lighter color for better visibility */
+            font-weight: 700;
+            text-align: center;
+            display: block;
+            margin-top: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        #showPasswordBtn {
+            cursor: pointer;
+        }
+       /* #clear{
+            margin-top:22px;
+        }*/
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <header>
+            <p class="brand-text">CREINTORS</p>
+            <span class="brand-sub">Automation Solutions</span>
+        </header>
+
+        <form id="loginForm" method="post" action="/Home/LoginCheck">
+            <div class="form-group mb-4">
+                <label>Login Id</label>
+                <div class="input-group">
+                    @Html.TextBoxFor(model => model.UserId, new { @class = "form-control", @placeholder = "Enter Login Id", @autofocus = "True" })
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label>Password</label>
+                <div class="input-group">
+                    @Html.TextBoxFor(model => model.PW, new { @type = "Password", @class = "form-control", @id = "passwordField", @placeholder = "Enter Password" })
+                    <span class="input-group-text" id="showPasswordBtn"><i class="fas fa-eye"></i></span>
+                    @*<span class="input-group-text"><i class="fas fa-lock"></i></span>*@
+                </div>
+            </div>
+
+            <span id="inErr" class="text-danger">
+                @(ViewBag.wrongLogin ?? TempData["wrongLogin"])
+            </span>
+
+            <button type="submit" class="btn-login">Login</button>
+
+            <div class="utility-row">
+                <i class="fa fa-rotate-left" id="clear" title="Reset Fields"></i>
+                @*<a href="/Home/FingerprintLogin">
+            <img src="/Content/img/fingerprint2.svg" style="color:white" alt="Biometric Login" title="Biometric Login" />
+        </a>*@
+                @*<a href="/Home/FingerprintLogin"><i class="fa fa-fingerprint" title="Biometric Login"></i></a>*@
+            </div>
+        </form>
+    </div>
+
+    <script src="~/Content/vendor/jquery/jquery.min.js"></script>
+    <script src="~/Content/vendor/jquery-validation/jquery.validate.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            var validator = $("#loginForm").validate({
+                rules: {
+                    UserId: { required: true },
+                    PW: { required: true }
+                },
+                messages: {
+                    UserId: "Please Enter Login Id",
+                    PW: "Please Enter Password"
+
+                },
+                errorClass: "text-danger",
+                errorPlacement: function (error, element) {
+                    $("#inErr").text("");
+                    // Check if the element is part of a custom input group (like the password field)
+                    if (element.attr("id") === "passwordField" || element.attr("id") === "UserId") {
+                        error.insertAfter(element.closest('.form-group').find('.input-group'));
+                    } else {
+                        error.insertAfter(element.closest('.form-group'));
+                    }
+                }
+            });
+
+            $("#clear").click(function () {
+                $("#UserId, #passwordField").val("");
+                $("#inErr").text("");
+                validator.resetForm();
+            });
+
+            // Password visibility toggle logic
+            $("#showPasswordBtn").on("mousedown touchstart", function (e) {
+                e.preventDefault();
+                $("#passwordField").attr("type", "text");
+                $(this).find('i').removeClass("fa-eye").addClass("fa-eye-slash");
+            }).on("mouseup touchend", function (e) {
+                e.preventDefault();
+                $("#passwordField").attr("type", "password");
+                $(this).find('i').removeClass("fa-eye-slash").addClass("fa-eye");
+            });
+
+            // This handles the case where the mouse leaves the button without releasing
+            $("#showPasswordBtn").on("mouseout", function () {
+                if ($("#passwordField").attr("type") === "text") {
+                    $("#passwordField").attr("type", "password");
+                    $(this).find('i').removeClass("fa-eye-slash").addClass("fa-eye");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

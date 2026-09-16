@@ -1,0 +1,372 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/npm/chart.js"></script>
+<style>
+
+    #asrs-dashboard .dashboard-card {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        transition: .3s;
+        height: 100%;
+    }
+
+        #asrs-dashboard .dashboard-card:hover {
+            transform: translateY(-2px);
+        }
+
+    .card-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .icon-blue {
+        background: #e8f1ff;
+        color: #0d6efd;
+    }
+
+    .icon-purple {
+        background: #f3e8ff;
+        color: #9333ea;
+    }
+
+    .icon-red {
+        background: #ffe5e5;
+        color: #ef4444;
+    }
+
+    .icon-green {
+        background: #e8fff1;
+        color: #22c55e;
+    }
+
+    .icon-orange {
+        background: #fff4e5;
+        color: #f59e0b;
+    }
+
+    #asrs-dashboard .dashboard-title {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    #asrs-dashboard .dashboard-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    #asrs-dashboard .chart-box {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.08);
+        height: 100%;
+    }
+
+    #asrs-dashboard .dashboard-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    #asrs-dashboard .alert-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .alert-item:last-child {
+        border-bottom: none;
+    }
+
+    .asrs-alert-danger {
+        /*    .alert-danger {*/
+        border-left: 5px solid #ef4444;
+    }
+
+    .alert-warning {
+        border-left: 5px solid #f59e0b;
+    }
+
+    canvas {
+        max-height: 300px;
+    }
+
+    .page-header {
+        margin-top: 0 !important;
+    }
+
+    .content-body {
+        padding-top: 0 !important;
+    }
+</style>
+<section role="main">
+    <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm"
+            style="background:#000;color:#fff;">
+
+        <h3 class="mb-0 font-weight-bold" style="color:aliceblue">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </h3>
+
+        <div class="right-wrapper d-flex align-items-center" style="gap:15px;">
+            <span id="currentTime" style="font-size:18px;font-weight:600;color:white;"></span>
+
+            <span id="shiftName"
+                  style="background:#0d6efd;color:white;padding:4px 10px;border-radius:15px;font-weight:bold;">
+            </span>
+        </div>
+    </header>
+
+    <div id="asrs-dashboard">
+        <div class="container-fluid">
+
+            <!-- KPI Cards -->
+
+            <div class="row g-3">
+
+                <div class="col">
+                    <div class="dashboard-card">
+                        <div class="card-icon icon-blue">📦</div>
+                        <div class="dashboard-title">Total Qty</div>
+                        <div class="dashboard-value">15,250</div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="dashboard-card">
+                        <div class="card-icon icon-purple">🏷️</div>
+                        <div class="dashboard-title">Part Numbers</div>
+                        <div class="dashboard-value">42</div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="dashboard-card">
+                        <div class="card-icon icon-blue">🔲</div>
+                        <div class="dashboard-title">Total Cells</div>
+                        <div class="dashboard-value">352</div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="dashboard-card">
+                        <div class="card-icon icon-red">📊</div>
+                        <div class="dashboard-title">Occupied</div>
+                        <div class="dashboard-value">125</div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="dashboard-card">
+                        <div class="card-icon icon-green">✔</div>
+                        <div class="dashboard-title">Available</div>
+                        <div class="dashboard-value">227</div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="dashboard-card">
+                        <div class="card-icon icon-orange">%</div>
+                        <div class="dashboard-title">Utilization</div>
+                        <div class="dashboard-value">35.5</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Row 2 -->
+
+            <div class="row mt-4">
+
+                <div class="col-lg-4">
+                    <div class="chart-box">
+                        <div class="chart-title"><b>Storage Occupancy</b></div>
+                        <canvas id="occupancyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="chart-box">
+                        <div class="chart-title"><b>Total Quantity By Part</b></div>
+                        <canvas id="partChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="chart-box">
+                        <div class="chart-title"><b>Monthly Transaction Summary</b></div>
+                        <canvas id="transactionChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Row 3 -->
+
+            <div class="row mt-4">
+
+                <div class="col-lg-6">
+
+                    <div class="chart-box">
+
+                        <div class="chart-title">
+                            Capacity Utilization By Level
+                        </div>
+
+                        <canvas id="levelChart"></canvas>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3">
+
+                    <div class="chart-box">
+
+                        <div class="chart-title">
+                            Column Groups
+                        </div>
+
+                        <canvas id="columnChart"></canvas>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3">
+
+                    <div class="chart-box">
+
+                        <div class="chart-title">
+                            Recent Alerts
+                        </div>
+
+                        <div class="alert-item asrs-alert-danger">
+                            Cell A-08-15-1 Over Capacity
+                        </div>
+
+                        <div class="alert-item asrs-alert-warning">
+                            Level 8 Utilization Above 90%
+                        </div>
+
+                        <div class="alert-item asrs-alert-warning">
+                            8 Cells Under Maintenance
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+<script>
+        $(document).ready(function () {
+            updateHeaderInfo();
+            setInterval(updateHeaderInfo, 1000);
+        });
+
+        function updateHeaderInfo() {
+
+            const now = new Date();
+
+            document.getElementById("currentTime").innerHTML =
+                now.toLocaleString('en-IN');
+
+            const hour = now.getHours();
+            let shift = "";
+
+            if (hour >= 6 && hour < 14) {
+                shift = "Shift A";
+            }
+            else if (hour >= 14 && hour < 22) {
+                shift = "Shift B";
+            }
+            else {
+                shift = "Shift C";
+            }
+
+            document.getElementById("shiftName").innerHTML = shift;
+        }
+        new Chart(document.getElementById('occupancyChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Occupied', 'Available', 'Maintenance'],
+                datasets: [{
+                    data: [125, 227, 8],
+                    backgroundColor: ['#ef4444', '#22c55e', '#f59e0b']
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('partChart'), {
+            type: 'pie',
+            data: {
+                labels: ['ABC123', 'XYZ555', 'DEF777', 'GHI888', 'Others'],
+                datasets: [{
+                    data: [4500, 3200, 2150, 1550, 2650]
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('transactionChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [
+                    {
+                        label: 'IN',
+                        backgroundColor: '#16a34a',
+                        data: [2400, 2800, 3600, 3100, 4600, 4200]
+                    },
+                    {
+                        label: 'OUT',
+                        backgroundColor: '#ef4444',
+                        data: [2100, 2500, 3200, 2900, 4000, 3700]
+                    }]
+            }
+        });
+
+        new Chart(document.getElementById('levelChart'), {
+
+            type: 'bar',
+
+            data: {
+                labels: [
+                    'Level 1', 'Level 2', 'Level 3', 'Level 4',
+                    'Level 5', 'Level 6', 'Level 7', 'Level 8'
+                ],
+
+                datasets: [{
+                    label: 'Utilization %',
+                    backgroundColor: '#0d6efd',
+                    data: [20, 28, 35, 48, 62, 75, 88, 95]
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('columnChart'), {
+
+            type: 'bar',
+
+            data: {
+                labels: ['1-10', '11-20', '21-30', '31-40', '41-44'],
+                datasets: [{
+                    backgroundColor: '#0d6efd',
+                    data: [78, 65, 48, 32, 25]
+                }]
+            }
+        });
+
+</script>

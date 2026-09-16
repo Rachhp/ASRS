@@ -1,0 +1,449 @@
+﻿@model List<S1947.Models.AgeingReportVM>
+
+@{
+    Layout = null;
+    int sr = 1;
+
+    int totalRecords = Model != null ? Model.Count : 0;
+
+    int freshCount = Model != null
+        ? Model.Count(x => x.AgeDays <= 15)
+        : 0;
+
+    int ageingCount = Model != null
+        ? Model.Count(x => x.AgeDays > 15 && x.AgeDays <= 30)
+        : 0;
+
+    int criticalCount = Model != null
+        ? Model.Count(x => x.AgeDays > 30)
+        : 0;
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>Ageing Report</title>
+
+    <style>
+
+        body {
+            margin: 30px;
+            font-family: Arial;
+            font-size: 12px;
+        }
+
+        .report-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+            .report-table th {
+                background: #333;
+                color: white;
+            }
+
+            .report-table th,
+            .report-table td {
+                border: 1px solid #999;
+                padding: 6px;
+                text-align: center;
+                vertical-align: middle;
+                word-wrap: break-word;
+            }
+
+        /* =========================
+           AGE ROW COLORS
+           ========================= */
+
+        .age-fresh td {
+            background-color: #C6EFCE !important;
+        }
+
+        .age-ageing td {
+            background-color: #FFF2CC !important;
+        }
+
+        .age-critical td {
+            background-color: #FFC7CE !important;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           AGE BADGE
+           ========================= */
+
+        .age-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .age-badge-fresh {
+            background: #198754 !important;
+            color: white !important;
+        }
+
+        .age-badge-ageing {
+            background: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        .age-badge-critical {
+            background: #dc3545 !important;
+            color: white !important;
+        }
+
+
+        /* =========================
+           SUMMARY
+           ========================= */
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+            .summary-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+                width: 25%;
+            }
+
+        .summary-title {
+            font-size: 11px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .summary-count {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           LEGEND
+           ========================= */
+
+        .legend {
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .legend-item {
+            margin-left: 15px;
+        }
+
+        .legend-box {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 1px solid #999;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        .legend-fresh {
+            background: #C6EFCE;
+        }
+
+        .legend-ageing {
+            background: #FFF2CC;
+        }
+
+        .legend-critical {
+            background: #FFC7CE;
+        }
+
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- TITLE -->
+
+    <div class="report-title">
+        Ageing Report - Live Loaded Stock
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <table class="summary-table">
+
+        <tr>
+
+            <td>
+
+                <div class="summary-title">
+                    Total Loaded Stock
+                </div>
+
+                <div class="summary-count">
+                    @totalRecords
+                </div>
+
+            </td>
+
+
+            <td>
+
+                <div class="summary-title">
+                    0–15 Days
+                </div>
+
+                <div class="summary-count">
+                    @freshCount
+                </div>
+
+            </td>
+
+
+            <td>
+
+                <div class="summary-title">
+                    16–30 Days
+                </div>
+
+                <div class="summary-count">
+                    @ageingCount
+                </div>
+
+            </td>
+
+
+            <td>
+
+                <div class="summary-title">
+                    31+ Days
+                </div>
+
+                <div class="summary-count">
+                    @criticalCount
+                </div>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+
+    <!-- REPORT INFORMATION -->
+
+    <div style="display:flex;
+                justify-content:space-between;
+                margin-bottom:15px;
+                font-size:12px;">
+
+        <div>
+
+            <strong>Generated On :</strong>
+
+            @DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt")
+
+        </div>
+
+
+        <div>
+
+            <strong>Total Records :</strong>
+
+            @totalRecords
+
+        </div>
+
+    </div>
+
+
+    <hr />
+
+
+    <!-- LEGEND -->
+
+    <div class="legend">
+
+        <span>Ageing Status:</span>
+
+        <span class="legend-item">
+
+            <span class="legend-box legend-fresh"></span>
+
+            0–15 Days
+
+        </span>
+
+
+        <span class="legend-item">
+
+            <span class="legend-box legend-ageing"></span>
+
+            16–30 Days
+
+        </span>
+
+
+        <span class="legend-item">
+
+            <span class="legend-box legend-critical"></span>
+
+            31+ Days
+
+        </span>
+
+    </div>
+
+
+    <!-- AGEING TABLE -->
+
+    <table class="report-table">
+
+        <colgroup>
+
+            <col style="width:6%" />
+
+            <col style="width:17%" />
+
+            <col style="width:20%" />
+
+            <col style="width:10%" />
+
+            <col style="width:20%" />
+
+            <col style="width:15%" />
+
+            <col style="width:12%" />
+
+        </colgroup>
+
+
+        <thead>
+
+            <tr>
+
+                <th>Sr No</th>
+
+                <th>Material Code</th>
+
+                <th>Model</th>
+
+                <th>Quantity</th>
+
+                <th>Location</th>
+
+                <th>Loaded Date</th>
+
+                <th>Age Days</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            @if (Model != null)
+            {
+                foreach (var item in Model.OrderByDescending(x => x.AgeDays))
+                {
+
+                    string rowClass;
+                    string badgeClass;
+
+
+                    if (item.AgeDays <= 15)
+                    {
+                        rowClass = "age-fresh";
+                        badgeClass = "age-badge-fresh";
+                    }
+                    else if (item.AgeDays <= 30)
+                    {
+                        rowClass = "age-ageing";
+                        badgeClass = "age-badge-ageing";
+                    }
+                    else
+                    {
+                        rowClass = "age-critical";
+                        badgeClass = "age-badge-critical";
+                    }
+
+
+                    <tr class="@rowClass">
+
+                        <td>
+                            @sr
+                        </td>
+
+                        <td>
+                            @item.MaterialCode
+                        </td>
+
+                        <td style="text-align:left;">
+                            @item.FGModel
+                        </td>
+
+                        <td>
+                            @item.Quantity
+                        </td>
+
+                        <td style="text-align:left;">
+                            @item.LocationName
+                        </td>
+
+                        <td>
+                            @(item.LoadedDate.HasValue
+                                ? item.LoadedDate.Value.ToString("dd-MM-yyyy HH:mm")
+                                : "-")
+                        </td>
+
+                        <td>
+
+                            <span class="age-badge @badgeClass">
+
+                                @item.AgeDays Days
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    sr++;
+                }
+            }
+
+        </tbody>
+
+    </table>
+
+</body>
+
+</html>

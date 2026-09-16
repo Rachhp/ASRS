@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "User Manual";
+}
+
+<style>
+    .help {
+        background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+        color: #fff;
+        border-radius: 17px;
+    }
+    section {
+        display: flex;
+        width: 100%;
+    }
+
+    .page-header {
+        margin: -35px -36px 30px -38px;
+        border-bottom: 5px solid #ff6a00;
+    }
+
+    /* PDF container center */
+    .pdf-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .pdf-container {
+        width: 90%;
+        height: 80vh;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+        background: #fff;
+    }
+
+    /* Dark mode support */
+    body.dark-mode .pdf-container {
+        background-color: #1e293b;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+    }
+
+</style>
+
+<section role="main" class="content-body">
+    <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm"
+            style="background:#000;color:#fff;">
+        <h3><i class="fas fa-book"></i> User Manual</h3>
+    </header>
+
+    <div class="col-12 pdf-wrapper">
+        <iframe class="pdf-container" src="@ViewBag.PdfPath">
+            This browser does not support PDFs.
+            <a href="@ViewBag.PdfPath" target="_blank">Download PDF</a>
+        </iframe>
+    </div>
+</section>

@@ -1,0 +1,553 @@
+﻿@model List<S1947.Models.LiveStockReportVM>
+
+@{
+    ViewBag.Title = "Live Stock Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int totalRecords = Model != null ? Model.Count : 0;
+
+    int totalQuantity = Model != null
+        ? Model.Sum(x => x.Quantity)
+        : 0;
+
+    int totalMaterials = Model != null
+        ? Model.Select(x => x.MaterialCode).Distinct().Count()
+        : 0;
+
+    int loadedLocations = Model != null
+        ? Model.Select(x => x.LocationName).Distinct().Count()
+        : 0;
+}
+
+<link href="~/Content/Report.css" rel="stylesheet" />
+<link href="~/Content/vendor/datatables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/vendor/datatables/extras/TableTools/Buttons-1.4.2/css/buttons.dataTables.min.css" rel="stylesheet" />
+
+<style>
+
+    .stock-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stock-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .stock-card-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    .stock-card-count {
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .card-total {
+        border-top: 4px solid #343a40;
+    }
+
+    .card-quantity {
+        border-top: 4px solid #007bff;
+    }
+
+    .card-material {
+        border-top: 4px solid #6f42c1;
+    }
+
+    .card-location {
+        border-top: 4px solid #28a745;
+    }
+
+    .status-loaded {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        background-color: #28a745;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    #tblLiveStock tbody tr:hover td {
+        background-color: #f5f5f5;
+    }
+
+    @@media (max-width: 1000px) {
+
+        .stock-summary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 600px) {
+
+        .stock-summary {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm">
+
+    <h3 class="mb-0 font-weight-bold text-white">
+
+        <i class="fas fa-boxes"></i>
+
+        Live Stock Report
+
+    </h3>
+
+</header>
+
+
+<section role="main">
+
+    <div id="reportContent">
+
+        <div class="report-card">
+
+
+            <div class="report-header d-flex justify-content-between align-items-center">
+
+                <h4 class="mb-0">
+
+                    <i class="fa fa-warehouse"></i>
+
+                    Current ASRS Stock
+
+                </h4>
+
+                <div id="exportButtons"></div>
+
+            </div>
+
+
+            <div class="card-body">
+
+
+                <!-- SUMMARY -->
+
+                <div class="stock-summary">
+
+
+                    <div class="stock-card card-total">
+
+                        <div class="stock-card-title">
+                            Occupied Locations
+                        </div>
+
+                        <div class="stock-card-count">
+                            @totalRecords
+                        </div>
+
+                    </div>
+
+
+                    <div class="stock-card card-quantity">
+
+                        <div class="stock-card-title">
+                            Total Quantity
+                        </div>
+
+                        <div class="stock-card-count">
+                            @totalQuantity
+                        </div>
+
+                    </div>
+
+
+                    <div class="stock-card card-material">
+
+                        <div class="stock-card-title">
+                            Material Types
+                        </div>
+
+                        <div class="stock-card-count">
+                            @totalMaterials
+                        </div>
+
+                    </div>
+
+
+                    <div class="stock-card card-location">
+
+                        <div class="stock-card-title">
+                            Loaded Locations
+                        </div>
+
+                        <div class="stock-card-count">
+                            @loadedLocations
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                @using (Html.BeginForm("LiveStockReport", "Reports", FormMethod.Get))
+                {
+
+                    <table id="tblLiveStock"
+                           class="table table-bordered table-hover report-table"
+                           style="width:100%">
+
+                        <thead>
+
+                            <tr>
+
+                                <th class="text-center">
+                                    Sr No
+                                </th>
+
+                                <th class="text-center">
+                                    Material Code
+                                </th>
+
+                                <th>
+                                    Model
+                                </th>
+
+                                <th class="text-center">
+                                    Quantity
+                                </th>
+
+                                <th class="text-center">
+                                    Level
+                                </th>
+
+                                <th class="text-center">
+                                    Cell
+                                </th>
+
+                                <th class="text-center">
+                                    Depth
+                                </th>
+
+                                <th class="text-center">
+                                    Location
+                                </th>
+
+                                <th class="text-center">
+                                    Loaded Date
+                                </th>
+
+                                @*<th class="text-center">
+                                    Status
+                                </th>*@
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @{
+                                int sr = 1;
+                            }
+
+
+                            @foreach (var item in Model)
+                            {
+
+                                <tr>
+
+                                    <td class="text-center">
+                                        @sr
+                                    </td>
+
+                                    <td class="text-center font-weight-bold">
+                                        @item.MaterialCode
+                                    </td>
+
+                                    <td>
+                                        @item.FGModel
+                                    </td>
+
+                                    <td class="text-center font-weight-bold">
+                                        @item.Quantity
+                                    </td>
+
+                                    <td class="text-center">
+                                        @item.Level
+                                    </td>
+
+                                    <td class="text-center">
+                                        @item.Cell
+                                    </td>
+
+                                    <td class="text-center">
+                                        @item.Depth
+                                    </td>
+
+                                    <td class="text-center font-weight-bold">
+                                        @item.LocationName
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        @(item.LoadedDate.HasValue
+                                            ? item.LoadedDate.Value.ToString("dd-MM-yyyy HH:mm")
+                                            : "-")
+
+                                    </td>
+
+                                    @*<td class="text-center">
+
+                                        <span class="status-loaded">
+                                            @item.Status
+                                        </span>
+
+                                    </td>*@
+
+                                </tr>
+
+                                sr++;
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        var table = $('#tblLiveStock').DataTable({
+
+            pageLength: 10,
+
+            ordering: true,
+
+            responsive: true,
+
+            autoWidth: false,
+
+            order: [[4, 'asc'], [5, 'asc'], [6, 'asc']],
+
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+
+            dom:
+                "<'row mb-3'<'col-md-5'l><'col-md-6 text-right'f>>" +
+                "t" +
+                "<'row mt-3'<'col-md-5'i><'col-md-7'p>>",
+
+            buttons: [
+
+                {
+                    text: '<i class="fa fa-print"></i> Print',
+
+                    className: 'buttons-print',
+
+                    action: function () {
+
+                        printLiveStockReport();
+
+                    }
+                },
+
+                {
+                    text: '<i class="fa fa-file-pdf"></i> PDF',
+
+                    className: 'buttons-pdf',
+
+                    action: function () {
+
+                        window.location =
+                            '@Url.Action("LiveStockReportPdf")';
+
+                    }
+                },
+
+                {
+                    extend: 'excelHtml5',
+
+                    text: '<i class="fa fa-file-excel"></i> Excel',
+
+                    className: 'buttons-excel',
+
+                    title: 'Live Stock Report'
+
+                }
+
+            ]
+
+        });
+
+
+        table.buttons()
+             .container()
+             .appendTo('#exportButtons');
+
+    });
+
+
+    function printLiveStockReport() {
+
+        var table = $('#tblLiveStock').DataTable();
+
+        var currentLength = table.page.len();
+
+        table.page.len(-1).draw();
+
+
+        setTimeout(function () {
+
+            var report =
+                document.getElementById("tblLiveStock").outerHTML;
+
+            var totalRecords =
+                $('#tblLiveStock tbody tr').length;
+
+            var printWindow =
+                window.open('', '', 'width=1200,height=900');
+
+
+            printWindow.document.write(`
+
+<html>
+
+<head>
+
+<title>Live Stock Report</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 15px;
+    font-size: 10px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #343a40 !important;
+    color: white !important;
+}
+
+th,
+td {
+    border: 1px solid #999;
+    padding: 5px;
+    text-align: center;
+    font-size: 9px;
+}
+
+thead {
+    display: table-header-group;
+}
+
+tr {
+    page-break-inside: avoid;
+}
+
+.status-loaded {
+    background: #28a745 !important;
+    color: white !important;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Live Stock Report</h2>
+<div class="subtitle">Current ASRS Loaded Stock</div>
+<div class="info">
+    <div>Generated On : ${new Date().toLocaleString()}</div>
+    <div>Total Records : ${totalRecords}</div>
+</div>
+${report}
+
+</body>
+
+</html>
+
+`);
+
+            printWindow.document.close();
+
+            printWindow.focus();
+            setTimeout(function () {
+
+                printWindow.print();
+
+                printWindow.close();
+
+                table.page.len(currentLength).draw();
+
+            }, 500);
+
+
+        }, 300);
+
+    }
+
+</script>

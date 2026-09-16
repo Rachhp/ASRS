@@ -1,0 +1,1583 @@
+﻿@using S1947.Models
+@model S1947.Models.AndonViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: #dfe6ee;
+        font-family: "Segoe UI",Arial,sans-serif;
+    }
+
+    .loading-container {
+        width: 100%;
+        margin: -15px auto;
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,.15);
+ 
+    }
+
+    .titleText {
+        font-size: 36px;
+        font-weight: 900;
+        color: #0f172a;
+        letter-spacing: 1px;
+    }
+
+    .dockBox {
+        background: linear-gradient(135deg,#1d4ed8,#2563eb);
+        color: white;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    .info-box {
+        background: #e8f0ff;
+        border-radius: 12px;
+        padding: 18px;
+        margin: 15px 15px 0 15px;
+        border: 1px solid #cbd5e1;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .form-control,
+    .form-select {
+        height: 38px;
+        border: 1px solid #94a3b8;
+        font-weight: 600;
+    }
+
+    .capacity-card {
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        color: white;
+        font-weight: bold;
+    }
+
+    .capacity-title {
+        font-size: 14px;
+    }
+
+    .capacity-value {
+        font-size: 28px;
+    }
+
+    .allowed {
+        background: #2563eb;
+    }
+
+    .used {
+        background: #16a34a;
+    }
+
+    .balance {
+        background: #f59e0b;
+    }
+
+    @@media(max-width:768px) {
+        .titleText {
+            font-size: 24px;
+        }
+    }
+
+
+    .totalRow {
+        background: #dbeafe;
+        font-weight: bold;
+    }
+
+    
+
+    #loadingTable thead th {
+        position: sticky;
+        top: 0;
+        background: #0f172a;
+        color: white;
+        z-index: 20;
+    }
+
+    #loadingTable th:last-child,
+    #loadingTable td:last-child {
+        position: sticky;
+        right: 0;
+        background: white;
+    }
+
+    #loadingTable thead th:last-child {
+        background: #0f172a;
+    }
+
+    .vehicle-title {
+        background: #0f172a;
+        color: white;
+        font-size:20px;
+        align-items: center;
+        text-align :center;
+        padding:10px;
+        width:280px;
+    
+    }
+    #loadingTable th:last-child,
+    #loadingTable td:last-child {
+        position: sticky;
+        right: 0;
+        background: white;
+        z-index: 5;
+    }
+
+    #loadingTable thead th:last-child {
+        background: #212529;
+        z-index: 15;
+    }
+    .vehicle-grid {
+        border-collapse: collapse;
+    }
+
+        .vehicle-grid td {
+            width: 65px;
+            height: 40px;
+            border: 1px solid #111;
+            text-align: center;
+            font-weight: bold;
+            background: white;
+        }
+
+        .vehicle-grid .filled {
+            background: #22c55e !important;
+            color: white;
+        }
+
+        .vehicle-grid .empty {
+            background: #ffffff;
+        }
+
+    .table-hover tbody tr:hover {
+        --bs-table-accent-bg: #e9ecef;
+    }
+
+    .table-dark th {
+        background-color: #212529 !important;
+        color: white !important;
+    }
+
+
+    /* STATUS ONLY */
+    .asrs-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 110px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        border: 1px solid;
+    }
+
+        .asrs-status::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 7px;
+            background: currentColor;
+        }
+
+    /* Pending / Created / Assigned */
+    .status-pending {
+        color: #92400e;
+        background: #fef3c7;
+        border-color: #f59e0b;
+    }
+
+    /* In Progress */
+    .status-progress {
+        color: #1d4ed8;
+        background: #dbeafe;
+        border-color: #60a5fa;
+    }
+
+    /* Completed */
+    .status-completed {
+        color: #047857;
+        background: #d1fae5;
+        border-color: #34d399;
+    }
+
+    /* Failed / Error / Cancelled */
+    .status-error {
+        color: #b91c1c;
+        background: #fee2e2;
+        border-color: #f87171;
+    }
+
+    /* Unknown status */
+    .status-default {
+        color: #475569;
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+
+</style>
+<section role="main">
+    <div class="loading-container">
+        <div class="row align-items-center mb-3">
+
+            <!-- Tabs Left -->
+            <div class="col-md-4">
+                <div class="tab-header">
+                    <button type="button"
+                            class="btn btn-primary active"
+                            onclick="showTab('loadingSheet')">
+                        Material Unload
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            onclick="showTab('asrsStatus')">
+                        ASRS Unloading Status
+                    </button>
+                </div>
+            </div>
+            <!-- Heading Center -->
+            <div class="col-md-5 text-center">
+                <h2 class="titleText mb-0">
+                    UNLOAD OPERATION
+                </h2>
+            </div>
+
+            <!-- Dock Right -->
+            <div class="col-md-3 text-end">
+                <label class="dockBox mb-0">
+                    DOCK NO :
+
+                    <select id="DockNo"
+                            name="DockNo"
+                            class="form-select d-inline-block"
+                            style="width:100px;">
+
+                        <option value="">-Select-</option>
+
+                        @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.DockNo)
+                        {
+                            <option value="@item.Value"
+                                    @(Model.DockNo == Convert.ToInt32(item.Value) ? "selected" : "")>
+                                @item.Text
+                            </option>
+                        }
+
+                    </select>
+                </label>
+            </div>
+
+
+            <!-- Dock Right -->
+            <!--<div class="col-md-3 text-end">
+                <label class="dockBox mb-0">
+                    DOCK NO :
+                    <select id="DockNo" class="form-select d-inline-block"
+                            style="width:100px;">
+                        <option value="">-Select-</option>
+                        <option value="1" @(Model.DockNo == 1 ? "selected" : "")>1</option>
+                        <option value="2" @(Model.DockNo == 2 ? "selected" : "")>2</option>
+                        <option value="3" @(Model.DockNo == 3 ? "selected" : "")>3</option>
+                        <option value="4" @(Model.DockNo == 4 ? "selected" : "")>4</option>
+                    </select>
+                </label>
+            </div>-->
+
+        </div>
+
+
+        <div id="loadingSheet" class="tab-content-section">         
+                <!-- ================= DATE TIME SHIFT ================= -->
+                <div class="row info-box">
+                    <div class="col-md-4">
+                        <label class="form-label"> Date </label>
+                        <input type="text" id="currentDate" class="form-control" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label"> Time </label>
+                        <input type="text" id="currentTime" class="form-control" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label"> Shift  </label>
+                        <input type="text" id="shiftName" class="form-control" readonly />
+                    </div>
+                </div>
+                <!-- ================= VEHICLE DETAILS ================= -->
+                <div class="row info-box mt-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Vehicle Size</label>
+                        <select id="VehicleSize" class="form-select w-100">
+                            <option value="">--Select--</option>
+                            <option value="20" @(Model.VehicleSize == 20 ? "selected" : "")> 20 Feet </option>
+                            <option value="32" @(Model.VehicleSize == 32 ? "selected" : "")> 32 Feet </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label"> Vehicle Register Number</label>
+                        <input type="text" id="VehicleNumber" class="form-control" value="@Model.VehicleNumber" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label"> Transporter Name </label>
+                        <input type="text" id="TransporterName" class="form-control" value="@Model.TransporterName" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label"> Vehicle Seal No.  </label>
+                        <input type="text" id="VehicleSealNo" class="form-control" value="@Model.VehicleSealNo" />
+                    </div>
+                </div>
+                <div class="row info-box mt-3">
+                    <div class="col-md-4">
+                        <div class="card md-3">
+                            <label class="form-label"><b>Supervisor Name</b></label>
+                            <input type="text" id="SupervisorName" class="form-control" value="@Model.SupervisiorName" />
+                            <label class="form-label mt-2"><b>Supervisor Mobile No.</b></label>
+                            <input type="text" id="SupervisorMobile" class="form-control" value="@Model.MobileNoSupervisor" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card md-3">
+                            <label class="form-label"><b>Driver Name</b></label>
+                            <input type="text" id="DriverName" class="form-control" value="@Model.DriverName" />
+                            <label class="form-label mt-2"><b>Driver Mobile No.</b></label>
+                            <input type="text" id="DriverMobile" class="form-control" value="@Model.MobileNoDriver" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card md-3">
+                            <label class="form-label"><b>Security Name</b></label>
+                            <input type="text" id="SecurityName" class="form-control" value="@Model.SecurityName" />
+                            <label class="form-label mt-2"><b>Security Mobile No.</b></label>
+                            <input type="text" id="SecurityMobile" class="form-control" value="@Model.MobileNoSecurity" />
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <!-- ================= LOADING DETAILS TABLE ================= -->
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="table-responsive table-scroll">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th> Sr No</th>
+                                        <th>Invoice No</th>
+                                        <th>Customer</th>
+                                        <th>Location</th>
+                                        <th>Part No</th>
+                                        <th>Part Description</th>
+                                        <th>SAP FG Code</th>
+                                        <th hidden>Available Qty</th>
+                                        <th>Qty</th>
+                                        <th>FLC Qty</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody id="loadingTableContainer">
+                                    @Html.Partial("_LoadingTable",
+                                    new S1947.Models.LoadingTableViewModel
+                                    {
+                                        LoadingHistory = Model.LoadingHistory,
+                                        CustomerList = Model.CustomerList,
+                                        ModelList = Model.ModelList
+                                    })
+                                </tbody>
+                                <tfoot>
+                                    <tr class="totalRow">
+                                        <td colspan="7" class="text-end"> Total </td>
+                                        <td></td>
+                                        <td id="totalQty">0 </td>
+                                        <td id="totalFLC">0 </td>
+                                        <td colspan="4"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- ================= VEHICLE STATUS ================= -->
+                <div class="row mt-1">
+                    <div class="col-md-12 text-center">
+                        <button type="button" id="btnSubmit" class="btn btn-success btn-lg">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>   <!-- closing loadingSheet -->
+            <!-- ASRS TABLE WILL COME HERE -->
+            <div id="asrsStatus" class="tab-content-section" style="display:none;">
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="table-responsive table-scroll">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>Invoice </th>
+                                        <th>Dock No </th>
+                                        <th>Customer </th>
+                                        <th>Location </th>
+                                        <th>Vehicle No</th>
+                                        <th>Pallet No</th>
+                                        <th>Model No</th>
+                                        <th>Quantity</th>
+                                        @*<th>FLC/Pallet Count</th>*@
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="asrsTableBody">
+                                </tbody>
+
+                            </table>
+                            <div class="text-center mt-3">
+
+                                <button class="btn btn-primary btn-sm" id="prevASRS">
+                                    Previous
+                                </button>
+
+                                <span id="asrsPageInfo" class="mx-3"></span>
+
+                                <button class="btn btn-primary btn-sm" id="nextASRS">
+                                    Next
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+<script>
+
+    let asrsPage = 1;
+    let asrsRowsPerPage = 10;
+
+
+    $(document).ready(function () {
+
+        paginateASRS();
+
+        $("#prevASRS").click(function () {
+
+            if (asrsPage > 1) {
+                asrsPage--;
+                paginateASRS();
+            }
+
+        });
+
+
+        $("#nextASRS").click(function () {
+
+            let totalRows = $("#asrsTableBody tr").length;
+            let totalPages = Math.ceil(totalRows / asrsRowsPerPage);
+
+            if (asrsPage < totalPages) {
+                asrsPage++;
+                paginateASRS();
+            }
+
+        });
+
+    });
+
+
+    function paginateASRS() {
+
+        let rows = $("#asrsTableBody tr");
+        let totalRows = rows.length;
+        let totalPages = Math.ceil(totalRows / asrsRowsPerPage);
+        rows.hide();
+
+        let start = (asrsPage - 1) * asrsRowsPerPage;
+        let end = start + asrsRowsPerPage;
+        rows.slice(start, end).show();
+
+        $("#asrsPageInfo").text(
+            "Page " + asrsPage + " of " + totalPages
+        );
+
+        $("#prevASRS").prop(
+            "disabled",
+            asrsPage == 1
+        );
+
+        $("#nextASRS").prop(
+            "disabled",
+            asrsPage == totalPages
+        );
+
+    }
+
+    function showTab(tabId) {
+        $(".tab-content-section").hide();
+        $("#" + tabId).show();
+        if (tabId === "asrsStatus") {
+            // Hide Dock No on ASRS tab+
+            $("#DockNo").closest(".col-md-3").hide();
+        }
+        else {
+            // Show Dock No on Material Unload tab
+            $("#DockNo").closest(".col-md-3").show();
+        }
+    }
+
+
+    $(document).ready(function () {
+
+        let size = $("#VehicleSize").val();
+        if (size == "20") {
+
+            vehicleSlots = 28;
+            allowedCapacity = 28;
+        }
+        else if (size == "32") {
+
+            vehicleSlots = 36;
+            allowedCapacity = 36;
+
+        }
+        // Always create grid on page load
+        if (vehicleSlots > 0) {
+            createVehicleGrid();
+        }
+
+        calculateTotal();
+        updateDateTime();
+
+
+        loadASRSStatus();
+        // continuous refresh
+        setInterval(function () { loadASRSStatus(); }, 3000);   // 3 seconds
+        setInterval(updateDateTime, 1000);
+
+    });
+
+    function loadASRSStatus() {
+    $.ajax({
+        url: '@Url.Action("GetASRSLoadingStatus","UnloadingOperation")',
+        type: 'GET',
+
+        success: function (data) {
+
+            let html = "";
+            let sl = 1;
+            $.each(data, function (i, item) {
+                html += `
+                <tr style="color:black;font-weight:600">
+
+                    <td>${sl}</td>
+                    <td>${item.InvoiceNo}</td>
+                    <td>${item.DockNo}</td>
+                    <td>${item.CustomerName}</td>
+                    <td>${item.LocationName}</td>
+                    <td>${item.VehicleNumber}</td>
+                    <td>${item.PalletNo}</td>
+                    <td>${item.FGModel}</td>
+                    <td>${item.PartQuantity}</td>
+                    <td>
+                        <span class="asrs-status ${getASRSStatusClass(item.Status)}">
+                            ${item.Status || "No Status"}
+                        </span>
+                    </td>
+
+                </tr>`;
+
+                sl++;
+
+            });
+
+
+            $("#asrsTableBody").html(html);
+
+        },
+
+        error:function(){
+            console.log("ASRS loading failed");
+        }
+
+    });
+
+    }
+
+
+    function updateBottomSection() {
+        $("#lblSupervisorName").text($("#SupervisorName").val());
+        $("#lblSupervisorMobile").text($("#SupervisorMobile").val());
+        $("#lblDriverName").text($("#DriverName").val());
+        $("#lblDriverMobile").text($("#DriverMobile").val());
+        $("#lblSecurityName").text($("#SecurityName").val());
+        $("#lblSecurityMobile").text($("#SecurityMobile").val());
+    }
+
+    $("#SupervisorName,#SupervisorMobile,#DriverName,#DriverMobile,#SecurityName,#SecurityMobile").on("keyup change", function () {
+            updateBottomSection(); });
+
+        let rowCount = 1;
+        function addNewRow() {
+
+    rowCount++;
+
+    let row = `<tr>
+
+        <td class="srNo">${rowCount}</td>
+        <td><input type="text" class="form-control invoiceNo" /> </td>
+        <td><select class="form-select customer">
+                <option value="">Select</option>
+
+                @foreach (var item in Model.CustomerList)
+                {
+                    <option value="@item">@item</option>
+                }
+
+            </select>
+        </td>
+        <td> <input type="text"  class="form-control location" readonly /> </td>
+        <td> <select class="form-select model">
+                <option value="">Select</option>
+
+                @foreach (var item in Model.ModelList)
+                {
+                    <option value="@item">@item</option>
+                }
+            </select>
+        </td>
+
+        <td> <input type="text"  class="form-control description" readonly /> </td>
+        <td> <input type="text" class="form-control fgCode" readonly /></td>
+        <td hidden> <input type="text" class="form-control availableQty" readonly /></td> 
+        <td><input type="number" class="form-control qty" min="0" /> </td>
+        <td> <input type="text" class="form-control flcQty" readonly /> </td>
+        <td> <button type="button" class="btn btn-success btn-sm saveRow">Add </button> </td>
+    </tr>`;
+
+    $("#loadingTableContainer").append(row);
+    }
+
+
+    function getASRSStatusClass(status) {
+
+        if (!status) {
+            return "status-default";
+        }
+
+        let value = status.toLowerCase();
+
+        if (value.includes("complete") || value.includes("success")) {
+            return "status-completed";
+        }
+
+        if (value.includes("failed") ||
+            value.includes("error") ||
+            value.includes("cancel")) {
+            return "status-error";
+        }
+
+        if (value.includes("proceed") ||
+            value.includes("pickup") ||
+            value.includes("vehicle") ||
+            value.includes("moving") ||
+            value.includes("charging")) {
+            return "status-progress";
+        }
+
+        if (value.includes("created") ||
+            value.includes("assigned") ||
+            value.includes("pending")) {
+            return "status-pending";
+        }
+
+        return "status-default";
+    }
+
+
+    function enableNewLoadingRow() {
+
+        let rows = $("#loadingTableContainer tr");
+
+        if (rows.length === 0) {
+            return;
+        }
+
+        let newRow = rows.last();
+
+        // Make inputs editable
+        newRow.find("input").prop("readonly", false);
+
+        // Make dropdowns editable
+        newRow.find("select").prop("disabled", false);
+
+        // Enable Add button
+        newRow.find(".saveRow")
+            .prop("disabled", false)
+            .removeClass("btn-secondary")
+            .addClass("btn-success")
+            .text("Add");
+    }
+
+   // =========================================================
+    // DISABLE EVERYTHING WHEN VEHICLE CAPACITY IS FULL
+    // =========================================================
+    function disableAllLoadingRows() {
+
+        $("#loadingTableContainer tr").each(function () {
+
+            let row = $(this);
+
+            row.find("input").prop("readonly", true);
+            row.find("select").prop("disabled", true);
+
+            row.find(".saveRow")
+                .prop("disabled", true)
+                .removeClass("btn-success")
+                .addClass("btn-secondary")
+                .text("Full");
+        });
+
+    }
+
+
+        function updateDateTime() {
+            let now = new Date();
+            $("#currentDate").val(now.toLocaleDateString('en-IN'));
+            $("#currentTime").val(now.toLocaleTimeString('en-IN'));
+            let hour = now.getHours();
+            let shift = "";
+            if (hour >= 6 && hour < 14)
+                shift = "Shift A";
+            else if (hour >= 14 && hour < 22)
+                shift = "Shift B";
+            else
+                shift = "Shift C";
+            $("#shiftName").val(shift);
+        }
+
+        let vehicleSlots = 0;
+        let allowedCapacity = 0;
+
+
+        $("#VehicleSize").change(function () {
+
+            let size = $(this).val();
+
+            if (size == "20") {
+                vehicleSlots = 28;
+                allowedCapacity = 28;
+            }
+            else if (size == "32") {
+                vehicleSlots = 36;
+                allowedCapacity = 36;
+            }
+            else {
+                vehicleSlots = 0;
+                allowedCapacity = 0;
+            }
+
+            createVehicleGrid();
+
+
+        });
+
+
+    function createVehicleGrid() {
+
+        let html = "";
+
+        let columns = 0;
+
+        if (vehicleSlots == 36) {
+            columns = 9;
+        }
+        else if (vehicleSlots == 28) {
+            columns = 7;
+        }
+        let rows = 4;
+        let count = vehicleSlots;
+        for (let r = 0; r < rows; r++) {
+            html += "<tr>";
+            for (let c = 0; c < columns; c++) {
+
+                if (count > 0) {
+
+                    html += `<td class="empty" data-slot="${count}">
+                            ${count}
+                         </td>`;
+
+                    count--;
+
+                }
+                else {
+
+                    html += "<td></td>";
+
+                }
+            }
+
+            html += "</tr>";
+        }
+
+        $("#vehicleGrid").html(html);
+    }
+
+
+
+        // ================= CAPACITY CHECK =================
+        function checkCapacity(currentRow) {
+            let totalFLC = 0;
+            $(".flcQty").each(function () {
+                totalFLC += parseFloat($(this).val()) || 0;
+            });
+            $("#usedFLC").text(totalFLC.toFixed(2));
+            let balance = allowedCapacity - totalFLC;
+            $("#balanceFLC").text(balance.toFixed(2));
+            if (totalFLC > allowedCapacity) {
+                alert(
+                    "Vehicle Capacity Exceeded. Maximum allowed FLC : "
+                    + allowedCapacity
+                );
+                currentRow.find(".qty").val("");
+                currentRow.find(".flcQty").val("");
+                calculateTotal();
+                return false;
+            }
+
+            if (totalFLC >= allowedCapacity) {
+
+                alert("Vehicle capacity is full. No more rows can be added.");
+
+                // Disable all rows
+                disableAllLoadingRows();
+
+                // Submit also disabled
+                $("#btnSubmit").prop("disabled", true);
+            }
+            else {
+
+                // Capacity still available
+                $("#btnSubmit").prop("disabled", false);
+            }
+
+            return true;
+
+
+        }
+
+
+        function calculateTotal(){
+            let totalQty=0;
+            let totalFLC = 0;
+            $("#loadingTableContainer  tr").each(function () {
+                let qty = parseFloat($(this).find(".qty").val()) || 0;
+                let flc = parseFloat($(this).find(".flcQty").val()) || 0;
+                totalQty += qty;
+                totalFLC += flc;
+            });
+            $("#totalQty").text(totalQty);
+            $("#totalFLC").text(totalFLC);
+        }
+
+
+        // customer change
+        $(document).on("change", ".customer", function () {
+            let customerName = $(this).val();
+            let row = $(this).closest("tr");
+            if (customerName == "") {
+                row.find(".location").val("");
+                return;
+            }
+            //alert("here"+customerName);
+            $.ajax({
+                url: 'GetCustomerLocation',
+                type: 'GET',
+                data: {customer: customerName},
+                success: function (response) {
+                    if (response.location) {
+                        row.find(".location").val(response.location);
+                    }
+                    else {
+                        row.find(".location").val("");
+                        alert("Location not found");
+                    }
+                },
+                error: function () {
+                    alert("Unable to fetch customer location");
+                }
+            });
+
+        });
+
+        // MODEL change
+        $(document).on("change", ".model", function () {
+
+            let modelName = $(this).val();
+            let row = $(this).closest("tr");
+
+            if (modelName == "") {
+                row.find(".fgCode").val("");
+                row.find(".description").val("");
+                row.find(".availableQty").val("");
+                row.data("qtyperflc", 0);
+                return;
+            }
+                $.ajax({
+                url: 'GetModelDtl',
+                type: 'GET',
+                data: {
+                    modelName: modelName
+                },
+                success: function (response) {
+                    row.find(".fgCode").val(response.FGCode);
+                    row.find(".description").val(response.Description);
+                    row.find(".availableQty").val(response.AvailableQty);
+                },
+                error: function () {
+                    alert("Unable to fetch model details");
+                }
+            });
+        });
+
+        // Qty change
+        $(document).on("change", ".qty", function () {
+            let row = $(this).closest("tr");
+            let qty = parseInt($(this).val()) || 0;
+            if(qty <= 0)
+            {
+                row.find(".flcQty").val("");
+                return;
+            }
+            $.ajax({
+                url:'GetPalletDetails',
+                type:'GET',
+                data:{
+                    fgCode: row.find(".fgCode").val(),
+                    description: row.find(".description").val(),
+                    model: row.find(".model").val(),
+                    qty: qty
+                },
+                success:function(response)
+                {
+                    if(!response.Success)
+                    {
+                        alert(response.Message);
+                        row.find(".qty").val("");
+                        row.find(".flcQty").val("");
+                        return;
+                    }
+                    // only display FLC count
+                    row.find(".flcQty").val(response.FLCCount);
+                    calculateTotal();
+                    checkCapacity(row);
+                },
+                error:function()
+                {
+                    alert("Unable to check pallet availability");
+                }
+            });
+        });
+
+
+        // ================= SAVE ROW BUTTON CLICK =================
+        $(document).on("click", ".saveRow", function () {
+            var row = $(this).closest("tr");
+            // Basic Validation
+            if ($("#DockNo").val() == "") {
+                alert("Select Dock");
+                $("#DockNo").focus();
+                return;
+            }
+            if (row.find(".invoiceNo").val().trim() == "") {
+                alert("Enter Invoice No");
+                row.find(".invoiceNo").focus();
+                return;
+            }
+            if (row.find(".customer").val() == "") {
+                alert("Select Customer");
+                row.find(".customer").focus();
+                return;
+            }
+            if (row.find(".model").val() == "") {
+                alert("Select Model");
+                row.find(".model").focus();
+                return;
+            }
+            if (row.find(".qty").val() == "" || parseInt(row.find(".qty").val()) <= 0) {
+                alert("Enter Quantity");
+                row.find(".qty").focus();
+                return;
+            }
+            function isValidMobile(mobile) {
+                return /^[0-9]{10}$/.test(mobile);
+            }
+
+            if (!isValidMobile($("#SupervisorMobile").val())) {
+                alert("Enter a valid 10-digit Supervisor Mobile Number.");
+                $("#SupervisorMobile").focus();
+                $("#SupervisorMobile").val('');
+                return;
+            }
+
+            if (!isValidMobile($("#DriverMobile").val())) {
+                alert("Enter a valid 10-digit Driver Mobile Number.");
+                $("#DriverMobile").focus();
+                $("#DriverMobile").val('');
+                return;
+            }
+
+            if (!isValidMobile($("#SecurityMobile").val())) {
+                alert("Enter a valid 10-digit Security Mobile Number.");
+                $("#SecurityMobile").focus();
+                $("#SecurityMobile").val('');
+                return;
+            }
+
+            saveCurrentRow(row);
+        });
+
+    function saveCurrentRow(row) {
+
+        $.ajax({
+
+            url: 'SaveLoading',
+            type: 'POST',
+
+            data: {
+                DockNo: $("#DockNo").val(),
+                VehicleSize: $("#VehicleSize").val(),
+                VehicleNumber: $("#VehicleNumber").val(),
+                TransporterName: $("#TransporterName").val(),
+                VehicleSealNo: $("#VehicleSealNo").val(),
+                InvoiceNo: row.find(".invoiceNo").val(),
+                CustomerName: row.find(".customer").val(),
+                Location: row.find(".location").val(),
+                Model: row.find(".model").val(),
+                FGCode: row.find(".fgCode").val(),
+                Description: row.find(".description").val(),
+                Quantity: row.find(".qty").val(),
+                // IMPORTANT
+                AvailableQty: row.find(".availableQty").length > 0 ? row.find(".availableQty").val() : "",
+                DriverName: $("#DriverName").val(),
+                DriverMobile: $("#DriverMobile").val(),
+                SecurityName: $("#SecurityName").val(),
+                SecurityMobile: $("#SecurityMobile").val(),
+                SupervisorName: $("#SupervisorName").val(),
+                SupervisorMobile: $("#SupervisorMobile").val()
+            },
+
+            success: function (response) {
+
+                console.log("Save response:", response);
+                if (!response.Success) {
+                    alert(response.Message || "Unable to save loading.");
+
+                    return;
+                }
+
+                // =====================================================
+                // LOCK ONLY THE ROW THAT WAS JUST SAVED
+                // =====================================================
+
+                row.find("input").prop("readonly", true);
+                row.find("select").prop("disabled", true);
+
+                row.find(".saveRow")
+                    .removeClass("btn-success")
+                    .addClass("btn-secondary")
+                    .text("Saved")
+                    .prop("disabled", true);
+
+
+                // =====================================================
+                // RECALCULATE TOTAL
+                // =====================================================
+
+                calculateTotal();
+
+                let totalFLC =
+                    parseFloat($("#totalFLC").text()) || 0;
+
+
+                // =====================================================
+                // CAPACITY AVAILABLE
+                // =====================================================
+
+                if (totalFLC < allowedCapacity) {
+
+                    // Create ONE new row
+                    addNewRow();
+
+                    // Enable ONLY the new row
+                    enableNewLoadingRow();
+
+                    // Submit allowed
+                    $("#btnSubmit").prop("disabled", false);
+
+                    // Focus new row
+                    $("#loadingTableContainer tr:last")
+                        .find(".invoiceNo")
+                        .focus();
+                }
+
+                // =====================================================
+                // CAPACITY FULL
+                // =====================================================
+
+                else {
+
+                    disableAllLoadingRows();
+
+                    $("#btnSubmit").prop("disabled", true);
+
+                    alert(
+                        "Vehicle loading completed. Maximum FLC reached."
+                    );
+                }
+            },
+
+            error: function (xhr, status, error) {
+
+                console.log("========== SAVE LOADING ERROR ==========");
+                console.log("Status Code:", xhr.status);
+                console.log("Status:", status);
+                console.log("Error:", error);
+                console.log("Response:", xhr.responseText);
+
+                alert(
+                    "Error while saving loading.\n\n" +
+                    "HTTP Status: " + xhr.status +
+                    "\n\n" +
+                    xhr.responseText
+                );
+            }
+        });
+    }
+
+    $("#btnSubmit").click(function () {
+
+        let totalQty = parseFloat($("#totalQty").text()) || 0;
+        let totalFLC = parseFloat($("#totalFLC").text()) || 0;
+
+        if ($("#DockNo").val() == "") {
+            alert("Select Dock");
+            return;
+        }
+
+        if ($("#VehicleSize").val() == "") {
+            alert("Select Vehicle Size");
+            return;
+        }
+
+        if ($("#VehicleNumber").val().trim() == "") {
+            alert("Enter Vehicle Number");
+            return;
+        }
+
+        if (totalQty <= 0) {
+            alert("Add loading details");
+            return;
+        }
+
+        if (confirm("Are you sure you want to submit ?")) {
+
+            $.ajax({
+                url: 'SubmitLoading',
+                type: 'POST',
+                data: {
+                    InvoiceNo: $(".invoiceNo").val(),
+                    DockNo: $("#DockNo").val(),
+                    VehicleSize: $("#VehicleSize").val(),
+                    VehicleNumber: $("#VehicleNumber").val(),
+                    TransporterName: $("#TransporterName").val(),
+                    VehicleSealNo: $("#VehicleSealNo").val(),
+                    TotalQty: totalQty,
+                    TotalFLC: totalFLC
+                },
+                success: function (response) {
+
+                    if (response.Success) {
+                        alert("Unload Successfull");
+                        lockLoadingScreen();
+                        location.reload();
+                    }
+                    else {
+                        alert(response.Message);
+                    }
+                },
+                error: function () {
+                    alert("Submit failed.");
+                }
+            });
+        }
+
+    });
+
+
+
+
+    $("#DockNo").change(function () {
+    let dockNo = $(this).val();
+    if (dockNo == "") {
+        clearDockDetails();
+        return;
+        }
+        // First check station availability
+        $.ajax({
+
+            url: 'GetActiveDock',
+            type: 'GET',
+            data: {
+                DockNo: dockNo
+            },
+
+            success: function (checkResponse) {
+                if (!checkResponse.Success) {
+                    alert(checkResponse.Message);
+                    $("#DockNo").val("");
+                    clearDockDetails();
+                    return;
+
+                }
+            }
+
+        });
+
+    $.ajax({
+        url: 'GetDockLoadingDetails',
+        type: 'GET',
+        data: {
+            DockNo: dockNo
+        },
+        success: function (response) {
+            $("#loadingTableContainer").html(response);
+            // First load values
+
+            $("#VehicleSize").val($("#dockVehicleSize").val());
+            // Set vehicle capacity based on dock vehicle size
+            let dockVehicleSize = $("#VehicleSize").val();
+
+            if (dockVehicleSize == "20") {
+                vehicleSlots = 28;
+                allowedCapacity = 28;
+            }
+            else if (dockVehicleSize == "32") {
+                vehicleSlots = 36;
+                allowedCapacity = 36;
+            }
+            else {
+                vehicleSlots = 0;
+                allowedCapacity = 0;
+            }
+
+
+            $("#VehicleNumber").val($("#dockVehicleNumber").val());
+            $("#TransporterName").val($("#dockTransporter").val());
+            $("#VehicleSealNo").val($("#dockVehicleSealNo").val());
+
+            $("#DriverName").val($("#dockDriverName").val());
+            $("#DriverMobile").val($("#dockDriverMobile").val());
+
+            $("#SecurityName").val($("#dockSecurityName").val());
+            $("#SecurityMobile").val($("#dockSecurityMobile").val());
+
+            $("#SupervisorName").val($("#dockSupervisorName").val());
+            $("#SupervisorMobile").val($("#dockSupervisorMobile").val());
+
+            // Now check status
+
+            let existingData = $("#dockExistingData").val();
+
+            console.log("Existing Data =", existingData);
+            if (existingData) {
+
+                // =========================================================
+                // EXISTING DATA FOUND
+                // =========================================================
+
+                // Existing vehicle details cannot be changed
+                $("#VehicleSize").prop("disabled", true);
+
+                $("#VehicleNumber").prop("readonly", true);
+                $("#TransporterName").prop("readonly", true);
+                $("#VehicleSealNo").prop("readonly", true);
+
+                $("#DriverName").prop("readonly", true);
+                $("#DriverMobile").prop("readonly", true);
+
+                $("#SecurityName").prop("readonly", true);
+                $("#SecurityMobile").prop("readonly", true);
+
+                $("#SupervisorName").prop("readonly", true);
+                $("#SupervisorMobile").prop("readonly", true);
+
+
+                // ---------------------------------------------------------
+                // Remove any empty/new row returned by partial
+                // We will create our own new row below if capacity remains
+                // ---------------------------------------------------------
+
+                $("#loadingTableContainer tr").each(function () {
+
+                    var invoice = $(this).find(".invoiceNo").val();
+
+                    if ($(this).find(".saveRow").length > 0 &&
+                        (!invoice || invoice.trim() === "")) {
+
+                        $(this).remove();
+                    }
+
+                });
+
+
+                // ---------------------------------------------------------
+                // Lock ALL existing/saved rows
+                // ---------------------------------------------------------
+
+                $("#loadingTableContainer tr").each(function () {
+
+                    var row = $(this);
+
+                    var invoice = row.find(".invoiceNo").val();
+
+                    // Existing row = has invoice
+                    if (invoice && invoice.trim() !== "") {
+
+                        row.find("input").prop("readonly", true);
+                        row.find("select").prop("disabled", true);
+
+                        row.find(".saveRow")
+                            .prop("disabled", true)
+                            .removeClass("btn-success")
+                            .addClass("btn-secondary")
+                            .text("Saved");
+                    }
+
+                });
+
+
+                // Calculate current FLC from existing rows
+                calculateTotal();
+
+
+                // ---------------------------------------------------------
+                // Check whether vehicle still has capacity
+                // ---------------------------------------------------------
+
+                let totalFLC = parseFloat($("#totalFLC").text()) || 0;
+
+                if (totalFLC < allowedCapacity) {
+
+                    // Capacity available
+                    // Create ONE new editable row
+                    addNewRow();
+                    enableNewLoadingRow();
+                    $("#btnSubmit").prop("disabled", false);
+
+                    $("#loadingTableContainer tr:last")
+                        .find(".invoiceNo")
+                        .focus();
+
+                }
+                else {
+
+                    // Vehicle already full
+                    disableAllLoadingRows();
+                    $("#btnSubmit").prop("disabled", true);
+
+                }
+
+
+            }
+            else {
+
+                // =========================================================
+                // NO EXISTING DATA
+                // =========================================================
+
+                $("#btnSubmit").prop("disabled", false);
+
+
+                // Vehicle details editable
+                $("#VehicleSize").prop("disabled", false);
+
+                $("#VehicleNumber").prop("readonly", false);
+                $("#TransporterName").prop("readonly", false);
+                $("#VehicleSealNo").prop("readonly", false);
+
+                $("#DriverName").prop("readonly", false);
+                $("#DriverMobile").prop("readonly", false);
+
+                $("#SecurityName").prop("readonly", false);
+                $("#SecurityMobile").prop("readonly", false);
+
+                $("#SupervisorName").prop("readonly", false);
+                $("#SupervisorMobile").prop("readonly", false);
+
+
+                // Existing/new rows are editable
+                $("#loadingTableContainer input")
+                    .prop("readonly", false);
+
+                $("#loadingTableContainer select")
+                    .prop("disabled", false);
+
+
+                $(".saveRow")
+                    .prop("disabled", false)
+                    .removeClass("btn-secondary")
+                    .addClass("btn-success")
+                    .text("Add");
+
+
+                calculateTotal();
+
+
+                // If there are no rows, create one
+                if ($("#loadingTableContainer tr").length === 0) {
+                    addNewRow();
+                }
+
+            }
+            //if (existingData) {
+
+            //    $("#btnSubmit").prop("disabled", true);
+
+
+            //    $(".saveRow")
+            //        .prop("disabled", true)
+            //        .removeClass("btn-success")
+            //        .addClass("btn-secondary")
+            //        .text("Saved");
+
+
+            //    $("#VehicleSize").prop("disabled", true);
+
+            //    $("#VehicleNumber").prop("readonly", true);
+            //    $("#TransporterName").prop("readonly", true);
+            //    $("#VehicleSealNo").prop("readonly", true);
+
+            //    $("#DriverName").prop("readonly", true);
+            //    $("#DriverMobile").prop("readonly", true);
+
+            //    $("#SecurityName").prop("readonly", true);
+            //    $("#SecurityMobile").prop("readonly", true);
+
+            //    $("#SupervisorName").prop("readonly", true);
+            //    $("#SupervisorMobile").prop("readonly", true);
+
+
+            //    // lock new entry row also
+            //    $("#loadingTableContainer input")
+            //        .prop("readonly", true);
+
+            //    $("#loadingTableContainer select")
+            //        .prop("disabled", true);
+            //    calculateTotal();
+
+
+            //    $("#loadingTableContainer tr").each(function () {
+
+            //        var invoice = $(this).find(".invoiceNo").val();
+
+            //        if ($(this).find(".saveRow").length > 0 && (!invoice || invoice.trim() === "")) {
+            //            $(this).remove();
+            //        }
+
+            //    });
+
+
+            //}
+            //else {
+            //    $("#btnSubmit").prop("disabled", false);
+
+
+            //    $(".saveRow")
+            //        .prop("disabled", false)
+            //        .removeClass("btn-success")
+            //        .addClass("btn-success")
+            //        .text("Add");
+
+
+            //    $("#VehicleSize").prop("disabled", false);
+
+            //    $("#VehicleNumber").prop("readonly", false);
+            //    $("#TransporterName").prop("readonly", false);
+            //    $("#VehicleSealNo").prop("readonly", false);
+
+            //    $("#DriverName").prop("readonly", false);
+            //    $("#DriverMobile").prop("readonly", false);
+
+            //    $("#SecurityName").prop("readonly", false);
+            //    $("#SecurityMobile").prop("readonly", false);
+
+            //    $("#SupervisorName").prop("readonly", false);
+            //    $("#SupervisorMobile").prop("readonly", false);
+
+
+            //    // lock new entry row also
+            //    $("#loadingTableContainer input")
+            //        .prop("readonly", false);
+
+            //    $("#loadingTableContainer select")
+            //        .prop("disabled", false);
+            //    calculateTotal();
+            //}
+
+        },
+        error: function (xhr) {
+            console.log(xhr.responseText);
+            alert("Unable to load dock details");
+        }
+
+    });
+
+    });
+
+
+
+    function clearDockDetails() {
+
+        $("#VehicleSize").val("");
+        $("#VehicleNumber").val("");
+        $("#TransporterName").val("");
+        $("#VehicleSealNo").val("");
+
+        $("#DriverName").val("");
+        $("#DriverMobile").val("");
+
+        $("#SecurityName").val("");
+        $("#SecurityMobile").val("");
+
+        $("#SupervisorName").val("");
+        $("#SupervisorMobile").val("");
+
+        // Remove all rows
+        $("#loadingTableContainer ").empty();
+
+        // Reset row count
+        rowCount = 1;
+
+        // Add one fresh row
+        addNewRow();
+    }
+</script>

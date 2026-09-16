@@ -1,0 +1,809 @@
+﻿@model S1947.Models.UnloadValidation
+
+@{
+    ViewBag.Title = "Unload Operation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        background-color: #f4f7f6;
+
+      /*font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
+    }
+    .page-header {
+        margin: -35px -35px 25px -35px;
+        border-bottom: 5px solid #ff6a00;
+    }
+    .form-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        padding: 10px;
+        margin-top: -16px;
+        border-top: 6px solid /*#28a745*/;
+        margin-left:0px;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #1860a1;
+        border-bottom: 2px solid #e9ecef;
+        /*    padding-bottom: 5px;
+        margin-bottom: 20px;*/
+        text-transform: uppercase;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    .form-control {
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+    }
+
+    .btn-save {
+        padding: 12px 40px;
+        font-weight: bold;
+        border-radius: 30px;
+        transition: all 0.3s;
+    }
+  
+    #myTable{
+        color:black;
+    }
+    .btn-success, .btn-success:hover {
+        background-color: #1860a1;
+        border-color: #1860a1;
+        color: #FFF;
+    }
+
+    #status{
+        font-size:20Px;
+    }
+</style>
+<section role="main">
+    <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm" style="background: #000; color: #fff;">
+        <div> <h3 class="mb-4 font-weight-bold"> @*<i class="fas fa-cogs card-icon"></i>*@ Unload Operation</h3>  </div>
+
+        <div>
+            <ol class="breadcrumbs mb-0" style="list-style: none; padding-left: 0; display: flex; gap: 15px; font-size: 18px;">
+                <li class="breadcrumb-item">
+                    <a href="~/Home/Dashboard" style="color: #fff;">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="~/Home/Dashboard"><i class="fas fa-sign-out-alt"></i></a>
+                </li>
+            </ol>
+        </div>
+    </header>
+    <div class="container-fluid">
+        <div id="customToast" class="custom-toast"></div>
+        <div class="form-card">
+
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "unloadForm" }))
+            {
+                @Html.AntiForgeryToken()
+            <div id="shippingSection">
+                <div class="section-title">Shipping & Vehicle Info</div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Dock No.</label>
+                            @Html.DropDownListFor(m => m.DockNo, null, "-- Select Dock --", new { @class = "form-control input-box" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Invoice No</label>
+                            @Html.TextBoxFor(m => m.InvoiceNo, new { @class = "form-control", placeholder = "Enter Invoice Number" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Customer Name</label>
+                            @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control", placeholder = "Enter Customer Name" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Location of Delivery</label>
+                            @Html.TextBoxFor(m => m.LocationofDelivery, new { @class = "form-control", placeholder = "Enter Location" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Transporter Name</label>
+                            @Html.TextBoxFor(m => m.TransporterName, new { @class = "form-control", placeholder = "Enter Transporter Name" })
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Vehicle Plate No</label>
+                            @Html.TextBoxFor(m => m.VehicleNumber, new { @class = "form-control", placeholder = "Enter Vehicle Plate Number" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Vehicle Seal No</label>
+                            @Html.TextBoxFor(m => m.VehicleSealno, new { @class = "form-control", placeholder = "Enter Seal Number" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Vehicle Size(In Feet)</label>
+                            @Html.TextBoxFor(m => m.VehicleSize, new { @class = "form-control", type = "number", placeholder = "Enter Vehicle Size in feet " })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Total FLC Count (1-36)</label>
+                            @Html.TextBoxFor(m => m.FLCQty, new { @class = "form-control", type = "number", placeholder = "Enter FLC Count" })
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+               
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Supervisior Name</label>
+                            @Html.TextBoxFor(m => m.SupervisiorName, new { @class = "form-control",  placeholder = "Enter Supervisior Name" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Supervisior Mob. No</label>
+                            @Html.TextBoxFor(m => m.MobileNoSupervisor, new { @class = "form-control", type = "number", placeholder = "Enter Supervisior Mobile Number" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Driver Name</label>
+                            @Html.TextBoxFor(m => m.DriverName, new { @class = "form-control",placeholder = "Enter Driver Name" })
+                        </div>
+                    </div>
+                    
+                </div>
+                <br />
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Driver Mob. No</label>
+                            @Html.TextBoxFor(m => m.MobileNoDriver, new { @class = "form-control", type = "number", placeholder = "Enter Driver Mobile Number" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Security Name</label>
+                            @Html.TextBoxFor(m => m.SecurityName, new { @class = "form-control", placeholder = "Enter Security Name" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Security Mob. No</label>
+                            @Html.TextBoxFor(m => m.MobileNoSecurity, new { @class = "form-control", type = "number", placeholder = "Enter Security Mobile Number" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="section-title mt-4">Model & Quantity Details</div>
+                <div id="modelSection">
+                    <br />
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>SAP FG Code</label>
+                                @Html.DropDownListFor(m => m.SAPFGCode, null, "-- Select FG Code --", new { @class = "form-control input-box" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Model No (Part No)</label>
+                                @Html.TextBoxFor(m => m.PartNo, new { @class = "form-control input-box", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Model Description</label>
+                                @Html.TextBoxFor(m => m.PartDescription, new { @class = "form-control input-box", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row mt-3">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Available Part Quantity </label>
+                                @Html.TextBoxFor(m => m.AvlQuantity, new { @class = "form-control", type = "number" , placeholder = "Enter Available Quantity" })
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Total  Quantity </label>
+                                @Html.TextBoxFor(m => m.TotalQuantity, new { @class = "form-control", type = "number", placeholder = "Enter Total Quantity" })
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Quantity Per Model </label>
+                                @Html.TextBoxFor(m => m.PartQuantity, new { @class = "form-control", type = "number", placeholder = "Enter Quantity Per Model" })
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Box Quantity Per Model </label>
+                                @Html.TextBoxFor(m => m.BoxQty, new { @class = "form-control", type = "number", placeholder = "Enter Box Quantity Per Model " })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group row mt-4 text-center">
+                                <button type="button" id="btnSave" class="btn btn-success btn-save shadow">
+                                    <i class="fa fa-plus-circle"></i> ADD DATA TO TABLE
+                                </button>
+                            </div>
+                        </div>
+                        @*<div class="col-md-4">
+            <div class="form-group">
+                <label>Quantity Per Model</label>
+                @Html.TextBoxFor(m => m.PartQuantity, new { @class = "form-control", type = "number" })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Box Qty Per Model</label>
+                @Html.TextBoxFor(m => m.BoxQty, new { @class = "form-control", type = "number" })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Total Quantity</label>
+                @Html.TextBoxFor(m => m.TotalQuantity, new { @class = "form-control", type = "number" })
+            </div>
+        </div>*@
+                    </div>
+                </div>
+                @*<div class="row mt-5">
+                <div class="col-md-12 text-center">
+                    <button type="button" id="btnSave" class="btn btn-success btn-save shadow">
+                        <i class="fa fa-plus-circle"></i> ADD DATA TO TABLE
+                    </button>
+                </div>
+            </div>*@
+            }
+            <div class="table-responsive mt-4">
+                <h5 class="text-center mb-3 font-weight-bold">Unloading Item List</h5>
+                <table class="table table-bordered table-sm mb-0" id="myTable">
+                    <thead class="thead-dark sticky-top">
+                        <tr>
+                            <th>Sl No</th>
+                            <th>Invoice - Customer</th>
+                            <th>Location - Transporter </th>
+                            <th>vehicleNo - Vehicle SealNo </th>
+                            <th>Vehicle Size - FLC Count </th>
+                            <th>SAP FG Code - Model No  </th>
+                            <th>Supervisor - Mob No</th>
+                            <th>Driver - Mob No</th>
+                            <th>Security - Mob No</th>
+                            <th> Dock No - Model Description</th>
+                            <th>Total Qty</th>
+                            <th style="width:10%">Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    $(document).ready(function () {
+        LoadShippingInfo();
+
+        // Initial Load
+        GetTableData();
+        // Start interval to refresh every 1 second
+        // setInterval(GetTableData, 1000);
+        //setInterval(function () {
+        //    AutoUpdateStatus();
+        //}, 5000);
+
+    });
+
+    //if alaredy exist
+    function LoadShippingInfo() {
+    $.ajax({
+        url: '@Url.Action("GetShippingInfo","Unload")',
+        type: 'GET',
+        success: function (data) {
+
+            if (data) {
+                $("#InvoiceNo").val(data.InvoiceNo);
+                $("#CustomerName").val(data.CustomerName);
+                $("#LocationofDelivery").val(data.LocationofDelivery);
+                $("#TransporterName").val(data.TransporterName);
+                $("#VehicleNumber").val(data.VehicleNumber);
+                $("#VehicleSealno").val(data.VehicleSealNo);
+                $("#VehicleSize").val(data.VehicleSize);
+                $("#DockNo").val(data.DockNo);
+                $("#FLCQty").val(data.FLCLocation);
+                $("#SupervisiorName").val(data.SupervisiorName);
+                $("#MobileNoSupervisor").val(data.MobileNoSupervisor);
+                $("#DriverName").val(data.DriverName);
+                $("#MobileNoDriver").val(data.MobileNoDriver);
+                $("#SecurityName").val(data.SecurityName);
+                $("#MobileNoSecurity").val(data.MobileNoSecurity);
+
+                $("#shippingSection")
+                    .find("input")
+                    .prop("readonly", true);
+
+                $("#DockNo")
+                    .css("pointer-events", "none");
+            }
+        }
+    });
+
+}
+    $("#SAPFGCode").change(function () {
+        var FGCode = $(this).val();
+        $.ajax({
+            url: 'GetModelDetails',
+            type: 'GET',
+            data: { FGCode: FGCode },
+            success: function (data) {
+                console.log(data);
+                if (data && data.length > 0) {
+                    // auto set textbox values
+                    $("#PartNo").val(data[0].PartNo);
+                    $("#PartDescription").val(data[0].PartDescription);
+                    $("#AvlQuantity").val(data[0].Quantity);
+
+                } else {
+                    $("#PartNo").val('');
+                    $("#PartDescription").val('');
+                    $("#AvlQuantity").val('');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("Error: " + error);
+            }
+        });
+    });
+
+
+    $("#PartQuantity").on("input", function () {
+        var availableQty = parseFloat($("#AvlQuantity").val()) || 0;
+        var requiredQty = parseFloat($(this).val()) || 0;
+        if (requiredQty > availableQty) {
+            alert("Required Quantity cannot be greater than Available Quantity.");
+
+            $(this).val("");
+            $(this).focus();
+        }
+    });
+
+    $("#btnSave").click(function () {
+        // Invoice No
+        if ($("#InvoiceNo").val().trim() == "") {
+            showToastMessage("Please enter Invoice Number.", "warning");
+            $("#InvoiceNo").focus();
+            return;
+        }
+        // Customer Name
+        if ($("#CustomerName").val().trim() == "") {
+            showToastMessage("Please enter Customer Name.", "warning");
+            $("#CustomerName").focus();
+            return;
+        }
+        // Location
+        if ($("#LocationofDelivery").val().trim() == "") {
+            showToastMessage("Please enter Location of Delivery.", "warning");
+            $("#LocationofDelivery").focus();
+            return;
+        }
+        // Transporter
+        if ($("#TransporterName").val().trim() == "") {
+            showToastMessage("Please enter Transporter Name.", "warning");
+            $("#TransporterName").focus();
+            return;
+        }
+        // FLC Count
+        if ($("#FLCQty").val().trim() == "") {
+            showToastMessage("Please enter FLC Count.", "warning");
+            $("#FLCQty").focus();
+            return;
+        }
+        // Vehicle Number
+        if ($("#VehicleNumber").val().trim() == "") {
+            showToastMessage("Please enter Vehicle Number.", "warning");
+            $("#VehicleNumber").focus();
+            return;
+        }
+
+        // SAP FG Code
+        if ($("#SAPFGCode").val() == "") {
+            showToastMessage("Please select SAP FG Code.", "warning");
+            $("#SAPFGCode").focus();
+            return;
+        }
+        // Required Quantity
+        if ($("#PartQuantity").val().trim() == "") {
+            showToastMessage("Please enter Required Quantity.", "warning");
+            $("#PartQuantity").focus();
+            return;
+        }
+
+        if ($("#VehicleSealno").val().trim() == "") {
+            showToastMessage("Please enter Vehicle Seal No.", "warning");
+            $("#VehicleSealno").focus();
+            return;
+        }
+
+        if ($("#VehicleSize").val().trim() == "") {
+            showToastMessage("Please enter Vehicle Size.", "warning");
+            $("#VehicleSize").focus();
+            return;
+        }
+
+        if ($("#DockNo").val() == "") {
+            showToastMessage("Please select Dock No.", "warning");
+            $("#DockNo").focus();
+            return;
+        }
+
+        if ($("#PartNo").val().trim() == "") {
+            showToastMessage("Part Number not found.", "warning");
+            return;
+        }
+
+        if ($("#PartDescription").val().trim() == "") {
+            showToastMessage("Part Description not found.", "warning");
+            return;
+        }
+
+        if ($("#AvlQuantity").val().trim() == "") {
+            showToastMessage("Available Quantity is missing.", "warning");
+            return;
+        }
+        if ($("#SupervisiorName").val().trim() == "") {
+            showToastMessage("Please enter Supervisor Name.", "warning");
+            $("#SupervisiorName").focus();
+            return;
+        }
+
+        if ($("#MobileNoSupervisor").val().trim() == "") {
+            showToastMessage("Please enter Supervisor Mobile Number.", "warning");
+            $("#MobileNoSupervisor").focus();
+            return;
+        }
+
+        if ($("#DriverName").val().trim() == "") {
+            showToastMessage("Please enter Driver Name.", "warning");
+            $("#DriverName").focus();
+            return;
+        }
+
+        if ($("#MobileNoDriver").val().trim() == "") {
+            showToastMessage("Please enter Driver Mobile Number.", "warning");
+            $("#MobileNoDriver").focus();
+            return;
+        }
+
+        if ($("#SecurityName").val().trim() == "") {
+            showToastMessage("Please enter Security Name.", "warning");
+            $("#SecurityName").focus();
+            return;
+        }
+
+        if ($("#MobileNoSecurity").val().trim() == "") {
+            showToastMessage("Please enter Security Mobile Number.", "warning");
+            $("#MobileNoSecurity").focus();
+            return;
+        }
+
+        $("#DockNo").prop("disabled", false);
+
+        var formData = $("#unloadForm").serialize();
+
+        $("#DockNo").prop("disabled", true);
+        $(this).prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Saving...');
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("SaveUnloadData", "Unload")",
+            data: formData,
+            success: function (res) {
+                console.log(res);
+                $("#btnSave").prop('disabled', false).html('<i class="fa fa-plus-circle"></i> ADD DATA TO TABLE');
+                if (res.success) {
+                    // Disable Shipping Section
+                    $("#shippingSection")
+                        .find("input")
+                        .prop("readonly", true);
+
+                    $("#DockNo")
+                        .css("pointer-events", "none");
+
+                    // Enable only Model Section
+                    $("#modelSection")
+                        .find("input,select")
+                        .prop("disabled", false);
+
+                    // Clear only model fields
+                    $("#SAPFGCode").val("");
+                    $("#PartNo").val("");
+                    $("#PartDescription").val("");
+                    $("#AvlQuantity").val("");
+                    $("#PartQuantity").val("");
+
+                    GetTableData();
+
+                    showToastMessage(res.message, "success");
+                    //$("#unloadForm")[0].reset();
+                }
+                else {
+                    showToastMessage(res.message, "error");
+                }
+            }
+
+        });
+    });
+
+
+
+function GetTableData() {
+    $.ajax({
+        type: "GET",
+        url: "@Url.Action("GetUnloadList", "Unload")", // Create this method in Controller
+        success: function (result) {
+            if (result.length == 0) {
+
+                $("#shippingSection")
+                    .find("input")
+                    .prop("readonly", false);
+
+                $("#shippingSection")
+                    .find("input")
+                    .val("");
+
+                $("#DockNo")
+                    .css("pointer-events", "auto");
+
+                //$("#shippingSection")
+                //    .find("select")
+                //    .prop("selectedIndex", 0);
+            }
+
+            AddTable(result);
+        },
+        error: function (err) {
+            console.error("Error fetching table data", err);
+        }
+    });
+}
+
+//function AddTable(result) {
+//    let event_data = '';
+//    $('#myTable tbody').empty();
+
+//    // allowDelete logic
+//    let LoadInProcess = result.some(x => x.Status === "In_Process");
+
+//    for (let i = 0; i < result.length; i++) {
+//        let item = result[i];
+//        let k = i + 1;
+//        let row_class = (item.Status === "In_Process") ? 'custom-skyBlue' : '';
+
+//        event_data += `<tr class="${row_class}">`;
+//        event_data += `<td class="text-center">${k}</td>`;
+//        event_data += `<td><b>Inv:</b> ${item.InvoiceNo}<br><small>Dock: ${item.DockNo}</small></td>`;
+//        event_data += `<td>${item.CustomerName}<br><small>${item.LocationofDelivery}</small></td>`;
+//        event_data += `<td>${item.PartNo}<br><small>${item.PartDescription}</small></td>`;
+//        event_data += `<td>${item.SAPFGCode}</td>`;
+//        event_data += `<td>Q: ${item.PartQuantity} | B: ${item.BoxQty}</td>`;
+//        event_data += `<td class="font-weight-bold text-primary">${item.TotalQty}</td>`;
+//        event_data += `<td>${item.FLCQty}</td>`;
+//        event_data += `<td>${item.VehicleNumber}<br><small>${item.TransporterName}</small></td>`;
+//        event_data += `<td><span class="badge ${item.Status == 'Pending' ? 'badge-warning' : 'badge-success'}">${item.Status}</span></td>`;
+
+//        // Action Logic
+//        if (item.Status === "Added" && !LoadInProcess) {
+//            event_data += `
+//            <td class="text-center">
+//                <button class="btn btn-danger btn-xs" onclick="deleteItem('${item.MTransNo}')">
+//                    <i class="far fa-trash-alt"></i>
+//                </button>
+//            </td>`;
+//        } else {
+//            event_data += `
+//            <td class="text-center">
+//                <button class="btn btn-secondary btn-xs" disabled>
+//                    <i class="fas fa-ban"></i>
+//                </button>
+//            </td>`;
+//        }
+//        event_data += `</tr>`;
+//    }
+//    $('#myTable tbody').append(event_data);
+//    }
+
+
+    function AddTable(result) {
+
+        let event_data = '';
+        //    // allowDelete logic
+        let LoadInProcess = result.some(x => x.Status === "In Process" || x.Status === "Completed" || x.Status === "Vehicle Picked" || x.Status ==="Task Assigned");
+        $('#myTable tbody').empty();
+
+        for (let i = 0; i < result.length; i++) {
+
+            let item = result[i];
+            let k = i + 1;
+
+            let statusClass = '';
+
+            switch (item.Status) {
+
+                case 'Task Assigned':
+                    statusClass = 'badge-secondary';
+                    break;
+
+                case 'Vehicle Picked':
+                    statusClass = 'badge-primary';
+                    break;
+
+                case 'In Process':
+                    statusClass = 'badge-warning';
+                    break;
+
+                case 'Completed':
+                    statusClass = 'badge-success';
+                    break;
+
+                default:
+                    statusClass = 'badge-dark';
+                    break;
+            }
+
+            event_data += `<tr>`;
+            event_data += `<td class="text-center">${k}</td>`;
+
+            event_data += `
+            <td>
+                ${item.InvoiceNo} -
+                ${item.CustomerName}
+            </td>`;
+            event_data += `
+            <td>
+                ${item.LocationofDelivery} -
+                ${item.TransporterName}
+            </td>`;
+            event_data += `
+            <td>
+                ${item.VehicleNumber} -
+                ${item.VehicleSealNo}
+            </td>`;
+            event_data += `
+             <td>
+                 ${item.VehicleSize} -
+                 ${item.FLCLocation}
+             </td>`;
+
+            event_data += `
+            <td>
+                ${item.SupervisiorName} -
+                ${item.MobileNoSupervisor}
+            </td>`;
+
+             event_data += `
+            <td>
+                ${item.DriverName} -
+                ${item.MobileNoDriver}
+            </td>`;
+
+             event_data += `
+            <td>
+                ${item.SecurityName} -
+                ${item.MobileNoSecurity}
+            </td>`;
+            event_data += `
+                <td>
+                ${item.SAPFGCode}-
+                ${item.FGModel} 
+            </td>`;
+            event_data += `
+            <td>
+                ${item.DockNo} -
+                ${item.FGModelDesc}
+
+            </td>`;
+
+            event_data += `
+            <td>
+                Q: ${item.PartQuantity}
+            </td>`;
+
+            // Status Column
+            event_data += `
+            <td>
+                <span class="badge ${statusClass}" id="status">
+                    ${item.Status}
+                </span>
+            </td>`;
+
+            // Action Logic
+            if (item.Status === "Added" && !LoadInProcess) {
+                        event_data += `
+                        <td class="text-center">
+                            <button class="btn btn-danger btn-xs" onclick="deleteItem('${item.MTransNo}')">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </td>`;
+                    } else {
+                        event_data += `
+                        <td class="text-center">
+                            <button class="btn btn-secondary btn-xs" disabled>
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        </td>`;
+                    }
+                    event_data += `</tr>`;
+        }
+
+        $('#myTable tbody').append(event_data);
+    }
+
+    function deleteItem(mTransNo) {
+    if (confirm("Are you sure you want to delete this record?")) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("DeleteUnloadEntry", "Unload")",
+            data: { id: mTransNo },
+            success: function (res) {
+                if (res.success) {
+                    showToastMessage(res.message, "success");
+
+                } else {
+                    alert("Error: " + res.message);
+                    showToastMessage(res.message, "error");
+                }
+            },
+            error: function () {
+                alert("An error occurred while deleting the entry.");
+            }
+        });
+    }
+    }
+
+
+   // setInterval(AutoUpdateStatus, 2000);
+
+    function AutoUpdateStatus() {
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("AutoUpdateStatus", "Unload")',
+        success: function (res) {
+
+            if (res.success) {
+                GetTableData();
+            }
+        }
+    });
+}
+</script>

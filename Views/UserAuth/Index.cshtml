@@ -1,0 +1,233 @@
+﻿@using S1947.Models
+@model S1947.Models.ReturnData
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "";
+    S1947Entities conn = new S1947Entities();
+    var AllList = (from OM in conn.UserAuthorizations
+                   join CM in conn.UserMasters
+                   on OM.UserNo equals CM.MTransNo
+                   where CM.DeleteStatus == "N" && CM.LockStatus == "Y"
+                   group OM by new
+                   {
+                       CM.UserName,
+                       CM.UserId,
+                       CM.MTransNo
+                   } into g
+                   select new
+                   {
+                       MTransNo = g.FirstOrDefault().MTransNo,
+                       UserName = g.Key.UserName,
+                       UserId = g.Key.UserId,
+                       UserMTransNo=g.Key.MTransNo
+                   }).Distinct().OrderBy(x => x.UserName).ToList();
+}
+<div id="loading"></div>
+<link href="@Url.Content("~/Content/css/MaterialMaster.css")" rel="stylesheet" />
+<style>
+    .master {
+        background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+        color: #fff;
+        border-radius: 17px;
+    }
+    .custom-toast1 {
+        background: linear-gradient(to right, #28a745, #218838); /* Strong, modern success green */
+        border-radius: 10px;
+        padding: 20px 28px;
+        font-weight: bold;
+        font-size: 18px;
+        color: #fff;
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25); /* More natural elevation */
+        max-width: 600px;
+        min-width: 400px;
+        text-align: center;
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        display: none;
+    }
+
+    .custom-toast {
+        background: linear-gradient(to right, #ff416c, #ff4b2b);
+        border-radius: 10px;
+        padding: 20px 28px;
+        font-weight: bold;
+        font-size: 18px;
+        color: #fff;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        min-width: 400px;
+        text-align: center;
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        display: none;
+    }
+
+    .page-header {
+        margin: -36px -37px 40px -37px;
+        border-bottom: 5px solid #ff6a00;
+    }
+
+    .table-responsive {
+        max-height: 600px; /* set the max height for scrolling */
+        overflow-y: auto; /* enable vertical scroll */
+    }
+
+    #datatable-tabletools thead th {
+        position: sticky;
+        top: 0;
+        background-color: #003366; /* same as your header background */
+        color: #fff;
+        z-index: 10; /* make sure header stays on top */
+    }
+
+    .table-container {
+        width: 100%;
+    }
+
+    .table-scroll {
+        max-height: 600px; /* height of scrollable area */
+        overflow-y: auto; /* vertical scrollbar */
+        overflow-x: auto; /* horizontal scrollbar if table is wide */
+        border: 1px solid #ccc; /* optional, to show boundary */
+    }
+
+    #datatable-tabletools thead th {
+        position: sticky;
+        top: 0;
+        background-color: #003366;
+        color: #fff;
+        z-index: 10;
+    }
+</style>
+<section role="main">
+
+    <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm" style="background: #000; color: #fff; border-radius: 6px;">
+        <div>
+            <h3 class="mb-4 font-weight-bold">
+                <i class="fas fa-user-shield fa-xs auth-icon"></i>
+                User Authorization
+            </h3>
+        </div>
+        <div class="text-center flex-grow-1">
+            <a href="~/UserAuth/AddEdit" class="btn btn-primary btn-lg px-4" style="border-radius: 30px;">  <i class="fas fa-plus-circle mr-1"></i> Add New </a>
+        </div>
+        <div>
+            <ol class="breadcrumbs mb-0" style="list-style: none; padding-left: 0; display: flex; gap: 15px; font-size: 18px;">
+                <li class="breadcrumb-item">
+                    <a href="~/Home/Dashboard" style="color: #fff;">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="~/Home/MastersManagement"><i class="fas fa-sign-out-alt"></i></a>
+                </li>
+            </ol>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="card-modern">
+        <div class="table-responsive">
+            <div id="customToast1" class="custom-toast1"></div>
+            <div id="customToast" class="custom-toast"></div>
+            <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search here..." />
+            <table class="table table-bordered table-hover" id="datatable-tabletools">
+                <thead>
+                    <tr>
+                        <th width="5%">SNo.</th>
+                        <th width="20%">User Name</th>
+                        <th width="20%">Login id</th>
+                        <th width="15%">Action</th>
+                        <th hidden>MTransNo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int rowNo = 0; }
+                    @foreach (var item in AllList)
+                    {
+                        <tr>
+                            <td>@(rowNo += 1)</td>
+                            <td>@item.UserName </td>
+                            <td>@item.UserId </td>
+                            <td class="text-center">
+                                <button type="button" data-toggle="tooltip" title="Edit" class="btn btn-info btn-xs RecEdit"><i class="fas fa-pencil-alt"></i></button>
+                                <a data-toggle="tooltip" title="Delete" class="btn btn-danger btn-xs Delete" ><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                            <td hidden>@item.MTransNo</td>
+                            <td hidden>@item.UserMTransNo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script>
+    if (screen.width < 600) {
+        $('#SDisplay').hide();
+    }
+    else {
+        $('#SDisplay').show();
+    }
+    $(document).ready(function () {
+        show('loading', false);
+    });
+    function show(id, value) {
+        document.getElementById(id).style.display = value ? 'block' : 'none';
+    }
+    function load() {
+        show('loading', true);
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#datatable-tabletools").on('click', '.RecEdit', function () {
+            var currentRow = $(this).closest("tr");
+            var MTransNo = currentRow.find("td:eq(4)").html();
+            //alert(MTransNo);
+
+            window.location.href = "/UserAuth/AddEdit?MTransNo=" + MTransNo;
+            //$.post('/SetSession/SetVariable',
+            //    { key: "MTransNo", value: MTransNo }, function (data) {
+            //        // Pass MTransNo as query string
+            //        window.location.href = "/UserAuth/AddEdit?MTransNo=" + MTransNo;
+            //    });
+
+        });
+    });
+    $(document).ready(function () {
+        $("#datatable-tabletools").on('click', '.Delete', function () {
+
+            if (!confirm("Are you sure you want to delete this record?")) {
+                return; // stop if user clicks Cancel
+            }
+
+            var currentRow = $(this).closest("tr");
+            var MTransNo = currentRow.find("td:eq(5)").html();
+
+            $.post('/SetSession/SetVariable',
+                { key: "MTransNo", value: MTransNo }, function (data) {
+                    window.location.href = "/UserAuth/DtlDelete?MTransNo=" + MTransNo;
+                }
+            );
+        });
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        $("#searchInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("table tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>

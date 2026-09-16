@@ -1,0 +1,417 @@
+﻿@using S1947.Models;
+@model S1947.Models.UserAuthorizationValidation
+
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    S1947Entities conn = new S1947Entities();
+    var ModuleLis = (from ML in conn.Menulists
+                     where ML.ModuleType == Model.ModuleType
+                     select new
+                     {
+                         ModuleNo = ML.MTransNo,
+                         MSLNo = ML.MSLNo,
+                         ModuleName = ML.ModuleName + " - " + ML.ModuleType,
+                         ModuleType = ML.ModuleType,
+                     }).OrderBy(x => x.ModuleType).ThenBy(x => x.MSLNo).ToList();
+    var User = (from B in conn.UserMasters
+                where B.DeleteStatus == "N" && B.MTransNo == Model.UserNo
+                select new
+                {
+                    UserName = B.UserName
+                }).FirstOrDefault(); }
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<div id="loading"></div>
+<style>
+    .master {
+        background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+        color: #fff;
+        border-radius: 17px;
+    }
+
+    body.dark-mode .card-body .card {
+        display: flex;
+        flex-wrap: wrap;
+        background-color: black;
+        color: #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-section {
+        display: flex;
+    }
+
+    .page-header {
+        margin: -35px -36px 41px -38px;
+        border-bottom: 5px solid #ff6a00;
+    }
+
+    .auth-icon {
+        font-size: 18px !important;
+    }
+
+    .custom-toast1 {
+        background: linear-gradient(to right, #28a745, #218838); /* Strong, modern success green */
+        border-radius: 10px;
+        padding: 20px 28px;
+        font-weight: bold;
+        font-size: 18px;
+        color: #fff;
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25); /* More natural elevation */
+        max-width: 600px;
+        min-width: 400px;
+        text-align: center;
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        display: none;
+    }
+
+    .custom-toast {
+        background: linear-gradient(to right, #ff416c, #ff4b2b);
+        border-radius: 10px;
+        padding: 20px 28px;
+        font-weight: bold;
+        font-size: 18px;
+        color: #fff;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        min-width: 400px;
+        text-align: center;
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        display: none;
+    }
+</style>
+<section role="main" >
+    <form id="formGRN" action="" method="POST">
+        @Html.AntiForgeryToken()
+
+        <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm" style="background: #000; color: #fff;">
+            <div>
+                <h3 class="mb-4 font-weight-bold">
+                    <i class="fas fa-user-shield fa-xs auth-icon"></i>
+                    User Authorization
+                </h3>
+            </div>
+
+            <div class="right-wrapper">
+                <ol class="breadcrumbs mb-0" style="list-style: none; padding-left: 15px; display: flex; gap: 5px; font-size: 18px;">
+                    <li class="breadcrumb-item">
+                        <a href="~/Home/Dashboard" style="color: #fff;">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Index"><i class="fas fa-sign-out-alt"></i></a>
+                    </li>
+                </ol>
+            </div>
+        </header>
+        <div id="customToast1" class="custom-toast1"></div>
+        <div id="customToast" class="custom-toast"></div>
+        <!-- start: page -->
+        <div class="row">
+            <div class="col">
+                <section class="card">
+                    <div class="card-body">
+                        <div id="SDisplay" style="margin-top:65px"></div>
+                        <div class="form-group row">
+                            <label class="col-lg-1 control-label text-lg-right pt-2" style="margin-left: 0px; padding-left: 0px; margin-right: 0px; padding-right: 0px;"> User Name </label>
+                            <div class="col-lg-2">
+                                @if (User != null)
+                                {
+                                    @Html.HiddenFor(model => model.UserNo)
+                                    @Html.HiddenFor(model => model.MTransNo)
+                                    <input class="form-control" value="@User.UserName" readonly /> }
+                                else
+                                {
+                                    @Html.DropDownListFor(model => model.UserNo, null, "", new { @class = "form-control populate", data_plugin_selecttwo = "" })
+                                }
+                                @Html.ValidationMessageFor(model => model.UserNo, "", new { style = "color: red" })
+                            </div>
+                            <label class="col-lg-1 control-label text-lg-right pt-2" style="margin-left: 0px; padding-left: 0px; margin-right: 0px; padding-right: 0px;"> ModuleType  </label>
+                            <div class="col-lg-2">
+                                @Html.DropDownListFor(model => model.ModuleType, null, "", new { @class = "form-control populate", data_plugin_selecttwo = "" })
+                                @Html.ValidationMessageFor(model => model.ModuleType, "", new { style = "color: red" })
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="text-right">
+                                    <button type="submit" id="Add" name="Add" value="Add" class="col-lg-12 btn btn-primary">Module List</button>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div style="overflow-x:auto;" class="form-group row">
+                            <table class="table table-no-more table-bordered table-striped mb-0 table-responsive-sm" cellspacing="0" cellpadding="0" id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">SNo</th>
+                                        <th width="40%">Module Name</th>
+                                        <th width="40%">Authorization Type</th>
+                                        <th width="15%">Select</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableCont">
+                                    @{ int rowNo = 0; }
+                                    @foreach (var item in ModuleLis)
+                                    {
+                                        var adoUserAuth = (from UA in conn.UserAuthorizations
+                                                           where UA.ModuleType == item.ModuleType && UA.ModuleNo == item.ModuleNo && UA.UserNo == Model.UserNo
+                                                           select new
+                                                           {
+                                                               MTransNo = UA.MTransNo,
+                                                               AuthType = UA.AuthType,
+                                                           }).FirstOrDefault();
+                                        if (adoUserAuth != null)
+                                        {
+                                            <tr>
+                                                <td class="text-center">@(rowNo += 1)</td>
+                                                <td class="text-left">@item.ModuleName</td>
+                                                <td class="text-left">
+                                                    <select class="form-control populate" style="background: transparent" id="AuthType">
+                                                        @if (adoUserAuth.AuthType == "F")
+                                                        {
+                                                            <option value="N">No Authorization</option>
+                                                            <option selected value="F">Full Authorization</option>
+                                                        }
+                                                        else if (adoUserAuth.AuthType == "R")
+                                                        {
+                                                            <option value="N">No Authorization</option>
+                                                            <option value="F">Full Authorization</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option selected value="N">No Authorization</option>
+                                                            <option value="F">Full Authorization</option>
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td class="text-center">
+
+                                                    <a data-toggle="tooltip" title="Remove Authorization"
+                                                       class="btn btn-warning btn-xs Delete">
+                                                        <i class="fas fa-user-slash"></i>
+                                                    </a>
+                                                </td>
+                                                <td hidden>@item.ModuleNo</td>
+                                                <td hidden>@adoUserAuth.MTransNo</td>
+                                                <td hidden>1</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td class="text-center">@(rowNo += 1)</td>
+                                                <td class="text-left">@item.ModuleName</td>
+                                                <td class="text-left">
+                                                    <select class="form-control populate" style="background: transparent" id="AuthType">
+                                                        <option selected value="N">No Authorization</option>
+                                                        <option value="F">Full Authorization</option>
+                                                    </select>
+                                                </td>
+                                                <td class="text-center"><button type="button" name="MSelect" id="MSelect" class="btn btn-primary MSelect btn-xs">Select</button></td>
+                                                <td hidden>@item.ModuleNo</td>
+                                                <td hidden>0</td>
+                                                <td hidden>0</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <hr />
+                        </div>
+                        @if (Model.MTransNo > 0)
+                        {<div class="col-sm-12  text-center" style=" margin-top :-10px;">
+                                <button type="button" id="TaxCal" name="TaxCal" value="TaxCal" class="btn btn-success btn-lg">Submit</button>
+                                <a href="Index" class="btn btn-danger btn-lg">Cancel</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-12  text-center" style=" margin-top :-10px;" hidden>
+                                <button type="button" id="TaxCal" name="TaxCal" value="TaxCal" class="btn btn-success btn-lg">Submit</button>
+                                <a href="Index" class="btn btn-danger btn-lg">Cancel</a>
+                            </div>
+                        }
+                    </div>
+                </section>
+            </div>
+        </div>
+    </form>
+</section>
+
+<script>
+    $(document).ready(function () {
+        $("#formGRN").on("submit", function (e) {
+            var userNo = $("#UserNo").val();
+            var moduleType = $("#ModuleType").val();
+
+            if (!userNo || userNo === "") {
+                e.preventDefault(); // stop form submission
+                alert("Please select a user before submitting.");
+                $("select[name='UserNo']").focus();
+                return false;
+            }
+            if (!moduleType || moduleType === "") {
+                e.preventDefault(); // stop form submission
+                alert("Please select a Module Type before submitting.");
+                $("select[name='ModuleType']").focus();
+                return false;
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $("#loading").hide();
+        $("input:text").focus(function () { $(this).select(); });
+        $("#myTable").on('click', '.MSelect', function () {
+            var currentRow = $(this).closest("tr");
+            var flagCell = currentRow.find("td:eq(6)"); // the hidden/status flag
+            var selectCell = currentRow.find("td:eq(2) select"); // the dropdown
+
+            if (flagCell.text() === "1") {
+                // Currently selected → unselect
+                flagCell.text("0");            // reset the flag
+                selectCell.val("N");           // change value to N
+                currentRow.children('td,th').css('background-color', ''); // remove glow
+            } else {
+                // Currently unselected → select
+                flagCell.text("1");            // mark as selected
+                selectCell.val("F");           // change value to F
+                currentRow.children('td,th').css('background-color', '#00ff90'); // glow
+            }
+        });
+        $(document).ready(function () {
+            $("#myTable").on('click', '.Delete', function () {
+                //if (!confirm("Are you sure you want to delete this record?")) {
+                //    return;
+                //}
+                if (!confirm("This user currently has FULL authorization for this module. Are you sure you want to remove it?")) {
+                    return ;
+                }
+
+                var currentRow = $(this).closest("tr");
+                var MTransNo = currentRow.find("td:eq(5)").html();
+
+                $.post('/SetSession/SetVariable',
+                    { key: "MTransNo", value: MTransNo }, function (data) {
+                        window.location.href = "/UserAuth/AuthDelete?MTransNo=" + MTransNo;
+                    }
+                );
+            });
+        });
+
+
+        $('#TaxCal').click(function () {
+            $("#loading").show();
+            var GRNtransNo = 0;
+            var DtlData = "";
+            var Status = "";
+            var myTable = document.getElementById('myTable');
+            if ($("#UserNo").val() > 0) {
+                Status = "Update"
+            }
+            else {
+                Status = ""
+            }
+            if ($('#UserNo').val() == 0) {
+                alert("Select The User");
+                $('#UserNo').focus();
+                $("#loading").hide();
+                exit
+            }
+            else if ($('#ModuleType').val() == "") {
+                alert("Select The ModuleType");
+                $('#ModuleType').focus();
+                $("#loading").hide();
+                exit
+            }
+            else {
+                var JUserNo = $('#UserNo').val();
+                var ModuleType = $('#ModuleType').val();
+
+                var anySelected = false;
+                for (var r = 1; r < myTable.rows.length; r++) {
+                    var status = myTable.rows.item(r).cells.item(6).innerHTML.trim(); // Status column
+
+                    if (status == "1") {
+                        anySelected = true;
+                        break;
+                    }
+                }
+
+                if (!anySelected) {
+                    alert("Please select at least one module");
+                    $("#loading").hide();
+                    return false;
+                }
+
+                for (i = 1; i < myTable.rows.length; i++) {
+                    var inputs = myTable.rows.item(i).getElementsByTagName("select");
+                    var col1 = myTable.rows.item(i).cells.item(4).innerHTML; //ModuleNo
+                    var col2 = inputs[0].value; //AuthType
+                    var col3 = myTable.rows.item(i).cells.item(5).innerHTML; //MTransNo
+                    var col4 = myTable.rows.item(i).cells.item(6).innerHTML; //Status
+                    if (col1 == "" || col1 == null) {
+                        col1 = 0;
+                    }
+                    if (col3 == "" || col3 == null) {
+                        col3 = 0;
+                    }
+                    if (col4 == "" || col4 == null) {
+                        col4 = 0;
+                    }
+                    DtlData = DtlData + "~" + col1 + "^" + col2 + "^" + col3 + "^" + col4;
+                    //alert(DtlData);
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/UserAuth/SaveDtl",
+                    data: {
+                        UserNo: JUserNo,
+                        ModuleType: ModuleType,
+                        DtlString: DtlData,
+                        Status: Status
+                    },
+                    success: function (result) {
+                        $("#loading").hide();
+                        $("#formGRN :input").prop("disabled", false);
+
+                        // Redirect to AddEdit passing MTransNo as int
+                        window.location.href = "/UserAuth/AddEdit?MTransNo=" + parseInt(result);
+                    },
+                    error: function (xhr, status, error) {
+                        $("#formGRN :input").prop("disabled", false);
+                        $("#loading").hide();
+                        alert(error);
+                    }
+                });
+
+            }
+        });
+    });
+</script>
+<script>
+    $('body').on('keydown', 'input, select', function (e) {
+        if (e.key === "Enter") {
+            var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
+            focusable = form.find('input,a,select,button,textarea').filter(':visible');
+            next = focusable.eq(focusable.index(this) + 1);
+            if (next.length) {
+                next.focus();
+            } else {
+                form.submit();
+            }
+            return false;
+        }
+    });
+</script>
+@*@Html.Partial("_jsfooter")*@

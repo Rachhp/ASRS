@@ -1,0 +1,568 @@
+﻿@using S1947.Models;
+@model S1947.Models.DashboardViewModel
+
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Content/npm/chart.js"></script>
+<script src="~/Content/npm/chartjs-plugin-datalabels.min.js"></script>
+
+
+<style>
+    .page-header {
+        margin: -36px -37px 40px -37px;
+        border-bottom: 5px solid #ff6a00;
+    }
+
+    #asrs-dashboard .dashboard-card {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.08);
+        border-left: 5px solid #22c55e;
+        transition: .3s;
+        height: 100%;
+    }
+
+        #asrs-dashboard .dashboard-card:hover {
+            transform: translateY(-2px);
+        }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    .card-blue {
+        border-left: 5px solid #2563eb !important;
+    }
+
+    .card-green {
+        border-left: 5px solid #22c55e !important;
+    }
+
+    .card-red {
+        border-left: 5px solid #ef4444 !important;
+    }
+
+    .card-orange {
+        border-left: 5px solid #f59e0b !important;
+    }
+
+    .card-purple {
+        border-left: 5px solid #9333ea !important;
+    }
+
+    .icon-blue {
+        background: #e8f1ff;
+        color: #0d6efd;
+    }
+
+    .icon-purple {
+        background: #f3e8ff;
+        color: #9333ea;
+    }
+
+    .icon-red {
+        background: #ffe5e5;
+        color: #ef4444;
+    }
+
+    .icon-green {
+        background: #e8fff1;
+        color: #22c55e;
+    }
+
+    .icon-orange {
+        background: #fff4e5;
+        color: #f59e0b;
+    }
+
+    #asrs-dashboard .dashboard-title {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    #asrs-dashboard .dashboard-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    #asrs-dashboard .chart-box {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.08);
+        height: 100%;
+    }
+
+    #asrs-dashboard .dashboard-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    #asrs-dashboard .alert-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .alert-item:last-child {
+        border-bottom: none;
+    }
+
+    .asrs-alert-danger {
+        /*    .alert-danger {*/
+        border-left: 5px solid #ef4444;
+    }
+
+    .alert-warning {
+        border-left: 5px solid #f59e0b;
+    }
+
+    canvas {
+        max-height: 300px;
+    }
+
+    .page-header {
+        margin-top: 0 !important;
+    }
+
+    .content-body {
+        padding-top: 0 !important;
+    }
+
+    .chart-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 15px;
+    }
+
+    @@media (max-width:991px) {
+
+        .dashboard-value {
+            font-size: 28px;
+        }
+
+        .chart-box {
+            min-height: 340px;
+        }
+    }
+
+    @@media (max-width:576px) {
+
+        .dashboard-card {
+            text-align: center;
+        }
+
+        .card-icon {
+            margin: 0 auto 15px;
+        }
+
+        .dashboard-value {
+            font-size: 26px;
+        }
+    }
+</style>
+<section role="main">
+    <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm"
+            style="background:#000;color:#fff;">
+        <h3 class="mb-0 font-weight-bold" style="color:aliceblue">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </h3>
+        <div class="right-wrapper d-flex align-items-center" style="gap:15px;">
+            <span id="currentTime" style="font-size:18px;font-weight:600;color:white;"></span>
+            <span id="shiftName"
+                  style="background:#0d6efd;color:white;padding:4px 10px;border-radius:15px;font-weight:bold;">
+            </span>
+        </div>
+    </header>
+
+    <div id="asrs-dashboard">
+        <div class="container-fluid">
+            <!-- KPI Cards -->
+            <div class="row g-3">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="dashboard-card card-purple">
+                        <div class="card-icon icon-purple">👥</div>
+                        <div class="dashboard-title">Active Users</div>
+                        <div class="dashboard-value">@Model.TotalUser</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="dashboard-card card-blue">
+                        <div class="card-icon icon-blue">📦</div>
+                        <div class="dashboard-title">Total Inventory Qty</div>
+                        <div class="dashboard-value"> @Model.TotalQty</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="dashboard-card">
+                        <div class="card-icon icon-blue">🏢</div>
+                        <div class="dashboard-title"> Locations</div>
+                        <div class="dashboard-value">@Model.TotalCells</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="dashboard-card card-red">
+                        <div class="card-icon icon-red">📥</div>
+                        <div class="dashboard-title">Occupied Locations</div>
+                        <div class="dashboard-value">@Model.OccupiedCells</div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="dashboard-card card-green">
+                        <div class="card-icon icon-green">🟢</div>
+                        <div class="dashboard-title">Available Locations</div>
+                        <div class="dashboard-value">@Model.AvailableCells</div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="dashboard-card card-orange">
+                        <div class="card-icon icon-orange">📊</div>
+                        <div class="dashboard-title">
+                            Storage Utilization
+                        </div>
+                        <div class="dashboard-value">
+                            @ViewBag.StorageUtilization %
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="row mt-4">
+                <div class="col-lg">
+                    <div class="chart-box">
+                        <div class="chart-title">Storage Occupancy</div>
+                        <canvas id="occupancyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-lg">
+                    <div class="chart-box">
+                        <div class="chart-title">Total Quantity By Part</div>
+                        <canvas id="partChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- Row 3 -->
+            <div class="row mt-4">
+                <div class="col-lg">
+                    <div class="chart-box">
+                        <div class="chart-title">Monthly Transaction Summary</div>
+                        <canvas id="transactionChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg">
+                    <div class="chart-box">
+                        <div class="chart-title">
+                            Capacity Utilization By Level
+                        </div>
+                        <canvas id="levelChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function () {
+        updateHeaderInfo();
+        setInterval(updateHeaderInfo, 1000);
+    });
+
+    function updateHeaderInfo() {
+
+        const now = new Date();
+        document.getElementById("currentTime").innerHTML =
+            now.toLocaleString('en-IN');
+
+        const hour = now.getHours();
+        let shift = "";
+
+        if (hour >= 6 && hour < 14) {
+            shift = "Shift A";
+        }
+        else if (hour >= 14 && hour < 22) {
+            shift = "Shift B";
+        }
+        else {
+            shift = "Shift C";
+        }
+
+        document.getElementById("shiftName").innerHTML = shift;
+    }
+
+
+function updateShift() {
+    $.ajax({
+        url: '@Url.Action("GetCurrentShift", "Utility")',
+        type: 'GET',
+        success: function (response) {
+
+            $('#shiftName').text(response);
+        },
+        error: function () {
+            $('#shiftName').text('Shift unavailable');
+        }
+    });
+}
+    $(document).ready(function () {
+        updateShift();
+        setInterval(updateShift, 60000);
+    });
+
+
+
+    //doughnut chart only percentage logic
+    const centerTextPlugin = {
+        id: 'centerText',
+        beforeDraw(chart) {
+
+            // Only draw on occupancy chart
+            if (chart.canvas.id !== 'occupancyChart')
+                return;
+
+            const { width, height, ctx } = chart;
+
+            const data = chart.data.datasets[0].data;
+            const total = data.reduce((a, b) => a + b, 0);
+
+            // First value = Loaded
+            const occupancy = ((data[0] / total) * 100).toFixed(1);
+
+            ctx.save();
+
+            ctx.font = "bold 24px Arial";
+            ctx.fillStyle = "#111";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(occupancy + "%", width / 2, height / 2 - 10);
+
+            ctx.font = "14px Arial";
+            ctx.fillStyle = "#666";
+            ctx.fillText("Occupancy", width / 2, height / 2 + 15);
+
+            ctx.restore();
+        }
+    };
+
+    //total location occupancy chart
+    new Chart(document.getElementById('occupancyChart'), {
+    type: 'doughnut',
+    data: {
+        labels: @Html.Raw(ViewBag.OccupancyLabels),
+        datasets: [{
+            data: @Html.Raw(ViewBag.OccupancyData),
+            backgroundColor: [
+                '#22c55e' ,   // Available (Green)
+                '#2563eb'  // Occupied (Blue)
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        cutout: '70%'
+    },
+    plugins: [centerTextPlugin]
+    });
+
+    function generateColors(count) {
+        var colors = [];
+
+        for (var i = 0; i < count; i++) {
+            colors.push(`hsl(${(i * 360 / count)}, 70%, 60%)`);
+        }
+        return colors;
+    }
+
+    //part summery
+    var partLabels = @Html.Raw(ViewBag.Partlabels);
+    var partData = @Html.Raw(ViewBag.PartlabelsData);
+
+    new Chart(document.getElementById('partChart'), {
+        type: 'bar',
+        data: {
+            labels: partLabels,
+            datasets: [{
+                label: 'Quantity',
+                data: partData,
+                backgroundColor: '#3b82f6',
+                borderRadius: 6,
+                barThickness: 18
+            }]
+        },
+        options: {
+
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+
+                legend: {
+                    display: false
+                }
+            },
+
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantity'
+                    }
+                },
+
+                y: {
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        },
+        plugins: {
+
+            legend: {
+                display: false
+            },
+
+            datalabels: {
+                anchor: 'end',
+                align: 'right',
+                color: '#000',
+
+                formatter: function (value) {
+                    return value;
+                }
+
+            }
+
+        }
+
+    });
+
+
+    //capacity utilized chart level wise
+ const totals = @Html.Raw(ViewBag.LevelTotals);
+const utilization = @Html.Raw(ViewBag.LevelUtilization);
+
+new Chart(document.getElementById('levelChart'), {
+    type: 'bar',
+    data: {
+        labels: @Html.Raw(ViewBag.LevelLabels),
+        datasets: [{
+            label: 'Occupied Locations',
+            data: @Html.Raw(ViewBag.LevelCounts),
+            backgroundColor: [
+                '#36A2EB',
+                '#FF6384',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
+                '#FF9F40',
+                '#8BC34A',
+                '#E91E63'
+            ]
+        }]
+    },
+    options: {
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        const i = context.dataIndex;
+
+                        return [
+                            'Occupied : ' + context.raw,
+                            'Total : ' + totals[i],
+                            'Utilization : ' + utilization[i] + '%'
+                        ];
+                    }
+                }
+            }
+        }
+    }
+});
+
+
+    // new Chart(document.getElementById('transactionChart'), {
+    //     type: 'bar',
+    //     data: {
+    //         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    //         datasets: [
+    //             {
+    //                 label: 'IN',
+    //                 backgroundColor: '#16a34a',
+    //                 data: [2400, 2800, 3600, 3100, 4600, 4200]
+    //             },
+    //             {
+    //                 label: 'OUT',
+    //                 backgroundColor: '#ef4444',
+    //                 data: [2100, 2500, 3200, 2900, 4000, 3700]
+    //             }]
+    //     }
+    // });
+
+
+    new Chart(document.getElementById('transactionChart'), {
+
+    type: 'bar',
+    data: {
+        labels: @Html.Raw(ViewBag.TransactionMonths),
+        datasets: [
+            {
+                label: 'IN',
+                backgroundColor: '#16a34a',
+                data: @Html.Raw(ViewBag.InTransactions)
+            },
+            {
+                label: 'OUT',
+                backgroundColor: '#ef4444',
+                data: @Html.Raw(ViewBag.OutTransactions)
+            }
+        ]
+    }
+
+    });
+
+    @*new Chart(document.getElementById('columnChart'), {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(ViewBag.ColumnLabels),
+            datasets: [{
+                label: 'Loaded Cells',
+                data:@Html.Raw(ViewBag.ColumnCounts),
+                backgroundColor: [
+                    '#36A2EB',
+                    '#FF6384',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40',
+                    '#8BC34A',
+                    '#E91E63',
+                    '#795548',
+                    '#607D8B'
+                ]
+
+            }],
+
+
+        }
+
+    });*@
+
+</script>

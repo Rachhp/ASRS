@@ -1,0 +1,232 @@
+﻿@model List<S1947.Models.vw_TransactionReport>
+
+@{
+    Layout = null;
+    int sr = 1;
+}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>Transaction Report</title>
+
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+
+    <link href="~/Content/Report.css" rel="stylesheet" />
+
+    <style>
+
+        body {
+            margin: 30px;
+            font-family: Arial;
+            font-size: 12px;
+        }
+
+        .report-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+            .report-table th {
+                background: #333;
+                color: white;
+            }
+
+            .report-table th,
+            .report-table td {
+                border: 1px solid #999;
+                padding: 6px;
+                text-align: center;
+                vertical-align: middle;
+                word-wrap: break-word;
+            }
+
+        .badge {
+            padding: 3px 8px;
+            color: white;
+            border-radius: 3px;
+        }
+
+        .badge-success {
+            background: #198754;
+        }
+
+        .badge-danger {
+            background: #dc3545;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-row-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="report-title">
+        Transaction Report
+    </div>
+
+    <div style="display:flex;
+            justify-content:space-between;
+            margin-bottom:15px;
+            font-size:12px;">
+
+        <div>
+            <strong>Generated On :</strong>
+            @DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt")
+        </div>
+
+        <div>
+            <strong>Total Records :</strong>
+            @Model.Count
+        </div>
+
+    </div>
+
+    <hr />
+
+    <table class="report-table">
+
+        <colgroup>
+
+            <col style="width:5%" />
+
+            <col style="width:8%" />
+
+            <col style="width:10%" />
+
+            <col style="width:8%" />
+
+            <col style="width:12%" />
+
+            <col style="width:10%" />
+
+            <col style="width:6%" />
+
+            <col style="width:12%" />
+
+            <col style="width:12%" />
+
+            <col style="width:9%" />
+
+            <col style="width:8%" />
+
+        </colgroup>
+
+        <thead>
+
+            <tr>
+
+                <th class="text-center">Sr No</th>
+
+                <th class="text-center">Date</th>
+
+                <th class="text-center">Time</th>
+
+                <th class="text-center">Type</th>
+
+                <th class="text-center">Material Code</th>
+
+                <th>Model</th>
+
+                <th class="text-center">Qty</th>
+
+                <th>Location</th>
+
+                <th class="text-center">Status</th>
+
+                <th>Operator</th>
+
+                <th class="text-center">Invoice</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+
+                <tr>
+
+                    <td class="text-center">@sr</td>
+
+                    <td class="text-center">
+                        @(item.TransactionDate?.ToString("dd-MM-yyyy"))
+                    </td>
+
+                    <td class="text-center">
+                        @item.TransactionTime
+                    </td>
+
+                    <td class="text-center">
+
+                        @if (item.TransactionType == "LOAD")
+                        {
+                            <span class="badge badge-success">LOAD</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger">UNLOAD</span>
+                        }
+
+                    </td>
+
+                    <td>@item.MaterialCode</td>
+
+                    <td>@item.FGModel</td>
+
+                    <td class="text-center">
+                        @item.Quantity
+                    </td>
+
+                    <td>@item.LocationName</td>
+
+                    <td>@item.Status</td>
+
+                    <td>
+                        @(string.IsNullOrEmpty(item.OperatorName)
+                       ? "-"
+                       : item.OperatorName)
+                    </td>
+
+                    <td>
+                        @(string.IsNullOrEmpty(item.InvoiceNo)
+                       ? "-"
+                       : item.InvoiceNo)
+                    </td>
+
+                </tr>
+
+                sr++;
+
+            }
+
+        </tbody>
+
+    </table>
+</body>
+
+</html>

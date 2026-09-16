@@ -1,0 +1,769 @@
+﻿@model S1947.Models.QRDataModel
+@{
+    ViewBag.Title = "Load Operation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: #dfe6ee;
+        font-family: "Segoe UI",Arial,sans-serif;
+    }
+
+    .content-body.expanded {
+        padding-right: 15px;
+    }
+
+    .loading-page {
+        width: 100%;
+        padding-bottom: 25px;
+    }
+
+    .load-header {
+        margin: -36px -37px 22px -37px;
+        padding: 5px 15px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border-bottom: 3px solid #ff6a00;
+        color: #ffffff;
+        box-shadow: 0 3px 12px rgba(0,0,0,.15);
+    }
+
+    .load-header-title {
+        margin: 0;
+        font-size: 25px;
+        line-height: 1.2;
+        font-weight: 700;
+        letter-spacing: .2px;
+    }
+
+    .load-header-subtitle {
+        margin: 5px 0 0;
+        font-size: 12px;
+        color: #cbd5e1;
+    }
+
+    .live-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 14px;
+        border-radius: 20px;
+        background: rgba(16,185,129,.10);
+        border: 1px solid rgba(16,185,129,.35);
+        color: #6ee7b7;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .5px;
+    }
+
+    .live-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10b981;
+        animation: livePulse 1.5s infinite;
+    }
+
+    @@keyframes livePulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(16,185,129,.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 7px rgba(16,185,129,0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(16,185,129,0);
+        }
+    }
+
+    .loading-card {
+        width: 100%;
+        max-width: none;
+        background: #ffffff;
+        border: 1px solid #d5dde7;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(15,23,42,.08);
+        overflow: hidden;
+    }
+
+    .table-toolbar {
+        padding: 15px 18px;
+        background: #ffffff;
+        border-bottom: 1px solid #cbd5e1;
+    }
+
+    .toolbar-left {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .table-icon {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        background: #fff7ed;
+        color: #ea580c;
+        font-size: 17px;
+        font-weight: 700;
+        border: 1px solid #fed7aa;
+    }
+
+    .table-title {
+        margin: 0;
+        color: #111827;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .table-subtitle {
+        margin: 3px 0 0;
+        color: #64748b;
+        font-size: 11px;
+    }
+
+    .last-updated {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .last-updated-label {
+        display: block;
+        margin-bottom: 2px;
+        color: #94a3b8;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    #lastUpdated {
+        color: #334155;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .loading-table-wrapper {
+        width: 100%;
+        max-height: calc(100vh - 245px);
+        overflow-x: auto;
+        overflow-y: auto;
+        background: #ffffff;
+    }
+
+    .loading-table {
+        width: 100%;
+        min-width: 1180px;
+        margin: 0;
+        border-collapse: collapse;
+        color: #0f172a;
+        table-layout: auto;
+    }
+
+        .loading-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            height: 40px;
+            padding: 0 7px;
+            background: #1e293b;
+            color: #ffffff;
+            border: 1px solid #64748b !important;
+            font-size: 10px;
+            font-weight: 700;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: .25px;
+            white-space: nowrap;
+            vertical-align: middle;
+            box-shadow: inset 0 -1px 0 rgba(255,255,255,.08);
+        }
+
+            .loading-table thead th:first-child {
+                text-align: center;
+            }
+
+        .loading-table tbody tr {
+            height: 45px;
+            background: #ffffff;
+            transition: background-color .15s ease, box-shadow .15s ease;
+        }
+
+            .loading-table tbody tr:nth-child(even) {
+                background: #f8fafc;
+            }
+
+            .loading-table tbody tr:hover {
+                background: #eef6ff;
+                box-shadow: inset 3px 0 0 #ff6a00;
+            }
+
+        .loading-table tbody td {
+            padding: 7px 8px;
+            color: #1e293b;
+            font-size: 11px;
+            line-height: 1.2;
+            vertical-align: middle;
+            white-space: nowrap;
+            border: 1px solid #cbd5e1 !important;
+        }
+
+    .sr-number {
+        width: 40px;
+        min-width: 40px;
+        text-align: center;
+        color: #475569 !important;
+        font-size: 10px !important;
+        font-weight: 700;
+    }
+
+    .model-name {
+        color: #0f172a;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .model-description {
+        color: #475569;
+        font-size: 10px;
+    }
+
+    .fg-code {
+        display: inline-block;
+        padding: 4px 6px;
+        border-radius: 4px;
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        color: #334155;
+        font-family: Consolas, monospace;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .shift-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 27px;
+        height: 27px;
+        border-radius: 50%;
+        background: #eff6ff;
+        border: 1px solid #93c5fd;
+        color: #1d4ed8;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .unique-id {
+        color: #475569 !important;
+        font-family: Consolas, monospace;
+        font-size: 10px !important;
+        letter-spacing: -.1px;
+    }
+
+    .pallet-number {
+        color: #0f172a;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .packing-line {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 30px;
+        height: 24px;
+        padding: 0 6px;
+        border-radius: 4px;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        color: #475569;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .numeric-value {
+        color: #0f172a !important;
+        font-size: 11px !important;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .date-value {
+        color: #334155;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .time-value {
+        color: #475569;
+        font-family: Consolas, monospace;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .location-cell {
+        color: #334155 !important;
+        font-size: 10px !important;
+        font-weight: 700;
+    }
+
+    .status-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 145px;
+        max-width: 200px;
+        min-height: 30px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1.2;
+        white-space: nowrap;
+        border: 1px solid transparent;
+        transition: all .25s ease;
+    }
+
+        .status-cell::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            flex: 0 0 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+    .status-gray {
+        color: #475569;
+        background: #f1f5f9;
+        border-color: #94a3b8;
+    }
+
+    .status-blue {
+        color: #1d4ed8;
+        background: #dbeafe;
+        border-color: #60a5fa;
+    }
+
+    .status-orange {
+        color: #c2410c;
+        background: #ffedd5;
+        border-color: #fb923c;
+    }
+
+    .status-green {
+        color: #047857;
+        background: #d1fae5;
+        border-color: #34d399;
+    }
+
+    .status-red {
+        color: #b91c1c;
+        background: #fee2e2;
+        border-color: #f87171;
+    }
+
+    .status-updated {
+        animation: statusChanged .75s ease;
+    }
+
+    @@keyframes statusChanged {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 rgba(59,130,246,0);
+        }
+
+        50% {
+            transform: scale(1.04);
+            box-shadow: 0 0 16px rgba(59,130,246,.4);
+        }
+
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 rgba(59,130,246,0);
+        }
+    }
+
+    .no-data {
+        padding: 45px 20px !important;
+        background: #ffffff !important;
+        color: #64748b !important;
+        text-align: center;
+        font-size: 13px !important;
+    }
+
+    .loading-table-wrapper::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .loading-table-wrapper::-webkit-scrollbar-track {
+        background: #e2e8f0;
+    }
+
+    .loading-table-wrapper::-webkit-scrollbar-thumb {
+        background: #94a3b8;
+        border-radius: 10px;
+    }
+
+        .loading-table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+    @@media (max-width: 1200px) {
+        .loading-table {
+            min-width: 1180px;
+        }
+
+            .loading-table thead th {
+                padding-left: 6px;
+                padding-right: 6px;
+                font-size: 9px;
+            }
+
+            .loading-table tbody td {
+                padding-left: 6px;
+                padding-right: 6px;
+                font-size: 10px;
+            }
+
+        .model-name {
+            font-size: 10px;
+        }
+
+        .model-description {
+            font-size: 9px;
+        }
+
+        .unique-id {
+            font-size: 9px !important;
+        }
+
+        .fg-code {
+            font-size: 9px;
+            padding: 3px 5px;
+        }
+
+        .pallet-number {
+            font-size: 10px;
+        }
+
+        .numeric-value {
+            font-size: 10px !important;
+        }
+
+        .date-value {
+            font-size: 9px;
+        }
+
+        .time-value {
+            font-size: 9px;
+        }
+
+        .location-cell {
+            font-size: 9px !important;
+        }
+
+        .status-cell {
+            min-width: 135px;
+            font-size: 9px;
+            padding: 5px 8px;
+        }
+    }
+
+    @@media (max-width: 1100px) {
+        .loading-table {
+            min-width: 1180px;
+        }
+
+        .load-header {
+            margin-left: -25px;
+            margin-right: -25px;
+        }
+    }
+</style>
+<section role="main" class="loading-page">
+    <header class="load-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="load-header-title">
+                    Load Operation
+                </h3>
+                <p class="load-header-subtitle">
+                    Live loading operation monitoring
+                </p>
+            </div>
+            <div>
+                <span class="live-indicator">
+                    <span class="live-dot"></span>
+                    LIVE
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <div class="loading-card">
+
+        <div class="table-toolbar">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="toolbar-left">
+                    <div class="table-icon">
+                        ▦
+                    </div>
+                    <div>
+                        <h4 class="table-title">
+                            Loading Records
+                        </h4>
+                        <p class="table-subtitle">
+                            Current loading operations and live pallet status
+                        </p>
+                    </div>
+                </div>
+                <div class="last-updated">
+                    <span class="last-updated-label">
+                        Last Updated
+                    </span>
+                    <span id="lastUpdated">
+                        --
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading-table-wrapper">
+            <table class="table loading-table">
+                <thead>
+                    <tr>
+                        <th style="width:45px;"> Sr No.</th>
+                        <th> Model </th>
+                        <th> Model Description </th>
+                        <th> FG Code </th>
+                        <th> Shift </th>
+                        <th> Unique ID </th>
+                        <th> Pallet Sr. No </th>
+                        <th> Packing Line </th>
+                        <th> Quantity </th>
+                        <th> Weight </th>
+                        <th> Date  </th>
+                        <th> Time </th>
+                        <th> Location </th>
+                        <th style="min-width:100px;"> Status </th>
+                    </tr>
+                </thead>
+                <tbody id="qrTableBody">
+                    @if (ViewBag.AndonData != null &&
+                         ViewBag.AndonData.Count > 0)
+                    {
+                        int srNo = 1;
+                        foreach (var item in ViewBag.AndonData)
+                        {
+                            <tr data-id="@item.UniqueId">
+
+                                <td class="sr-number"> @srNo </td>
+                                <td><span class="model-name"> @item.FGModel</span> </td>
+                                <td> <span class="model-description"> @item.FGModelDesc</span></td>
+                                <td> <span class="fg-code"> @item.FGcode </span></td>
+                                <td> <span class="shift-badge"> @item.Shift </span> </td>
+                                <td class="unique-id"> @item.UniqueId </td>
+                                <td class="pallet-number"> @item.PalletSrNo </td>
+                                <td> <span class="packing-line">  @item.PackingLineNo </span> </td>
+                                <td class="numeric-value"> @item.Quantity </td>
+                                <td class="numeric-value"> @item.WeightTheo </td>
+                                <td class="date-value">  @item.Date</td>
+                                <td class="time-value"> @item.Time</td>
+                                <td class="location-cell"> @item.LocationName</td>
+                                <td>
+                                    <span class="status-cell status-gray">Loading...</span>
+                                </td>
+                            </tr>
+                            srNo++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="14"
+                                class="no-data">
+                                No loading records available
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script src="~/Scripts/jquery-3.6.0.min.js"></script>
+<script>
+    function getStatusClass(status) {
+        if (!status) {
+            return "status-gray";
+        }
+        var value =
+            status.toLowerCase();
+        if (value.includes("completed")) {
+            return "status-green";
+        }
+        if (value.includes("charging")) {
+            return "status-orange";
+        }
+        if (
+            value.includes("proceeding") ||
+            value.includes("pickup") ||
+            value.includes("vehicle")
+        ) {
+            return "status-blue";
+        }
+        if (
+            value.includes("created") ||
+            value.includes("assigned")
+        ) {
+            return "status-gray";
+        }
+        if (
+            value.includes("failed") ||
+            value.includes("error") ||
+            value.includes("cancel")
+        ) {
+            return "status-red";
+        }
+        return "status-gray";
+    }
+    function escapeHtml(value) {
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return "";
+        }
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function loadLiveData() {
+        $.ajax({
+            url: '@Url.Action("GetLoadingData", "Load")',
+            type: 'GET',
+            cache: false,
+            success: function (data) {
+                var tbody =
+                    $("#qrTableBody");
+                if (
+                    !data ||
+                    data.length === 0
+                ) {
+                    tbody.html(`
+                        <tr>
+                            <td
+                                colspan="14"
+                                class="no-data">
+                                No loading records available
+                            </td>
+                        </tr>
+                    `);
+                    $("#lastUpdated").text(
+                        new Date().toLocaleTimeString()
+                    );
+                    return;
+                }
+                var previousStatuses = {};
+                $("#qrTableBody tr").each(function () {
+                    var id =
+                        $(this).attr("data-id");
+                    var status =
+                        $(this)
+                            .find(".status-cell")
+                            .text()
+                            .trim();
+                    if (id) {
+                        previousStatuses[id] =
+                            status;
+                    }
+                });
+                /* =================================================
+                   BUILD TABLE
+                   ================================================= */
+                var html = "";
+                $.each(data, function (index, item) {
+                    var status =
+                        item.Status;
+                    if (
+                        !status ||
+                        status.trim() === ""
+                    ) {
+                        status = "No Status";
+                    }
+                    var statusClass =
+                        getStatusClass(status);
+                    html += `
+                        <tr
+                            data-id="${escapeHtml( item.UniqueId )}">
+                            <td class="sr-number"> ${index + 1}</td>
+                            <td> <span class="model-name"> ${escapeHtml( item.FGModel)} </span> </td>
+                            <td><span class="model-description"> ${escapeHtml( item.FGModelDesc )} </span> </td>
+                            <td> <span class="fg-code"> ${escapeHtml(item.FGcode)} </span></td>
+                            <td> <span class="shift-badge">  ${escapeHtml( item.Shift )} </span></td>
+                            <td class="unique-id"> ${escapeHtml( item.UniqueId  )}</td>
+                            <td class="pallet-number"> ${escapeHtml(item.PalletSrNo )}</td>
+                            <td> <span class="packing-line">  ${escapeHtml(item.PackingLineNo  )} </span></td>
+                            <td class="numeric-value">  ${escapeHtml( item.Quantity )}</td>
+                            <td class="numeric-value"> ${escapeHtml(  item.WeightTheo )}</td>
+                            <td class="date-value"> ${escapeHtml( item.Date)} </td>
+                            <td class="time-value"> ${escapeHtml( item.Time)}</td>
+                            <td class="location-cell"> ${escapeHtml(item.LocationName)} </td>
+                            <td> <span class="status-cell ${statusClass}"> ${escapeHtml(status )} </span></td>
+                        </tr>
+                    `;
+                });
+                tbody.html(html);
+                $.each(data, function (index, item) {
+                    var id =
+                        String(item.UniqueId);
+                    var newStatus =
+                        item.Status ||
+                        "No Status";
+                    var oldStatus =
+                        previousStatuses[id];
+                    if (
+                        oldStatus &&
+                        oldStatus !== newStatus
+                    ) {
+                        $("#qrTableBody tr")
+                            .filter(function () {
+                                return String(
+                                    $(this)
+                                        .attr("data-id")
+                                ) === id;
+                            })
+                            .find(".status-cell")
+                            .addClass("status-updated");
+                    }
+                });
+                $("#lastUpdated").text(
+                    new Date().toLocaleTimeString()
+                );
+            },
+            error: function (xhr, status, error) {
+                console.log(
+                    "Live loading data error:",
+                    error
+                );
+            }
+        });
+    }
+    $(document).ready(function () {
+        loadLiveData();
+    });
+    setInterval(function () {  loadLiveData();}, 2000);
+</script>

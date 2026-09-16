@@ -1,0 +1,932 @@
+﻿@model List<S1947.Models.AgeingReportVM>
+
+@{
+    ViewBag.Title = "Ageing Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int totalRecords = Model != null ? Model.Count : 0;
+
+    int freshCount = Model != null
+        ? Model.Count(x => x.AgeDays <= 15)
+        : 0;
+
+    int ageingCount = Model != null
+        ? Model.Count(x => x.AgeDays >= 15 && x.AgeDays <= 30)
+        : 0;
+
+    int criticalCount = Model != null
+        ? Model.Count(x => x.AgeDays > 30)
+        : 0;
+}
+
+<link href="~/Content/Report.css" rel="stylesheet" />
+<link href="~/Content/vendor/datatables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/vendor/datatables/extras/TableTools/Buttons-1.4.2/css/buttons.dataTables.min.css" rel="stylesheet" />
+
+<style>
+
+    /* ================================
+       SUMMARY CARDS
+       ================================ */
+
+    .ageing-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .ageing-card {
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        background: #fff;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .ageing-card-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    .ageing-card-count {
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .card-total {
+        border-top: 4px solid #343a40;
+    }
+
+    .card-fresh {
+        border-top: 4px solid #28a745;
+    }
+
+    .card-ageing {
+        border-top: 4px solid #ffc107;
+    }
+
+    .card-critical {
+        border-top: 4px solid #dc3545;
+    }
+
+
+    /* ================================
+       LEGEND
+       ================================ */
+
+    .ageing-legend {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .legend-box {
+        width: 17px;
+        height: 17px;
+        border-radius: 3px;
+        border: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .legend-fresh {
+        background-color: #C6EFCE;
+    }
+
+    .legend-ageing {
+        background-color: #FFF2CC;
+    }
+
+    .legend-critical {
+        background-color: #FFC7CE;
+    }
+
+    /* ================================
+       COMPLETE ROW COLORING
+       ================================ */
+    #tblAgeing tbody tr.age-fresh td {
+        background-color: #C6EFCE !important;
+    }
+
+    #tblAgeing tbody tr.age-ageing td {
+        background-color: #FFF2CC !important;
+    }
+
+    #tblAgeing tbody tr.age-critical td {
+        background-color: #FFC7CE !important;
+        font-weight: 600;
+    }
+
+
+    /* Hover */
+
+    #tblAgeing tbody tr:hover td {
+        filter: brightness(0.96);
+    }
+
+
+    /* ================================
+       AGE BADGE
+       ================================ */
+
+    .age-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .age-badge-fresh {
+        background-color: #28A745;
+        color: #fff;
+    }
+
+    .age-badge-ageing {
+        background-color: #FFC107;
+        color: #212529;
+    }
+
+    .age-badge-critical {
+        background-color: #DC3545;
+        color: #fff;
+    }
+
+
+    /* ================================
+       CATEGORY
+       ================================ */
+
+    .category-text {
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+
+    /* ================================
+       RESPONSIVE
+       ================================ */
+
+    @@media (max-width: 1000px) {
+
+        .ageing-summary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 600px) {
+
+        .ageing-summary {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm">
+
+    <h3 class="mb-0 font-weight-bold text-white">
+
+        <i class="fas fa-hourglass-half"></i>
+
+        Ageing Report - Live Loaded Stock
+
+    </h3>
+
+</header>
+
+
+<section role="main">
+
+    <div id="reportContent">
+
+        <div class="report-card">
+
+
+            <!-- ================================
+                 HEADER
+                 ================================ -->
+
+            <div class="report-header d-flex justify-content-between align-items-center">
+
+                <h4 class="mb-0">
+
+                    <i class="fa fa-chart-line"></i>
+
+                    Stock Ageing Overview
+
+                </h4>
+
+                <div id="exportButtons"></div>
+
+            </div>
+
+
+            <div class="card-body">
+
+
+                <!-- ================================
+                     SUMMARY
+                     ================================ -->
+
+                <div class="ageing-summary">
+
+
+                    <!-- TOTAL -->
+
+                    <div class="ageing-card card-total">
+
+                        <div class="ageing-card-title">
+                            Total Loaded Stock
+                        </div>
+
+                        <div class="ageing-card-count">
+                            @totalRecords
+                        </div>
+
+                    </div>
+
+
+                    <!-- 0-15 DAYS -->
+
+                    <div class="ageing-card card-fresh">
+
+                        <div class="ageing-card-title">
+                            0–15 Days
+                        </div>
+
+                        <div class="ageing-card-count">
+                            @freshCount
+                        </div>
+
+                    </div>
+
+
+                    <!-- 16-60 DAYS -->
+
+                    <div class="ageing-card card-ageing">
+
+                        <div class="ageing-card-title">
+                            16–30 Days
+                        </div>
+
+                        <div class="ageing-card-count">
+                            @ageingCount
+                        </div>
+
+                    </div>
+
+
+                    <!-- 60+ DAYS -->
+
+                    <div class="ageing-card card-critical">
+
+                        <div class="ageing-card-title">
+                            30+ Days
+                        </div>
+
+                        <div class="ageing-card-count">
+                            @criticalCount
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================
+                     LEGEND
+                     ================================ -->
+
+                <div class="ageing-legend">
+
+                    <span>Ageing Status:</span>
+
+
+                    <span class="legend-item">
+
+                        <span class="legend-box legend-fresh"></span>
+
+                        0–15 Days
+
+                    </span>
+
+
+                    <span class="legend-item">
+
+                        <span class="legend-box legend-ageing"></span>
+
+                        16–30 Days
+
+                    </span>
+
+
+                    <span class="legend-item">
+
+                        <span class="legend-box legend-critical"></span>
+
+                        30+ Days
+
+                    </span>
+
+                </div>
+
+
+                @using (Html.BeginForm("AgeingReport", "Reports", FormMethod.Get))
+                {
+
+
+                    <!-- ================================
+                         AGEING TABLE
+                         ================================ -->
+
+                    <table id="tblAgeing"
+                           class="table table-bordered table-hover report-table"
+                           style="width:100%">
+
+                        <thead>
+
+                            <tr>
+
+                                <th class="text-center">
+                                    Sr No
+                                </th>
+
+                                <th class="text-center">
+                                    Material Code
+                                </th>
+
+                                <th>
+                                    Model
+                                </th>
+
+                                <th class="text-center">
+                                    Quantity
+                                </th>
+
+                                <th>
+                                    Location
+                                </th>
+
+                                <th class="text-center">
+                                    Loaded Date
+                                </th>
+
+                                <th class="text-center">
+                                    Age Days
+                                </th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @{
+                                int sr = 1;
+                            }
+
+
+                            @foreach (var item in Model.OrderByDescending(x => x.AgeDays))
+                            {
+
+                                string rowClass;
+                                string badgeClass;
+                                string ageingCategory;
+
+
+                                /* ==========================
+                                   AGEING LOGIC
+                                   ========================== */
+
+                                //if (item.AgeDays <= 15)
+                                //{
+                                //    rowClass = "age-fresh";
+                                //    badgeClass = "age-badge-fresh";
+                                //    ageingCategory = "0–15 Days";
+                                //}
+                                //else if (item.AgeDays <= 60)
+                                //{
+                                //    rowClass = "age-ageing";
+                                //    badgeClass = "age-badge-ageing";
+                                //    ageingCategory = "16–60 Days";
+                                //}
+                                //else
+                                //{
+                                //    rowClass = "age-critical";
+                                //    badgeClass = "age-badge-critical";
+                                //    ageingCategory = "60+ Days";
+                                //}
+
+                                if (item.AgeDays <= 15)
+                                {
+                                    rowClass = "age-fresh";
+                                    badgeClass = "age-badge-fresh";
+                                }
+                                else if (item.AgeDays <= 30)
+                                {
+                                    rowClass = "age-ageing";
+                                    badgeClass = "age-badge-ageing";
+                                }
+                                else
+                                {
+                                    rowClass = "age-critical";
+                                    badgeClass = "age-badge-critical";
+                                }
+                                <tr class="@rowClass">
+
+
+                                    <!-- SR NO -->
+
+                                    <td class="text-center">
+                                        @sr
+                                    </td>
+
+
+                                    <!-- MATERIAL CODE -->
+
+                                    <td class="text-center font-weight-bold">
+                                        @item.MaterialCode
+                                    </td>
+
+
+                                    <!-- MODEL -->
+
+                                    <td>
+                                        @item.FGModel
+                                    </td>
+
+
+                                    <!-- QUANTITY -->
+
+                                    <td class="text-center font-weight-bold">
+                                        @item.Quantity
+                                    </td>
+
+
+                                    <!-- LOCATION -->
+
+                                    <td>
+                                        @item.LocationName
+                                    </td>
+
+
+                                    <!-- LOADED DATE -->
+
+                                    <td class="text-center">
+
+                                        @(item.LoadedDate.HasValue
+                                            ? item.LoadedDate.Value.ToString("dd-MM-yyyy HH:mm")
+                                            : "-")
+
+                                    </td>
+
+
+                                    <!-- AGE DAYS -->
+
+                                    <td class="text-center">
+
+                                        <span class="age-badge @badgeClass">
+
+                                            @item.AgeDays Days
+
+                                        </span>
+
+                                    </td>
+                                </tr>
+
+                                sr++;
+
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================
+     DATATABLE SCRIPTS
+     ================================ -->
+
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+
+<script>
+
+    $(document).ready(function () {
+
+
+        var table = $('#tblAgeing').DataTable({
+
+            pageLength: 10,
+
+            ordering: true,
+
+            responsive: true,
+
+            autoWidth: false,
+
+
+            /* Oldest stock first */
+
+            order: [[6, 'desc']],
+
+
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+
+
+            dom:
+                "<'row mb-3'<'col-md-5'l><'col-md-6 text-right'f>>" +
+                "t" +
+                "<'row mt-3'<'col-md-5'i><'col-md-7'p>>",
+
+
+            buttons: [
+
+                /* ==========================
+                   PRINT
+                   ========================== */
+
+                {
+                    text: '<i class="fa fa-print"></i> Print',
+
+                    className: 'buttons-print',
+
+                    action: function () {
+
+                        printAgeingReport();
+
+                    }
+                },
+
+
+                /* ==========================
+                   PDF
+                   ========================== */
+
+                {
+                    text: '<i class="fa fa-file-pdf"></i> PDF',
+
+                    className: 'buttons-pdf',
+
+                    action: function () {
+
+                        window.location =
+                            '@Url.Action("AgeingReportPdf")';
+
+                    }
+                },
+
+
+                /* ==========================
+                   EXCEL
+                   ========================== */
+
+                {
+                    extend: 'excelHtml5',
+
+                    text: '<i class="fa fa-file-excel"></i> Excel',
+
+                    className: 'buttons-excel',
+
+                    title: 'Ageing Report - Live Loaded Stock'
+
+                }
+
+            ]
+
+        });
+
+
+        table.buttons()
+             .container()
+             .appendTo('#exportButtons');
+
+    });
+
+
+
+    /* =========================================
+       PRINT AGEING REPORT
+       ========================================= */
+
+    function printAgeingReport() {
+
+
+        var table = $('#tblAgeing').DataTable();
+
+
+        var currentLength = table.page.len();
+
+
+        /* Show all records */
+
+        table.page.len(-1).draw();
+
+
+        setTimeout(function () {
+
+
+            var report =
+                document.getElementById("tblAgeing").outerHTML;
+
+
+            var totalRecords =
+                $('#tblAgeing tbody tr').length;
+
+
+            var printWindow =
+                window.open(
+                    '',
+                    '',
+                    'width=1200,height=900'
+                );
+
+
+            printWindow.document.write(`
+
+<html>
+
+<head>
+
+<title>
+Ageing Report - Live Loaded Stock
+</title>
+
+
+<style>
+
+
+body {
+
+    font-family: Arial, sans-serif;
+
+    margin: 15px;
+
+    font-size: 10px;
+
+}
+
+
+h2 {
+
+    text-align: center;
+
+    margin-bottom: 5px;
+
+}
+
+
+.subtitle {
+
+    text-align: center;
+
+    margin-bottom: 15px;
+
+    font-size: 11px;
+
+    color: #555;
+
+}
+
+
+.info {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+
+    font-weight: bold;
+
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+th {
+
+    background: #343a40 !important;
+
+    color: white !important;
+
+}
+
+
+th,
+td {
+
+    border: 1px solid #999;
+
+    padding: 5px;
+
+    text-align: center;
+
+    font-size: 9px;
+
+}
+
+
+thead {
+
+    display: table-header-group;
+
+}
+
+
+tr {
+
+    page-break-inside: avoid;
+
+}
+
+
+/* ==========================
+   COMPLETE ROW COLORS
+   ========================== */
+
+
+.age-fresh td {
+
+    background-color: #d9f2df !important;
+
+}
+
+
+.age-ageing td {
+
+    background-color: #fff3cd !important;
+
+}
+
+
+.age-critical td {
+
+    background-color: #f8d7da !important;
+
+    font-weight: bold;
+
+}
+
+
+/* ==========================
+   BADGES
+   ========================== */
+
+
+.age-badge {
+
+    padding: 3px 8px;
+
+    border-radius: 10px;
+
+    font-weight: bold;
+
+}
+
+
+.age-badge-fresh {
+
+    background: #198754 !important;
+
+    color: white !important;
+
+}
+
+
+.age-badge-ageing {
+
+    background: #ffc107 !important;
+
+    color: #212529 !important;
+
+}
+
+
+.age-badge-critical {
+
+    background: #dc3545 !important;
+
+    color: white !important;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<h2>
+Ageing Report - Live Loaded Stock
+</h2>
+
+
+<div class="subtitle">
+Stock ageing based on loaded date
+</div>
+
+
+<div class="info">
+
+<div>
+Generated On :
+${new Date().toLocaleString()}
+</div>
+
+
+<div>
+Total Records :
+${totalRecords}
+</div>
+
+</div>
+
+
+${report}
+
+
+</body>
+
+</html>
+
+`);
+
+
+            printWindow.document.close();
+
+
+            printWindow.focus();
+
+
+            setTimeout(function () {
+
+
+                printWindow.print();
+
+
+                printWindow.close();
+
+
+                /* Restore DataTable */
+
+                table.page.len(currentLength).draw();
+
+
+            }, 500);
+
+
+        }, 300);
+
+    }
+
+</script>

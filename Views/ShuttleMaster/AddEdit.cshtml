@@ -1,0 +1,504 @@
+﻿
+@using S1947.Models;
+@model S1947.Models.Shuttlemastervalidationcs
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string mUserType = Convert.ToString(Session["UserType"]);
+    S1947Entities conn = new S1947Entities();
+    // var ModuleName = conn.Menulists.Where(x => x.ModuleLink == "PartMaster").FirstOrDefault();
+}
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<style>
+    .master {
+        background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+        color: #fff;
+        border-radius: 17px;
+    }
+
+    body.dark-mode .content-body .card {
+        display: flex;
+        flex-wrap: wrap;
+        background-color: black;
+        color: #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-section {
+        display: flex;
+    }
+
+
+    .form-card {
+        border-radius: 12px;
+        padding: 30px 30px;
+        border: 1px solid #e2e2e2;
+        background: #ffffff;
+        box-shadow: 0px 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #ffffff;
+        border-left: 4px solid #004a99;
+        padding-left: 10px;
+    }
+
+    label {
+        font-weight: 700;
+        font-size: 20px;
+        margin-bottom: 6px;
+        color: #d62828;
+    }
+
+    .required {
+        color: #d00000;
+        font-weight: bold;
+        margin-right: 3px;
+    }
+
+    .input-box {
+        height: 45px;
+        border-radius: 7px;
+        border: 1px solid #c9c9c9;
+        padding-left: 12px;
+        font-size: 15px;
+        transition: 0.25s ease;
+        background: #fafafa;
+    }
+
+        .input-box:hover {
+            border-color: #8ab4f8;
+        }
+
+        .input-box:focus {
+            border-color: #006eff;
+            background: #ffffff;
+            box-shadow: 0 0 6px rgba(0, 110, 255, 0.25);
+        }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .error {
+        color: red;
+        font-size: 13px;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .btn-lg {
+        border-radius: 8px;
+        padding: 10px 40px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .btn-success {
+        background: #009a4e;
+        border-color: #009a4e;
+    }
+
+        .btn-success:hover {
+            background: #008343;
+            border-color: #00793e;
+        }
+
+    .btn-danger {
+        background: #d62828;
+        border-color: #d62828;
+    }
+
+        .btn-danger:hover {
+            background: #c81f1f;
+            border-color: #b81818;
+        }
+
+    form label {
+    }
+
+    .custom-toast1 {
+        background: linear-gradient(to right, #28a745, #218838); /* Strong, modern success green */
+        border-radius: 10px;
+        padding: 20px 28px;
+        font-weight: bold;
+        font-size: 18px;
+        color: #fff;
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25); /* More natural elevation */
+        max-width: 600px;
+        min-width: 400px;
+        text-align: center;
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        display: none;
+    }
+
+    .custom-toast {
+        background: linear-gradient(to right, #ff416c, #ff4b2b);
+        border-radius: 10px;
+        padding: 20px 28px;
+        font-weight: bold;
+        font-size: 18px;
+        color: #fff;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        min-width: 400px;
+        text-align: center;
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        display: none;
+    }
+
+    .loader {
+        z-index: 999;
+    }
+
+    /* From Uiverse.io by pradipkaityuiux */
+    .loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 150px;
+        height: 150px;
+        background: transparent;
+        border: 3px solid rgba(0, 102, 255, 0.1);
+        border-radius: 50%;
+        text-align: center;
+        line-height: 150px;
+        font-family: sans-serif;
+        font-size: 20px;
+        color: #0066ff;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px #0066ff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, .15);
+    }
+
+        .loader::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid #0066ff;
+            border-right: 3px solid #0066ff;
+            border-radius: 50%;
+            animation: animateC 2s linear infinite;
+        }
+
+        .loader span {
+            display: block;
+            position: absolute;
+            top: calc(50% - 2px);
+            left: 50%;
+            width: 50%;
+            height: 4px;
+            background: transparent;
+            transform-origin: left;
+            animation: animate 2s linear infinite;
+        }
+
+            .loader span::before {
+                content: '';
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #00aeff;
+                top: -6px;
+                right: -8px;
+                box-shadow: 0 0 20px 5px #0066ff;
+            }
+
+    @@keyframes animateC {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes animate {
+        0% {
+            transform: rotate(45deg);
+        }
+
+        100% {
+            transform: rotate(405deg);
+        }
+    }
+
+    .page-header .breadcrumbs {
+        display: inline-block;
+        font-size: 0;
+        line-height: 0px;
+        margin: 0;
+        padding: 0;
+    }
+
+    .fa, .fa-brands, .fa-classic, .fa-regular, .fa-sharp, .fa-solid, .fab, .far, .fas {
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        display: var(--fa-display, inline-block);
+        font-style: normal;
+        font-variant: normal;
+        line-height: 0;
+        text-rendering: auto;
+    }
+
+    .page-header {
+        margin: -35px -36px 41px -38px;
+        border-bottom: 5px solid #ff6a00;
+    }
+
+
+    /* Button Css*/
+    .button-group {
+        display: flex;
+        justify-content: center; /* centers horizontally */
+        align-items: center;
+        gap: 20px; /* spacing between buttons */
+    }
+
+    .theme-btn {
+        border-radius: 10px;
+        padding: 10px 40px;
+        font-weight: 600;
+        border: none;
+        transition: .3s ease;
+        display: inline-block;
+        text-align: center;
+        min-width: 170px;
+    }
+
+    /* Orange button */
+    .btn-orange {
+        background: linear-gradient(45deg, #ff9800, #ff6d00);
+        color: #fff;
+    }
+
+    /* Black button */
+    .btn-black {
+        background: #4f4b4b;
+        color: #fff;
+    }
+
+
+    select.input-box {
+        height: 42px !important; /* SAME as textbox */
+        padding-top: 8px;
+        padding-bottom: 8px;
+        line-height: 42px;
+    }
+
+
+
+    /*    .form-control:not(.form-control-sm):not(.form-control-lg) {
+        font-size: 13.6px;
+        font-size: 0.85rem;
+        line-height: 1.85;
+        min-height: 2.4rem;
+    }*/
+
+
+</style>
+
+<section role="main" >
+    <form id="FRM" method="POST" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
+        <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm" style="background: #000; color: #fff; ">
+            <h3 class="mb-4 font-weight-bold" style="color:aliceblue">
+                <i class="fas fa-box-open"></i>  Shuttle Master
+            </h3>
+            <div class="right-wrapper">
+                <ol class="breadcrumbs mb-0" style="list-style: none; padding-left: 15px; display: flex; gap: 5px; font-size: 18px;">
+                    <li class="breadcrumb-item">
+                        <a href="~/Home/Dashboard" style="color: #fff;">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="~/Home/MaterialManagement"><i class="fas fa-sign-out-alt"></i></a>
+                    </li>
+                </ol>
+            </div>
+        </header>
+        <div class="row">
+            <div class="col-12">
+                <section class="card form-card shadow-sm">
+                    @*<div class="card-body">*@
+                    <div id="customToast1" class="custom-toast1"></div>
+                    <div id="customToast" class="custom-toast"></div>
+                    <div class="loader" style="display:none;">Loading<span></span> </div>
+                    <div class="form-group row">
+                        <label class="col-lg-2 col-form-label text-lg-right"><span class="required">*</span>Shuttle Number</label>
+                        <div class="col-lg-4">
+                            @Html.HiddenFor(m => m.MTransNo)
+                            @*@Html.DropDownListFor(m => m.ShuttleNo, null, "-- Select Shuttle Number --", new { @class = "form-control input-box" })*@
+                            @Html.TextBoxFor(m => m.ShuttleNo, new { @class = "form-control input-box", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.ShuttleNo, "", new { @class = "error" })
+
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-2 col-form-label text-lg-right"><span class="required">*</span>Status</label>
+                        <div class="col-lg-4">
+
+                            @* @Html.DropDownListFor(m => m.LockStatus, (IEnumerable<SelectListItem>)ViewBag.LockStatus, "-- Select Lock Status --", new { @class = "form-control" })*@
+                            @*@Html.DropDownListFor(m => m.LockStatus, (SelectList)ViewBag.lockstatus, new { @class = "form-control input-box" })*@
+                            @Html.DropDownListFor(
+    m => m.LockStatus,
+    (SelectList)ViewBag.lockstatus,
+    "-- Select Status --",
+    new { @class = "form-control input-box", id = "LockStatus" }
+)
+                            @Html.ValidationMessageFor(m => m.LockStatus, "", new { @class = "error" })
+                        </div>
+                    </div>
+                    <br />
+                    <div class="text-center mt-4">
+                        <div class="text-center button-group">
+                            <button type="submit" id="MainSubmit" class="theme-btn btn-orange">Save</button>
+                            <button type="button" class="theme-btn btn-black" onclick="history.back();"> Cancel </button>
+                        </div>
+                    </div>
+                    @*</div>*@
+                </section>
+                <hr />
+                <div class="table-responsive mt-4">
+                    <table class="table table-bordered table-striped">
+                        <thead style="background:#003366;color:white;">
+                            <tr>
+                                <th>Shuttle No</th>
+                                <th>Status</th>
+                                <th width="100">Action</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.ShuttleList)
+                            {
+                                <tr>
+                                    <td>@item.ShuttleNo</td>
+                                    <td>
+                                        @(item.LockStatus == "Y" ? "Active" : "Inactive")
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("AddEdit","ShuttleMaster", new { MTransNo = item.MTransNo })" class="btn btn-primary btn-sm"> Edit </a>
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+@if (TempData["Message"] != null)
+{
+    <script>
+        alert('@TempData["Message"]');
+    </script>
+}
+
+<script>
+    $(document).ready(function () {
+    var val = '@Model.LockStatus';
+    $("#LockStatus").val(val);
+});
+    $(document).ready(function () {
+
+    $("#MainSubmit").click(function (e) {
+      e.preventDefault();
+      $('#loader').show();
+      // Get field values
+
+      var MTransNo = $("#MTransNo").val();
+      var status = $("#LockStatus").val();
+
+       if (MTransNo == "" || MTransNo == null || MTransNo == 0) {
+          //alert("⚠️ Please enter Material Code");
+          $('#customToast').text("⚠️ Please Select Shuttle Number", "").stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+          $("#MaterialCode").focus();
+          return;
+      }
+      if (status === "" || status === null) {
+          showCustomToast("⚠️ Please Select Status");
+          $("#LockStatus").focus();
+          return;
+      }
+
+      if ($("#MainSubmit").data("clicked")) return;
+      $("#MainSubmit").data("clicked", true);
+      $("#MainSubmit").prop("disabled", true);
+      $.ajax({
+          url: '@Url.Action("SaveData", "ShuttleMaster")',
+          type: 'POST',
+          data: {
+              MTransNo: MTransNo,
+              status: status
+          },
+          success: function (response) {
+              showCustomToast1(response.message);
+              $('#loader').hide();
+
+              if (response.success) {
+                  setTimeout(function () { window.location.href = '@Url.Action("AddEdit", "ShuttleMaster")'; }, 1500); }
+              },
+              error: function (xhr) {
+                  $('#loader').hide();
+                  $("#MainSubmit").prop("disabled", false).data("clicked", false);
+              var msg = "❌ Something Went Wrong! Please Try Again.";
+              if (xhr.responseJSON && xhr.responseJSON.message) {
+                  msg = xhr.responseJSON.message;
+                  }
+
+                  showCustomToast(msg);
+                  ClearForm()
+          }
+      });
+
+      function showCustomToast(message) {
+          $('#customToast').text(message).stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+      }
+      function showCustomToast1(message) {
+          $('#customToast1').text(message).stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+      }
+
+  });
+});
+
+
+    function ClearForm() {
+        // Text fields
+
+        $("#ShuttleNo").prop('selectedIndex', 0);
+        $("#LockStatus").prop('selectedIndex', 0);
+
+        // Clear MVC validation messages
+        $(".error").text('');
+    }
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

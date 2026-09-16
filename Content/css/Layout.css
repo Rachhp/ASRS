@@ -1,0 +1,215 @@
+﻿
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+
+.autocomplete-items div {
+    padding: 3px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+}
+
+    /*when hovering an item:*/
+    .autocomplete-items div:hover {
+        background-color: #e9e9e9;
+    }
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+    background-color: DodgerBlue !important;
+    color: #ffffff;
+}
+
+
+/*      only script form msg*/
+/* Toast Notification Container - Positioned at the Top Center */
+#toast-container {
+    position: fixed;
+    top: 20px; /* Distance from the top of the screen */
+    left: 50%; /* Position from the left */
+    transform: translateX(-50%); /* Center the container horizontally */
+    z-index: 9999;
+    max-width: 80%; /* Maximum width to avoid stretching across screen */
+    width: auto; /* Width adjusts based on content */
+    text-align: center; /* Center the text within each toast */
+}
+
+/* Basic Toast Styling */
+.toast {
+    background-color: #333;
+    color: white;
+    padding: 12px 20px; /* Padding based on content, adjusted for readability */
+    margin-bottom: 15px;
+    border-radius: 20px; /* Rounded corners */
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* Soft shadow for a cute effect */
+    opacity: 0;
+    transform: translateY(100%); /* Toast starts off-screen */
+    transition: opacity 0.5s, transform 0.6s ease-in-out; /* Smooth transition */
+    font-size: 20px; /* Larger font size for readability */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Smooth, modern font */
+    line-height: 1.4; /* Improved readability with line-height */
+    max-width: 100%; /* Toasts can be as wide as the screen */
+    word-wrap: break-word; /* Ensure the text wraps inside the toast */
+}
+
+    /* Show toast animation */
+    .toast.show {
+        opacity: 1;
+        transform: translateY(0); /* Toast slides in from the top */
+    }
+
+    /* Success Toast */
+    .toast.success {
+        background-color: #4CAF50; /* Green */
+        border-left: 5px solid #388E3C; /* Darker green border */
+        box-shadow: 0px 10px 30px rgba(76, 175, 80, 0.3); /* Light green shadow */
+    }
+
+    /* Error Toast */
+    .toast.error {
+        background-color: #f44336; /* Red */
+        border-left: 5px solid #D32F2F; /* Darker red border */
+        box-shadow: 0px 10px 30px rgba(244, 67, 54, 0.3); /* Light red shadow */
+    }
+
+    /* Info Toast */
+    .toast.info {
+        background-color: #2196F3; /* Blue */
+        border-left: 5px solid #1976D2; /* Darker blue border */
+        box-shadow: 0px 10px 30px rgba(33, 150, 243, 0.3); /* Light blue shadow */
+    }
+
+    /* Warning Toast */
+    .toast.warning {
+        background-color: #FF9800; /* Orange */
+        border-left: 5px solid #F57C00; /* Darker orange border */
+        box-shadow: 0px 10px 30px rgba(255, 152, 0, 0.3); /* Light orange shadow */
+    }
+
+    /* Custom Hover Effects (optional) */
+    .toast:hover {
+        opacity: 0.9; /* Slightly transparent on hover */
+        cursor: pointer;
+    }
+
+
+/* Keyframes for fade-in effect */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover effect for highlighting */
+.current-mode, .current-modeE:hover {
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05); /* Slight scaling effect */
+}
+
+    .current-mode, .current-modeE:hover span {
+        color: #f8f9fa; /* Changing the mode text color to white on hover */
+    }
+
+.nav-children {
+    font-size: 80px;
+}
+
+.loader {
+    z-index: 999;
+}
+/* From Uiverse.io by pradipkaityuiux */
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    background: transparent;
+    border: 3px solid rgba(0, 102, 255, 0.1);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 150px;
+    font-family: sans-serif;
+    font-size: 20px;
+    color: #0066ff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #0066ff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .15);
+}
+
+    .loader::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        width: 100%;
+        height: 100%;
+        border: 3px solid transparent;
+        border-top: 3px solid #0066ff;
+        border-right: 3px solid #0066ff;
+        border-radius: 50%;
+        animation: animateC 2s linear infinite;
+    }
+
+    .loader span {
+        display: block;
+        position: absolute;
+        top: calc(50% - 2px);
+        left: 50%;
+        width: 50%;
+        height: 4px;
+        background: transparent;
+        transform-origin: left;
+        animation: animate 2s linear infinite;
+    }
+
+        .loader span::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #00aeff;
+            top: -6px;
+            right: -8px;
+            box-shadow: 0 0 20px 5px #0066ff;
+        }
+
+@keyframes animateC {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes animate {
+    0% {
+        transform: rotate(45deg);
+    }
+
+    100% {
+        transform: rotate(405deg);
+    }
+}

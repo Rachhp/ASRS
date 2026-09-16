@@ -1,0 +1,543 @@
+﻿@using S1947.Models;
+@model S1947.Models.UserMasterValidation
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var UserId = Session["MTransNo"];
+}
+@*<script src="~/Scripts/jquery-3.3.1.js"></script>*@
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+@*<div id="loading"></div>*@
+<!-- From Uiverse.io by pradipkaityuiux -->
+<style>
+    .master {
+        background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+        color: #fff;
+        border-radius: 17px;
+    }
+    .page-header {
+        margin: -35px -35px 30px -35px;
+        border-bottom: 5px solid #ff6a00;
+    }
+</style>
+<style>
+    body.dark-mode .content-body .card {
+        display: flex;
+        flex-wrap: wrap;
+        background-color: black;
+        color: #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-section {
+        display: flex;
+    }
+    .toggle-password {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #888;
+    }
+
+        .toggle-password i {
+            font-size: 18px;
+        }
+
+
+    body {
+        background: #f1f4f9;
+       /* font-family: 'Segoe UI', sans-serif;*/
+    }
+
+    .form-card {
+        border-radius: 12px;
+        padding: 30px 30px;
+        border: 1px solid #e2e2e2;
+        background: #ffffff;
+        box-shadow: 0px 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #ffffff;
+        border-left: 4px solid #004a99;
+        padding-left: 10px;
+    }
+
+    label {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #000000;
+    }
+
+    .required {
+        color: #d00000;
+        font-weight: bold;
+        margin-right: 3px;
+    }
+
+    .input-box {
+        height: 45px;
+        border-radius: 7px;
+        border: 1px solid #c9c9c9;
+        padding-left: 12px;
+        font-size: 15px;
+        transition: 0.25s ease;
+        background: #fafafa;
+    }
+
+        .input-box:hover {
+            border-color: #8ab4f8;
+        }
+
+        .input-box:focus {
+            border-color: #006eff;
+            background: #ffffff;
+            box-shadow: 0 0 6px rgba(0, 110, 255, 0.25);
+        }
+
+    .error {
+        color: red;
+        font-size: 13px;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .btn-lg {
+        border-radius: 8px;
+        padding: 10px 40px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .btn-success {
+        background: #009a4e;
+        border-color: #009a4e;
+    }
+
+    .btn-danger {
+        background: #d62828;
+        border-color: #d62828;
+    }
+
+    .custom-toast1 {
+        background: linear-gradient(to right, #28a745, #218838); /* Strong, modern success green */
+        border-radius: 10px;
+        padding: 20px 28px;
+        font-weight: bold;
+        font-size: 18px;
+        color: #fff;
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25); /* More natural elevation */
+        max-width: 600px;
+        min-width: 400px;
+        text-align: center;
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        display: none;
+    }
+
+    .custom-toast {
+        background: linear-gradient(to right, #ff416c, #ff4b2b);
+        border-radius: 10px;
+        padding: 20px 28px;
+        font-weight: bold;
+        font-size: 18px;
+        color: #fff;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        min-width: 400px;
+        text-align: center;
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        display: none;
+    }
+
+    .loader {
+        z-index: 999;
+    }
+    /* From Uiverse.io by pradipkaityuiux */
+    .loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 150px;
+        height: 150px;
+        background: transparent;
+        border: 3px solid rgba(0, 102, 255, 0.1);
+        border-radius: 50%;
+        text-align: center;
+        line-height: 150px;
+        font-family: sans-serif;
+        font-size: 20px;
+        color: #0066ff;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px #0066ff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, .15);
+    }
+
+        .loader::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid #0066ff;
+            border-right: 3px solid #0066ff;
+            border-radius: 50%;
+            animation: animateC 2s linear infinite;
+        }
+
+        .loader span {
+            display: block;
+            position: absolute;
+            top: calc(50% - 2px);
+            left: 50%;
+            width: 50%;
+            height: 4px;
+            background: transparent;
+            transform-origin: left;
+            animation: animate 2s linear infinite;
+        }
+
+            .loader span::before {
+                content: '';
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #00aeff;
+                top: -6px;
+                right: -8px;
+                box-shadow: 0 0 20px 5px #0066ff;
+            }
+
+    @@keyframes animateC {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes animate {
+        0% {
+            transform: rotate(45deg);
+        }
+
+        100% {
+            transform: rotate(405deg);
+        }
+    }
+
+
+
+    /* Button Css*/
+    .button-group {
+        display: flex;
+        justify-content: center; /* centers horizontally */
+        align-items: center;
+        gap: 20px; /* spacing between buttons */
+    }
+
+    .theme-btn {
+        border-radius: 10px;
+        padding: 10px 40px;
+        font-weight: 600;
+        border: none;
+        transition: .3s ease;
+        display: inline-block;
+        text-align: center;
+        min-width: 170px;
+    }
+
+    /* Orange button */
+    .btn-orange {
+        background: linear-gradient(45deg, #ff9800, #ff6d00);
+        color: #fff;
+    }
+
+    /* Black button */
+    .btn-black {
+        background: #4f4b4b;
+        color: #fff;
+    }
+
+
+    select.input-box {
+        height: 42px !important; /* SAME as textbox */
+        padding-top: 8px;
+        padding-bottom: 8px;
+        line-height: 42px;
+    }
+
+</style>
+
+<section role="main" >
+    <form id="UserForm" method="POST">
+        @Html.AntiForgeryToken()
+        <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm" style="background: #000; color: #fff;  padding: 10px 5px;">
+            <h3 class="mb-4 font-weight-bold" style="color:aliceblue">
+                <i class="fas fa-users-cog mr-2"></i> User Master
+            </h3>
+
+            <div class="right-wrapper">
+                <ol class="breadcrumbs mb-0" style="list-style: none; padding-left: 10px; display: flex; gap: 10px; font-size: 18px;">
+                    <li class="breadcrumb-item">
+                        <a href="~/Home/Dashboard" style="color: #fff;">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Index"><i class="fas fa-sign-out-alt"></i></a>
+                    </li>
+                </ol>
+            </div>
+        </header>
+
+        <div class="row">
+            <div class="col-12">
+                <section class="card form-card shadow-sm">
+                    @*<div class="card-body">*@
+                    <div class="loader" style="display:none;">Loading<span></span> </div>
+
+                    <div id="customToast1" class="custom-toast1"></div>
+                    <div id="customToast" class="custom-toast"></div>
+                    @Html.HiddenFor(m => m.MTransNo)
+
+                    <div class="form-group row">
+                        <label class="col-lg-2 col-form-label text-lg-right">
+                            <span class="required">*</span>User Name
+                        </label>
+                        <div class="col-lg-4">
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control input-box", placeholder = "Enter user name" })
+                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "error" })
+                        </div>
+
+                        <label class="col-lg-2 col-form-label text-lg-right"><span class="required">*</span>User ID</label>
+                        <div class="col-lg-4">
+                            @Html.TextBoxFor(m => m.UserId, new { @class = "form-control input-box", placeholder = "Enter user ID" })
+                            @Html.ValidationMessageFor(m => m.UserId, "", new { @class = "error" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-lg-2 col-form-label text-lg-right"><span class="required">*</span>Password</label>
+                        <div class="col-lg-4 position-relative">
+                            <input type="password" id="PW" name="PW" class="form-control input-box pr-5" placeholder="Enter password" value="@Model.PW" />
+                            <span class="toggle-password" onclick="togglePW()"> <i class="fa fa-eye" id="eyeIcon"></i>  </span>
+                            @Html.ValidationMessageFor(m => m.PW, "", new { @class = "error" })
+                        </div>
+
+                        <label class="col-lg-2 col-form-label text-lg-right"><span class="required">*</span>User Type</label>
+                        <div class="col-lg-4">
+                            @Html.DropDownListFor(m => m.UserType, null, "-- Select User Type --", new { @class = "form-control input-box" })
+                            @Html.ValidationMessageFor(m => m.UserType, "", new { @class = "error" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-lg-2 col-form-label text-lg-right"><span class="required">*</span>Mobile No</label>
+                        <div class="col-lg-4">
+                            @Html.TextBoxFor(m => m.ContactNo, new { @class = "form-control input-box",
+                           maxlength = 10,
+                           placeholder = "Enter mobile number",
+                           onkeydown = "return event.key >= '0' && event.key <= '9' || event.key === 'Backspace' || event.key === 'Delete' || event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'Tab'",
+                           onpaste = "return false",
+                           inputmode = "numeric"
+                       })
+                            @Html.ValidationMessageFor(m => m.ContactNo, "", new { @class = "error" })
+                        </div>
+                        <label class="col-lg-2 col-form-label text-lg-right">@*<span class="required">*</span>*@Email ID</label>
+                        <div class="col-lg-4">
+                            @Html.TextBoxFor(m => m.EmailId, new { @class = "form-control input-box", placeholder = "Enter Email ID", type = "email", id = "EmailId" })
+                            @Html.ValidationMessageFor(m => m.EmailId, "", new { @class = "error" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-2 col-form-label text-lg-right"><span class="required">*</span>Status</label>
+                        <div class="col-lg-4">
+                            @Html.DropDownListFor(m => m.LockStatus, null, "-- Select Status --", new { @class = "form-control input-box" })
+                            @Html.ValidationMessageFor(m => m.LockStatus, "", new { @class = "error" })
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <div class="text-center button-group">
+                            <button type="submit" id="MainSubmit" class="theme-btn btn-orange">Save</button>
+
+                            <button type="button" class="theme-btn btn-black" onclick="history.back();"> Cancel </button>
+                        </div>
+                    </div>
+                    @*</div>*@
+                </section>
+            </div>
+        </div>
+    </form>
+</section>
+
+<script>
+
+
+    $(document).ready(function () {
+        if ($("#MTransNo").val() > 0) {
+            $("#UserName").prop("readonly", true);
+            $("#UserId").prop("readonly", true);
+            $("#UserName").prop("disabled", false);
+            $("#UserId").prop("disabled", true);
+        }
+    });
+
+    $('#UserForm').on('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+
+$("#MainSubmit").click(function (e) {
+    e.preventDefault();
+    $('#loader').show();
+    // Get values
+    var userName = $("#UserName").val().trim();
+    var userId = $("#UserId").val().trim();
+    var contact = $("#ContactNo").val().trim();
+    var userType = $("#UserType").val().trim();
+    var lockStatus = $("#LockStatus").val().trim();
+    var password = $("#PW").val().trim();
+    var email = $("#EmailId").val().trim();
+    var emailPattern = /^[^\s]+[^\s]+\.[^\s]+$/;
+
+    if (userName === "") {
+        showCustomToast("⚠️ Please Enter User Name");
+        $("#UserName").focus();
+        return;
+    }
+    if (userId === "") {
+        showCustomToast("⚠️ Please Enter User Id");
+        $("#UserId").focus();
+        return;
+    }
+    if (password === "") {
+        showCustomToast("⚠️ Please Enter Password");
+        $("#PW").focus();
+        return;
+    }
+    if (userType === "" || userType === "0") {
+        showCustomToast("⚠️ Please Select User Type");
+        $("#UserType").focus();
+        return;
+    }
+    if (contact === "") {
+        showCustomToast("⚠️ Please Enter Contact Number");
+        $("#ContactNo").focus();
+        return;
+    }
+    if (!/^[0-9]{10}$/.test(contact)) {
+        showCustomToast("⚠️ Contact Number Must Be 10 Digits");
+        $("#ContactNo").focus();
+        return;
+    }
+
+    if (email !== ""&& !emailPattern.test(email)) {
+        showCustomToast("⚠️ Please Enter A Valid Email ID");
+        $("#EmailId").focus();
+        return;
+    }
+    if (lockStatus === "" || lockStatus === "0") {
+        showCustomToast("⚠️ Please Select Status");
+        $("#LockStatus").focus();
+        return;
+    }
+  
+
+    if ($("#MainSubmit").data("clicked")) return;
+    $("#MainSubmit").data("clicked", true);
+    $("#MainSubmit").prop("disabled", true);
+
+    $.ajax({
+        url: '@Url.Action("AddEdit", "User")',
+        type: 'POST',
+        data: $("#UserForm").serialize(),
+        success: function (response)
+        {
+            showCustomToast1(response.message);
+            if (response.success)
+            {
+                $('#loader').hide();
+                setTimeout(function ()
+                {
+                    window.location.href = '@Url.Action("Index", "User")';
+                }, 1500);
+            }
+        },
+        error: function () {
+        alert("❌ Something Went Wrong! Please Try Again.");
+        }
+    });
+    function showCustomToast(message) {
+        $('#customToast').text(message).stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+    }
+    function showCustomToast1(message) {
+        $('#customToast1').text(message).stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+    }
+
+});
+    function togglePW() {
+        var input = document.getElementById("PW");
+        var icon = document.getElementById("eyeIcon");
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        if ($("#MTransNo").val() == 0) { 
+        // Material Code Check
+        $('#UserId').blur(function () {
+            var UserId = $('#UserId').val().trim();
+            if (UserId === "") return;
+            $.ajax({
+                type: "POST",
+                url: "/User/isCodeExists",
+                data: { UserId: UserId },
+                success: function (result) {
+                    if (result === false) {
+                        showCustomToast2("UserId Already Exists!");
+                        $('#UserId').val('');
+                    }
+                }
+            });
+            function showCustomToast2(message) {
+                $('#customToast').text(message).stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+            }
+        });
+     }
+    });
+</script>

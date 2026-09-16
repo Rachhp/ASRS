@@ -1,0 +1,431 @@
+﻿
+@using S1947.Models;
+@{
+    ViewBag.Title = "Material Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    S1947.Models.S1947Entities conn = new S1947.Models.S1947Entities();
+    var userType = Session["UserType"]?.ToString() ?? "";
+    var userName = Session["UserName"]?.ToString() ?? "";
+    var UserNo = Session["Userid"];
+    if (UserNo == null || (string)UserNo == "")
+    {
+        Response.Redirect("~/Home/Login");
+    }
+    var AdminMenuList = (from M in conn.Menulists select new { ModuleType = M.ModuleType }).Distinct().OrderByDescending(x => x.ModuleType).Distinct().ToList();
+
+    int user = conn.UserMasters.Where(x => x.UserId == (string)UserNo).Select(x => x.MTransNo).FirstOrDefault();
+    var UserData = conn.UserMasters.Where(x => x.UserId == (string)UserNo).FirstOrDefault();
+
+    List<int> authorizedMasters = new List<int>();
+
+    if (UserData.UserType != "ADMIN")
+    {
+        authorizedMasters = (from UA in conn.UserAuthorizations
+                             join MO in conn.Menulists
+                                 on UA.ModuleNo equals MO.MTransNo
+                             where UA.UserNo == UserData.MTransNo
+                                   && MO.ModuleType == "MASTERS"
+                                   && UA.AuthType != null
+                                   && UA.AuthType != ""
+                             select MO.MTransNo).ToList();
+    }
+}
+
+<style>
+    .page-header {
+        margin: -36px -37px 40px -37px;
+        border-bottom: 5px solid #ff6a00;
+    }
+    .master {
+        background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+        color: #fff;
+        border-radius: 17px;
+    }
+
+    .card {
+        width: 280px; /* Fixed width */
+        height: 210px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 30px 20px;
+        border-radius: 18px;
+        color: white;
+        text-align: center !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border: 3px solid transparent;
+        transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out;
+        min-height: 180px;
+        position: relative;
+        flex-direction: column;
+        justify-content: center !important; /* Centers icon + title */
+        align-items: center;
+    }
+
+    .card-icon ~ .card-title, .card-icon ~ .card-subtitle {
+        margin-left: 0px;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Icon Styling */
+    .card-icon { /* Renamed class for clarity */
+        font-size: 50px;
+        margin-bottom: 20px;
+        opacity: 0.9;
+        transition: color 0.3s, transform 0.3s ease-out;
+    }
+
+    /* Animated Icon on Card Hover: Pulse effect */
+    .card:hover .card-icon {
+        animation: pulse 1.5s infinite; /* Subtle continuous pulse on hover */
+    }
+
+    @@keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Text Styling */
+    .card-title {
+        font-size: 22px;
+        color: white;
+        margin: 0 0 10px 0;
+        font-weight: 600;
+        line-height: 1.3;
+        text-align: center !important;
+    }
+
+    /* --- Card Specific Colors and Glowing Border Effects --- */
+
+    /* Card 1: Material Master (Warm Orange/Red) - Icon: cube/box */
+    .card-1 {
+        background: linear-gradient(135deg, #ff8c42, #ff3d00);
+        /*box-shadow: 0 0 25px 8px rgba(255, 61, 0, 0.4);*/
+        border-color: #ff3d00;
+    }
+
+        .card-1:hover {
+            border-color: #ff8c42;
+        }
+
+    /* Card 2: Machine Master (Deep Violet/Magenta) - Icon: cogs/gear */
+    .card-2 {
+        background: linear-gradient(135deg, #8a2be2, #d81b60);
+        /*box-shadow: 0 0 25px 8px rgba(138, 43, 226, 0.4);*/
+        border-color: #8a2be2;
+    }
+
+        .card-2:hover {
+            border-color: #d81b60;
+        }
+
+    /* Card 3:   Bin Allocation Master (Emerald Green/Teal) - Icon: warehouse/boxes */
+    .card-3 {
+        background: linear-gradient(135deg, #00c9b7, #008f82);
+        /*box-shadow: 0 0 25px 8px rgba(0, 201, 183, 0.4);*/
+        border-color: #00c9b7;
+    }
+
+        .card-3:hover {
+            border-color: #008f82;
+        }
+
+    .main-boxx {
+        display: flex;
+        justify-content: center;
+        margin: 0px;
+    }
+    /* Card 4: User Master (Royal Blue/Sky Blue) - Icon: user/group */
+    .card-4 {
+        background: linear-gradient(135deg, #42a5f5, #1e88e5);
+        /*  box-shadow: 0 0 25px 8px rgba(30, 136, 229, 0.4);*/
+        border-color: #42a5f5;
+    }
+
+        .card-4:hover {
+            border-color: #1e88e5;
+        }
+
+    /* Card 5: Bin Allocation (Gold/Yellow) - Icon: fingerprint */
+    .card-5 {
+        background: linear-gradient(135deg, #ffb300, #ff8f00);
+        /*box-shadow: 0 0 25px 8px rgba(255, 179, 0, 0.4);*/
+        border-color: #ffb300;
+    }
+
+        .card-5:hover {
+            border-color: #ff8f00;
+        }
+
+    /* Optional: Make it responsive for smaller screens */
+    @@media (max-width: 992px) {
+        .dashboard-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .dashboard-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: left;
+    }
+
+    .form-section {
+        display: flex;
+    }
+    .fa-users-cog{
+        font-size:50px;
+    }
+    .e-card {
+        margin: 20px;
+        background: transparent;
+        box-shadow: 0px 8px 28px -9px rgba(0,0,0,0.45);
+        position: relative;
+        width: 300px;
+        height: 230px;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+
+
+    .one {
+        position: absolute;
+        width: 650px;
+        height: 700px;
+        opacity: 0.6;
+        left: 0;
+        top: 0;
+        margin-left: -50%;
+        margin-top: -70%;
+        background: linear-gradient(744deg,#af40ff,#5b42f3 60%,#00ddeb);
+    }
+
+    .two {
+        position: absolute;
+        width: 650px;
+        height: 700px;
+        opacity: 0.6;
+        left: 0;
+        top: 0;
+        margin-left: -50%;
+        margin-top: -70%;
+        background: linear-gradient(744deg, #B85000, #FF8C00 60%, #FFD799);
+    }
+
+    .three {
+        position: absolute;
+        width: 650px;
+        height: 700px;
+        opacity: 0.6;
+        left: 0;
+        top: 0;
+        margin-left: -50%;
+        margin-top: -70%;
+        background: linear-gradient(744deg,#348916,#6AC748 60%,#C4F5B2);
+    }
+
+
+    .four {
+        position: absolute;
+        width: 650px;
+        height: 700px;
+        opacity: 0.6;
+        left: 0;
+        top: 0;
+        margin-left: -50%;
+        margin-top: -70%;
+        background: linear-gradient(744deg, #8E104C, #E51C7F 60%, #F9B8D3);
+    }
+
+    .icon {
+        width: 3em;
+        margin-top: -1em;
+        padding-bottom: 1em;
+    }
+
+    .infotop {
+        text-align: center;
+        font-size: 22px;
+        position: absolute;
+        top: -5px;
+        left: 0;
+        right: 0;
+        color: rgb(255, 255, 255);
+        font-weight: 500;
+        font-size: 24px;
+        padding: 0 10px;
+    }
+
+    .name {
+        font-size: 15px;
+        font-weight: 100;
+        position: relative;
+        top: 1em;
+        text-transform: lowercase;
+    }
+
+    .wave:nth-child(2),
+    .wave:nth-child(3) {
+        top: 210px;
+    }
+
+    .playing .wave {
+        border-radius: 40%;
+        animation: wave 3000ms infinite linear;
+    }
+
+    .wave {
+        border-radius: 40%;
+        animation: wave 55s infinite linear;
+    }
+
+    .playing .wave:nth-child(2) {
+        animation-duration: 9000ms;
+    }
+
+    .wave:nth-child(2) {
+        animation-duration: 50s;
+    }
+
+    .playing .wave:nth-child(3) {
+        animation-duration: 5000ms;
+    }
+
+    .wave:nth-child(3) {
+        animation-duration: 45s;
+    }
+
+
+    .playing .wave:nth-child(4) {
+        animation-duration: 2000ms;
+        /*top: 210px;*/
+    }
+
+    .wave:nth-child(4) {
+        animation-duration: 50s;
+    }
+
+    .playing .wave:nth-child(5) {
+        animation-duration: 6000ms;
+        /* top: 210px;*/
+    }
+
+    .wave:nth-child(5) {
+        animation-duration: 50s;
+    }
+
+
+    @@keyframes wave {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+</style>
+
+<section role="main">
+    <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm" style="background: #000; color: #fff;">
+        <div> <h3 class="mb-4 font-weight-bold"> @*<i class="fas fa-cogs card-icon"></i>*@ operations</h3>  </div>
+
+        <div>
+            <ol class="breadcrumbs mb-0" style="list-style: none; padding-left: 0; display: flex; gap: 15px; font-size: 18px;">
+                <li class="breadcrumb-item">
+                    <a href="~/Home/Dashboard" style="color: #fff;">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="~/Home/Dashboard"><i class="fas fa-sign-out-alt"></i></a>
+                </li>
+            </ol>
+        </div>
+    </header>
+
+    <div class="row justify-content-center">
+        @*@if (UserData.UserType == "ADMIN" || authorizedMasters.Contains(1))
+            {
+                <a href="/MaterialMaster/Index" class="main-boxx" style="text-decoration:none; color:inherit;">
+
+                    <div class="e-card playing">
+                        <div class="image"></div>
+                        <div class="one wave"></div>
+                        <div class="one wave"></div>
+                        <div class="one wave"></div>ss
+                        <div class="infotop"><img src="../../Content/img/Materialaddd.png " alt="icon" style="height: 100px; width: 100px; margin-top: 50px;"><br>Material Master </div>
+                    </div>
+                </a>
+            }*@
+
+        @if (UserData.UserType != "" || authorizedMasters.Contains(3))
+        {
+            <a href="/Load/AddEdit" class="main-boxx" style="text-decoration:none; color:inherit;">
+                <div class="e-card playing">
+                    <div class="image"></div>
+                    <div class="four wave"></div>
+                    <div class="four wave"></div>
+                    <div class="four wave"></div>
+                    <div class="infotop"><img src="../../Content/img/forklift.png" alt="icon" style="height: 100px; width: 100px; margin-top: 50px;"><br>Load Operation  </div>
+                </div>
+            </a>
+        }
+        @if (UserData.UserType != "")
+        {
+            <a href="/unloadingOperation/Index" class="main-boxx" style="text-decoration:none; color:inherit;">
+                <div class="e-card playing" id="unload_grn">
+                    <div class="image"></div>
+                    <div class="two wave"></div>
+                    <div class="two wave"></div>
+                    <div class="two wave"></div>
+                    <div class="infotop">
+                        <img src="../../Content/img/delivery-box.png" alt="icon" style="height: 100px; width: 100px; margin-top: 50px;">
+                        <br>
+                        Unload Operation
+                    </div>
+                </div>
+            </a>
+        }
+        @if (UserData.UserType != "" || authorizedMasters.Contains(2))
+        {
+            <a href="/Unload/UnloadScan" class="main-boxx" style="text-decoration:none; color:inherit;">
+                <div class="e-card playing">
+                    <div class="image"></div>
+                    <div class="three wave"></div>
+                    <div class="three wave"></div>
+                    <div class="three wave"></div>
+                    <div class="infotop">
+                        <img src="../../Content/img/Truckloading.png" alt="icon" style="height: 100px; width: 100px; margin-top: 50px;">
+                        <br>
+                        Security Loading Operation
+                    </div>
+                </div>
+            </a>
+        }
+
+    </div>
+</section>
+

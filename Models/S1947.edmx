@@ -1,0 +1,2779 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="S1947Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AndonTVDockMapping">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TVId" Type="int" />
+          <Property Name="DockNo" Type="int" />
+        </EntityType>
+        <EntityType Name="AndonTVMaster">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TVName" Type="varchar" MaxLength="250" />
+          <Property Name="IPAddress" Type="varchar" MaxLength="250" />
+          <Property Name="IsActive" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="ApiErrorLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ApiName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="HttpMethod" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="ApiUrl" Type="nvarchar" MaxLength="1000" />
+          <Property Name="ErrorCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="HttpStatusCode" Type="int" />
+          <Property Name="ErrorReason" Type="nvarchar" MaxLength="1000" />
+          <Property Name="OperatorMessage" Type="nvarchar" MaxLength="1000" />
+          <Property Name="ExceptionMessage" Type="nvarchar(max)" />
+          <Property Name="RequestBody" Type="nvarchar(max)" />
+          <Property Name="UniqueId" Type="nvarchar" MaxLength="200" />
+          <Property Name="TaskId" Type="int" />
+          <Property Name="CreatedOn" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ApiErrorMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ApiName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="HttpMethod" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="ErrorCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="HttpStatusCode" Type="int" Nullable="false" />
+          <Property Name="ErrorReason" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="OperatorMessage" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="ApiUrl" Type="nvarchar" MaxLength="500" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="App_Location">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="32" />
+          <Property Name="Code" Type="nvarchar" MaxLength="32" />
+          <Property Name="HouseNo" Type="nvarchar" MaxLength="32" />
+          <Property Name="LayerNo" Type="nvarchar" MaxLength="32" />
+          <Property Name="RoadWayNo" Type="nvarchar" MaxLength="32" Nullable="false" />
+          <Property Name="Layer" Type="int" Nullable="false" />
+          <Property Name="Row" Type="int" Nullable="false" />
+          <Property Name="Col" Type="int" Nullable="false" />
+          <Property Name="Direction" Type="int" Nullable="false" />
+          <Property Name="DirectionByRing" Type="int" Nullable="false" />
+          <Property Name="IsUse" Type="int" />
+          <Property Name="LocationType" Type="nvarchar" MaxLength="32" />
+          <Property Name="State" Type="int" Nullable="false" />
+          <Property Name="CreateTime" Type="datetime" />
+          <Property Name="UpdateTime" Type="datetime" />
+          <Property Name="CreateUserId" Type="bigint" />
+          <Property Name="CreateUserName" Type="nvarchar" MaxLength="64" />
+          <Property Name="UpdateUserId" Type="bigint" />
+          <Property Name="UpdateUserName" Type="nvarchar" MaxLength="64" />
+          <Property Name="CreateOrgId" Type="bigint" />
+          <Property Name="CreateOrgName" Type="nvarchar" MaxLength="64" />
+          <Property Name="IsDelete" Type="bit" Nullable="false" />
+          <Property Name="RoadWayType" Type="nvarchar" MaxLength="64" />
+          <Property Name="IsVirtual" Type="int" />
+          <Property Name="StemGroupNo" Type="nvarchar" MaxLength="32" />
+        </EntityType>
+        <EntityType Name="ASRSLocationZoneMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ZoneCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ZoneName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="MovementType" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Priority" Type="int" Nullable="false" />
+          <Property Name="ColumnFrom" Type="int" Nullable="false" />
+          <Property Name="ColumnTo" Type="int" Nullable="false" />
+          <Property Name="RowFrom" Type="int" Nullable="false" />
+          <Property Name="RowTo" Type="int" Nullable="false" />
+          <Property Name="LevelFrom" Type="int" Nullable="false" />
+          <Property Name="LevelTo" Type="int" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="AsrsZone">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Zone" Type="varchar" MaxLength="150" />
+          <Property Name="Name" Type="varchar" MaxLength="50" />
+          <Property Name="LocationFrom" Type="int" />
+          <Property Name="LocationTo" Type="int" />
+        </EntityType>
+        <EntityType Name="CustomerMaster">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerName" Type="varchar" MaxLength="250" />
+          <Property Name="Location" Type="varchar" MaxLength="400" />
+          <Property Name="LockStatus" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="CreatedBy" Type="smallint" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Errorlog">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ErrorCode" Type="varchar" MaxLength="5000" Nullable="false" />
+          <Property Name="ErrorType" Type="varchar" MaxLength="5000" Nullable="false" />
+          <Property Name="ErrorMessage" Type="varchar" MaxLength="5000" Nullable="false" />
+          <Property Name="PlalletQR" Type="varchar" MaxLength="250" />
+          <Property Name="LocationName" Type="varchar" MaxLength="250" />
+          <Property Name="TaskId" Type="varchar" MaxLength="250" />
+          <Property Name="ModuleName" Type="varchar" MaxLength="20" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="20" />
+          <Property Name="CreatedOn" Type="datetime" />
+        </EntityType>
+        <EntityType Name="GE">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LocationName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Layer" Type="int" Nullable="false" />
+          <Property Name="Row" Type="int" Nullable="false" />
+          <Property Name="Col" Type="int" Nullable="false" />
+          <Property Name="FGModel" Type="varchar" MaxLength="250" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="250" />
+          <Property Name="FGCode" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQr" Type="varchar" MaxLength="250" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
+          <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="int" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+          <Property Name="Cat" Type="varchar" MaxLength="25" />
+          <Property Name="sequence" Type="int" />
+        </EntityType>
+        <EntityType Name="GoodsExisiting">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LocationName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Layer" Type="int" Nullable="false" />
+          <Property Name="Row" Type="int" Nullable="false" />
+          <Property Name="Col" Type="int" Nullable="false" />
+          <Property Name="FGModel" Type="varchar" MaxLength="250" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="250" />
+          <Property Name="FGCode" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQr" Type="varchar" MaxLength="250" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
+          <Property Name="CreatedBy" Type="smallint" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+        </EntityType>
+        <EntityType Name="GoodsExisiting_old">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LocationName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="XPos" Type="int" Nullable="false" />
+          <Property Name="YPos" Type="int" Nullable="false" />
+          <Property Name="ZPos" Type="int" Nullable="false" />
+          <Property Name="CellNo" Type="int" Nullable="false" />
+          <Property Name="FGModel" Type="varchar" MaxLength="250" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="250" />
+          <Property Name="FGCode" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQr" Type="varchar" MaxLength="250" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
+          <Property Name="CreatedBy" Type="smallint" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+          <Property Name="Verify" Type="char" MaxLength="1" />
+          <Property Name="SerialCode" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'S1947.dbo.GoodsExistings' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="GoodsExistings">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="XPos" />
+            <PropertyRef Name="YPos" />
+            <PropertyRef Name="ZPos" />
+            <PropertyRef Name="CellNo" />
+            <PropertyRef Name="CreatedBy" />
+          </Key>
+          <Property Name="MTransNo" Type="int" Nullable="false" />
+          <Property Name="LocationName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="XPos" Type="int" Nullable="false" />
+          <Property Name="YPos" Type="int" Nullable="false" />
+          <Property Name="ZPos" Type="int" Nullable="false" />
+          <Property Name="CellNo" Type="int" Nullable="false" />
+          <Property Name="FGModel" Type="varchar" MaxLength="250" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="250" />
+          <Property Name="FGCode" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQr" Type="varchar" MaxLength="250" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
+          <Property Name="CreatedBy" Type="smallint" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+          <Property Name="Verify" Type="char" MaxLength="1" />
+        </EntityType>
+        <EntityType Name="LiftStatusMaster">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LiftNo" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="RunMode" Type="int" Nullable="false" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="UpdatedDate" Type="datetime" />
+          <Property Name="UpdatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="LoadingLog">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LoadLocationid" Type="int" />
+          <Property Name="LocationName" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQR" Type="varchar" MaxLength="250" />
+          <Property Name="Date" Type="varchar" MaxLength="50" />
+          <Property Name="Time" Type="varchar" MaxLength="50" />
+          <Property Name="Shift" Type="varchar" MaxLength="250" />
+          <Property Name="PackingLineNo" Type="int" />
+          <Property Name="UniqueId" Type="nchar" MaxLength="10" />
+          <Property Name="PalletSrNo" Type="int" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="FGModel" Type="varchar" MaxLength="150" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="150" />
+          <Property Name="FGcode" Type="varchar" MaxLength="150" />
+          <Property Name="Weight" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="OperatorName" Type="varchar" MaxLength="150" />
+          <Property Name="ShiftSupervisor" Type="varchar" MaxLength="150" />
+          <Property Name="Status" Type="varchar" MaxLength="150" />
+          <Property Name="Action" Type="varchar" MaxLength="150" />
+          <Property Name="TaskId" Type="varchar" MaxLength="150" />
+          <Property Name="CreatedBy" Type="smallint" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+          <Property Name="SerialCode" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="LoadingTemp">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Date" Type="varchar" MaxLength="150" />
+          <Property Name="Time" Type="varchar" MaxLength="50" />
+          <Property Name="Shift" Type="varchar" MaxLength="250" />
+          <Property Name="PackingLineNo" Type="int" />
+          <Property Name="UniqueId" Type="nchar" MaxLength="10" />
+          <Property Name="PalletSrNo" Type="int" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="FGModel" Type="varchar" MaxLength="150" />
+          <Property Name="FGModelDesc" Type="varchar" MaxLength="150" />
+          <Property Name="FGcode" Type="varchar" MaxLength="250" />
+          <Property Name="WeightTheo" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="ScannedQr" Type="varchar" MaxLength="150" />
+          <Property Name="LocationName" Type="varchar" MaxLength="150" />
+          <Property Name="LocationNo" Type="int" />
+          <Property Name="Status" Type="varchar" MaxLength="150" />
+          <Property Name="Action" Type="varchar" MaxLength="150" />
+          <Property Name="CreatedBy" Type="smallint" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="UUID" Type="varchar" MaxLength="250" />
+          <Property Name="Station" Type="int" />
+          <Property Name="SerialCode" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Menulist">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ModuleType" Type="varchar" MaxLength="50" />
+          <Property Name="MSLNo" Type="int" />
+          <Property Name="ModuleName" Type="varchar" MaxLength="50" />
+          <Property Name="ModulePage" Type="varchar" MaxLength="50" />
+          <Property Name="ModuleLink" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Othermaster">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Autoscan" Type="int" />
+          <Property Name="EmptyPalletwight" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="MaxDockRange" Type="int" />
+        </EntityType>
+        <EntityType Name="PartMaster">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FGCode" Type="varchar" MaxLength="100" />
+          <Property Name="FGModel" Type="varchar" MaxLength="1000" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="100" />
+          <Property Name="Type" Type="char" MaxLength="10" />
+          <Property Name="LockStatus" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="CreatedBy" Type="smallint" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PokaYokaQCTransaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="QRCode" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Model" Type="nvarchar" MaxLength="100" />
+          <Property Name="FGCode" Type="nvarchar" MaxLength="100" />
+          <Property Name="UniqueId" Type="nvarchar" MaxLength="100" />
+          <Property Name="PalletNumber" Type="nvarchar" MaxLength="100" />
+          <Property Name="ReceivedWeight" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="ReceivedQuantity" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="ActualWeight" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="ActualQuantity" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="WeightDifference" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="QuantityDifference" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="WeightTolerance" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="QuantityTolerance" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="QCStatus" Type="nvarchar" MaxLength="20" />
+          <Property Name="MachineIP" Type="nvarchar" MaxLength="50" />
+          <Property Name="MachineResponse" Type="nvarchar" MaxLength="500" />
+          <Property Name="ScannedAt" Type="datetime" />
+          <Property Name="WeighedAt" Type="datetime" />
+          <Property Name="CompletedAt" Type="datetime" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="shift_master">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="shift_name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="start_time" Type="time" Precision="7" Nullable="false" />
+          <Property Name="end_time" Type="time" Precision="7" Nullable="false" />
+          <Property Name="is_active" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ShuttleDtl">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ShuttleNo" Type="int" />
+          <Property Name="LockStatus" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="CreatedBy" Type="smallint" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <EntityType Name="TaskDtl">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TaskNo" Type="int" Nullable="false" />
+          <Property Name="TaskType" Type="varchar" MaxLength="100" />
+          <Property Name="Priority" Type="int" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="100" />
+          <Property Name="SourceLocation" Type="varchar" MaxLength="100" />
+          <Property Name="DestinationLocation" Type="varchar" MaxLength="100" />
+          <Property Name="TaskStatus" Type="varchar" MaxLength="50" />
+          <Property Name="LiftNo" Type="varchar" MaxLength="50" />
+          <Property Name="LocatioNo" Type="varchar" MaxLength="100" />
+          <Property Name="TaskSent" Type="int" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="StartedAt" Type="datetime" />
+          <Property Name="CompletedAt" Type="datetime" />
+          <Property Name="UUID" Type="varchar" MaxLength="250" />
+          <Property Name="SerialCode" Type="varchar" MaxLength="250" />
+        </EntityType>
+        <EntityType Name="TaskReport">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TaskID" Type="int" />
+          <Property Name="SerialCode" Type="varchar" MaxLength="50" />
+          <Property Name="StatusCode" Type="varchar" MaxLength="50" />
+          <Property Name="StautusMessage" Type="varchar" MaxLength="100" />
+          <Property Name="OperationType" Type="varchar" MaxLength="25" />
+        </EntityType>
+        <EntityType Name="TaskStatusCodes">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StatusId" Type="varchar" MaxLength="50" />
+          <Property Name="StatusMessage" Type="varchar" MaxLength="250" />
+          <Property Name="UUID" Type="varchar" MaxLength="250" />
+        </EntityType>
+        <EntityType Name="UnloadedData">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InvoiceNo" Type="varchar" MaxLength="100" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQR" Type="varchar" MaxLength="250" />
+          <Property Name="CustomerName" Type="varchar" MaxLength="100" />
+          <Property Name="LocationofDelivery" Type="varchar" MaxLength="100" />
+          <Property Name="FGModel" Type="varchar" MaxLength="100" />
+          <Property Name="FGModelDesc" Type="varchar" MaxLength="100" />
+          <Property Name="SAPFGCode" Type="varchar" MaxLength="100" />
+          <Property Name="PartQuantity" Type="int" />
+          <Property Name="BoxLocationNo" Type="int" />
+          <Property Name="FLCLocation" Type="int" />
+          <Property Name="VehicleSize" Type="int" />
+          <Property Name="VehicleNumber" Type="varchar" MaxLength="100" />
+          <Property Name="TransporterName" Type="varchar" MaxLength="100" />
+          <Property Name="LoadingstartTime" Type="datetime" />
+          <Property Name="LoadingEndtime" Type="datetime" />
+          <Property Name="VehicleSealNo" Type="varchar" MaxLength="50" />
+          <Property Name="DockNo" Type="int" />
+          <Property Name="BoxQty" Type="int" />
+          <Property Name="TotalQty" Type="int" />
+          <Property Name="SupervisiorName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoSupervisor" Type="varchar" MaxLength="250" />
+          <Property Name="DriverName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoDriver" Type="varchar" MaxLength="250" />
+          <Property Name="SecurityName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoSecurity" Type="varchar" MaxLength="250" />
+          <Property Name="Status" Type="varchar" MaxLength="150" />
+          <Property Name="Action" Type="varchar" MaxLength="150" />
+          <Property Name="CreatedBy" Type="smallint" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="SerialCode" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="UnloadingLog">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InvoiceNo" Type="varchar" MaxLength="100" />
+          <Property Name="CustomerName" Type="varchar" MaxLength="100" />
+          <Property Name="LocationofDelivery" Type="varchar" MaxLength="100" />
+          <Property Name="FGModel" Type="varchar" MaxLength="100" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="100" />
+          <Property Name="FGCode" Type="varchar" MaxLength="100" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="FLCLocation" Type="int" />
+          <Property Name="VehicleSize" Type="int" />
+          <Property Name="VehicleNumber" Type="varchar" MaxLength="100" />
+          <Property Name="TransporterName" Type="varchar" MaxLength="100" />
+          <Property Name="LoadingstartTime" Type="datetime" />
+          <Property Name="LoadingEndtime" Type="datetime" />
+          <Property Name="VehicleSealNo" Type="varchar" MaxLength="50" />
+          <Property Name="DockNo" Type="int" />
+          <Property Name="BoxQty" Type="int" />
+          <Property Name="TotalQty" Type="int" />
+          <Property Name="PlalletSrNo" Type="varchar" MaxLength="250" />
+          <Property Name="PlalletQR" Type="varchar" MaxLength="250" />
+          <Property Name="LocationId" Type="varchar" MaxLength="50" />
+          <Property Name="LocationName" Type="varchar" MaxLength="50" />
+          <Property Name="SupervisiorName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoSupervisor" Type="varchar" MaxLength="250" />
+          <Property Name="DriverName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoDriver" Type="varchar" MaxLength="250" />
+          <Property Name="SecurityName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoSecurity" Type="varchar" MaxLength="250" />
+          <Property Name="Status" Type="varchar" MaxLength="50" />
+          <Property Name="Action" Type="varchar" MaxLength="50" />
+          <Property Name="CreatedBy" Type="smallint" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="SerialCode" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="UnloadMaterialTemp">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InvoiceNo" Type="varchar" MaxLength="250" />
+          <Property Name="Customer" Type="varchar" MaxLength="250" />
+          <Property Name="Location" Type="varchar" MaxLength="250" />
+          <Property Name="Model" Type="varchar" MaxLength="250" />
+          <Property Name="SAPFGCode" Type="varchar" MaxLength="250" />
+          <Property Name="Description" Type="varchar" MaxLength="250" />
+          <Property Name="VehicleSize" Type="int" />
+          <Property Name="EnteredQty" Type="int" />
+          <Property Name="AvailableQty" Type="int" />
+          <Property Name="TransporterName" Type="varchar" MaxLength="250" />
+          <Property Name="FLCQty" Type="int" />
+          <Property Name="VehicleRegNo" Type="varchar" MaxLength="250" />
+          <Property Name="VehicleSealNo" Type="varchar" MaxLength="250" />
+          <Property Name="DockNo" Type="int" />
+          <Property Name="Date" Type="varchar" MaxLength="250" />
+          <Property Name="Time" Type="varchar" MaxLength="250" />
+          <Property Name="Shift" Type="varchar" MaxLength="250" />
+          <Property Name="SupervisiorName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoSupervisor" Type="varchar" MaxLength="250" />
+          <Property Name="DriverName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoDriver" Type="varchar" MaxLength="250" />
+          <Property Name="SecurityName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoSecurity" Type="varchar" MaxLength="250" />
+          <Property Name="status" Type="varchar" MaxLength="250" />
+          <Property Name="Station" Type="int" />
+          <Property Name="SerialCode" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="UnloadTemp">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InvoiceNo" Type="varchar" MaxLength="500" />
+          <Property Name="CustomerName" Type="varchar" MaxLength="500" />
+          <Property Name="LocationofDelivery" Type="varchar" MaxLength="500" />
+          <Property Name="FGModel" Type="varchar" MaxLength="500" />
+          <Property Name="FGModelDesc" Type="varchar" MaxLength="500" />
+          <Property Name="SAPFGCode" Type="varchar" MaxLength="500" />
+          <Property Name="PartQuantity" Type="int" />
+          <Property Name="FLCLocation" Type="int" />
+          <Property Name="VehicleSize" Type="int" />
+          <Property Name="VehicleNumber" Type="varchar" MaxLength="500" />
+          <Property Name="TransporterName" Type="varchar" MaxLength="500" />
+          <Property Name="LoadingstartTime" Type="datetime" />
+          <Property Name="LoadingEndtime" Type="datetime" />
+          <Property Name="VehicleSealNo" Type="varchar" MaxLength="500" />
+          <Property Name="DockNo" Type="int" />
+          <Property Name="Station" Type="int" />
+          <Property Name="TotalQty" Type="int" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="50" />
+          <Property Name="PlalletQR" Type="varchar" MaxLength="250" />
+          <Property Name="LocationId" Type="varchar" MaxLength="50" />
+          <Property Name="LocationName" Type="varchar" MaxLength="50" />
+          <Property Name="SupervisiorName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoSupervisor" Type="varchar" MaxLength="250" />
+          <Property Name="DriverName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoDriver" Type="varchar" MaxLength="250" />
+          <Property Name="SecurityName" Type="varchar" MaxLength="250" />
+          <Property Name="MobileNoSecurity" Type="varchar" MaxLength="250" />
+          <Property Name="Status" Type="varchar" MaxLength="150" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="150" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="SerialCode" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="UserAuthorization">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserNo" Type="int" Nullable="false" />
+          <Property Name="ModuleNo" Type="int" Nullable="false" />
+          <Property Name="AuthType" Type="char" MaxLength="1" />
+          <Property Name="ModuleType" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="UserMaster">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="UserId" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="PW" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="UserType" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="ContactNo" Type="varchar" MaxLength="20" />
+          <Property Name="EmailId" Type="varchar" MaxLength="80" />
+          <Property Name="BadLogins" Type="tinyint" />
+          <Property Name="LockCounter" Type="tinyint" />
+          <Property Name="LockStatus" Type="char" MaxLength="1" />
+          <Property Name="CreatedBy" Type="smallint" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+          <Property Name="SubscID" Type="smallint" />
+          <Property Name="LastLogin" Type="date" />
+          <Property Name="loginDate" Type="date" />
+        </EntityType>
+        <EntityType Name="WcsApiLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ApiName" Type="nvarchar" MaxLength="100" />
+          <Property Name="RequestData" Type="nvarchar(max)" />
+          <Property Name="ResponseData" Type="nvarchar(max)" />
+          <Property Name="HttpStatusCode" Type="int" />
+          <Property Name="WcsCode" Type="int" />
+          <Property Name="WcsStatus" Type="bit" />
+          <Property Name="Result" Type="nvarchar" MaxLength="20" />
+          <Property Name="ErrorMessage" Type="nvarchar(max)" />
+          <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'S1947.dbo.GELoadingView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="GELoadingView">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="Layer" />
+            <PropertyRef Name="Row" />
+            <PropertyRef Name="Col" />
+            <PropertyRef Name="CreatedBy" />
+          </Key>
+          <Property Name="MTransNo" Type="int" Nullable="false" />
+          <Property Name="LocationName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Layer" Type="int" Nullable="false" />
+          <Property Name="Row" Type="int" Nullable="false" />
+          <Property Name="Col" Type="int" Nullable="false" />
+          <Property Name="ZoneCode" Type="varchar" MaxLength="50" />
+          <Property Name="ZoneName" Type="varchar" MaxLength="100" />
+          <Property Name="MovementType" Type="varchar" MaxLength="20" />
+          <Property Name="ZonePriority" Type="int" />
+          <Property Name="FGModel" Type="varchar" MaxLength="250" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="250" />
+          <Property Name="FGCode" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQr" Type="varchar" MaxLength="250" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
+          <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="int" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+          <Property Name="Cat" Type="varchar" MaxLength="25" />
+          <Property Name="status" Type="varchar" MaxLength="20" />
+          <Property Name="sequence" Type="bigint" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'S1947.dbo.vw_AgeingReport' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_AgeingReport">
+          <Key>
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="Col" />
+          </Key>
+          <Property Name="SrNo" Type="bigint" />
+          <Property Name="MaterialCode" Type="varchar" MaxLength="250" />
+          <Property Name="FGModel" Type="varchar" MaxLength="250" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="250" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocationName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Col" Type="int" Nullable="false" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
+          <Property Name="LoadedDate" Type="date" />
+          <Property Name="AgeDays" Type="int" />
+          <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
+          <Property Name="CreatedOn" Type="datetime" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'S1947.dbo.vw_TransactionHistory' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_TransactionHistory">
+          <Key>
+            <PropertyRef Name="TransactionId" />
+            <PropertyRef Name="TransactionType" />
+            <PropertyRef Name="CreatedBy" />
+          </Key>
+          <Property Name="TransactionId" Type="int" Nullable="false" />
+          <Property Name="TransactionType" Type="varchar" MaxLength="6" Nullable="false" />
+          <Property Name="TransactionDateTime" Type="datetime" />
+          <Property Name="TransactionDate" Type="date" />
+          <Property Name="TransactionTime" Type="time" Precision="7" />
+          <Property Name="MaterialCode" Type="varchar" MaxLength="150" />
+          <Property Name="FGModel" Type="varchar" MaxLength="150" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="150" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocationId" Type="int" />
+          <Property Name="LocationName" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQR" Type="varchar" MaxLength="250" />
+          <Property Name="Status" Type="varchar" MaxLength="150" />
+          <Property Name="Action" Type="varchar" MaxLength="150" />
+          <Property Name="Shift" Type="varchar" MaxLength="250" />
+          <Property Name="PackingLineNo" Type="int" />
+          <Property Name="UniqueId" Type="nchar" MaxLength="10" />
+          <Property Name="PalletSrNo" Type="int" />
+          <Property Name="Weight" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="OperatorName" Type="varchar" MaxLength="150" />
+          <Property Name="ShiftSupervisor" Type="varchar" MaxLength="150" />
+          <Property Name="TaskId" Type="varchar" MaxLength="150" />
+          <Property Name="InvoiceNo" Type="varchar" MaxLength="100" />
+          <Property Name="CustomerName" Type="varchar" MaxLength="100" />
+          <Property Name="LocationofDelivery" Type="varchar" MaxLength="100" />
+          <Property Name="FLCLocation" Type="int" />
+          <Property Name="VehicleSize" Type="int" />
+          <Property Name="VehicleNumber" Type="varchar" MaxLength="100" />
+          <Property Name="TransporterName" Type="varchar" MaxLength="100" />
+          <Property Name="LoadingStartTime" Type="datetime" />
+          <Property Name="LoadingEndTime" Type="datetime" />
+          <Property Name="VehicleSealNo" Type="varchar" MaxLength="50" />
+          <Property Name="DockNo" Type="int" />
+          <Property Name="BoxQty" Type="int" />
+          <Property Name="TotalQty" Type="int" />
+          <Property Name="CreatedBy" Type="smallint" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_TransactionReport">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+            <PropertyRef Name="TransactionType" />
+            <PropertyRef Name="CreatedBy" />
+          </Key>
+          <Property Name="MTransNo" Type="int" Nullable="false" />
+          <Property Name="TransactionType" Type="varchar" MaxLength="6" Nullable="false" />
+          <Property Name="TransactionDate" Type="date" />
+          <Property Name="TransactionTime" Type="time" Precision="7" />
+          <Property Name="Shift" Type="varchar" MaxLength="250" />
+          <Property Name="MaterialCode" Type="varchar" MaxLength="150" />
+          <Property Name="FGModel" Type="varchar" MaxLength="150" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="150" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocationId" Type="int" />
+          <Property Name="LocationName" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQR" Type="varchar" MaxLength="250" />
+          <Property Name="OperatorName" Type="varchar" MaxLength="150" />
+          <Property Name="ShiftSupervisor" Type="varchar" MaxLength="150" />
+          <Property Name="InvoiceNo" Type="varchar" MaxLength="100" />
+          <Property Name="CustomerName" Type="varchar" MaxLength="100" />
+          <Property Name="VehicleNumber" Type="varchar" MaxLength="100" />
+          <Property Name="TransporterName" Type="varchar" MaxLength="100" />
+          <Property Name="Status" Type="varchar" MaxLength="150" />
+          <Property Name="Action" Type="varchar" MaxLength="150" />
+          <Property Name="CreatedBy" Type="smallint" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+        </EntityType>
+        <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
+        <Function Name="InsertTaskDtl" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="TaskNo" Type="int" Mode="In" />
+          <Parameter Name="TaskType" Type="varchar" Mode="In" />
+          <Parameter Name="Priority" Type="int" Mode="In" />
+          <Parameter Name="PalletNo" Type="varchar" Mode="In" />
+          <Parameter Name="SourceLocation" Type="varchar" Mode="In" />
+          <Parameter Name="DestinationLocation" Type="varchar" Mode="In" />
+          <Parameter Name="TaskStatus" Type="varchar" Mode="In" />
+          <Parameter Name="LiftNo" Type="int" Mode="In" />
+          <Parameter Name="LocatioNo" Type="varchar" Mode="In" />
+          <Parameter Name="TaskSent" Type="int" Mode="In" />
+          <Parameter Name="CreatedAt" Type="datetime" Mode="In" />
+          <Parameter Name="StartedAt" Type="datetime" Mode="In" />
+          <Parameter Name="CompletedAt" Type="datetime" Mode="In" />
+          <Parameter Name="UUID" Type="varchar" Mode="In" />
+          <Parameter Name="SerialCode" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+          <Parameter Name="version" Type="int" Mode="In" />
+          <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+        </Function>
+        <Function Name="sp_creatediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+          <Parameter Name="version" Type="int" Mode="In" />
+          <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+        </Function>
+        <Function Name="sp_dropdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_helpdiagramdefinition" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_helpdiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_renamediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+          <Parameter Name="new_diagramname" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_upgraddiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <EntityContainer Name="S1947ModelStoreContainer">
+          <EntitySet Name="AndonTVDockMapping" EntityType="Self.AndonTVDockMapping" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AndonTVMaster" EntityType="Self.AndonTVMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ApiErrorLog" EntityType="Self.ApiErrorLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ApiErrorMaster" EntityType="Self.ApiErrorMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="App_Location" EntityType="Self.App_Location" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ASRSLocationZoneMaster" EntityType="Self.ASRSLocationZoneMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AsrsZone" EntityType="Self.AsrsZone" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CustomerMaster" EntityType="Self.CustomerMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Errorlog" EntityType="Self.Errorlog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GE" EntityType="Self.GE" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GoodsExisiting" EntityType="Self.GoodsExisiting" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GoodsExisiting_old" EntityType="Self.GoodsExisiting_old" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LiftStatusMaster" EntityType="Self.LiftStatusMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LoadingLog" EntityType="Self.LoadingLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LoadingTemp" EntityType="Self.LoadingTemp" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Menulist" EntityType="Self.Menulist" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Othermaster" EntityType="Self.Othermaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PartMaster" EntityType="Self.PartMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PokaYokaQCTransaction" EntityType="Self.PokaYokaQCTransaction" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="shift_master" EntityType="Self.shift_master" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ShuttleDtl" EntityType="Self.ShuttleDtl" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TaskDtl" EntityType="Self.TaskDtl" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TaskReport" EntityType="Self.TaskReport" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TaskStatusCodes" EntityType="Self.TaskStatusCodes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UnloadedData" EntityType="Self.UnloadedData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UnloadingLog" EntityType="Self.UnloadingLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UnloadMaterialTemp" EntityType="Self.UnloadMaterialTemp" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UnloadTemp" EntityType="Self.UnloadTemp" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserAuthorization" EntityType="Self.UserAuthorization" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserMaster" EntityType="Self.UserMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WcsApiLog" EntityType="Self.WcsApiLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GoodsExistings" EntityType="Self.GoodsExistings" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [GoodsExistings].[MTransNo] AS [MTransNo], 
+    [GoodsExistings].[LocationName] AS [LocationName], 
+    [GoodsExistings].[XPos] AS [XPos], 
+    [GoodsExistings].[YPos] AS [YPos], 
+    [GoodsExistings].[ZPos] AS [ZPos], 
+    [GoodsExistings].[CellNo] AS [CellNo], 
+    [GoodsExistings].[FGModel] AS [FGModel], 
+    [GoodsExistings].[FGDesc] AS [FGDesc], 
+    [GoodsExistings].[FGCode] AS [FGCode], 
+    [GoodsExistings].[PalletQr] AS [PalletQr], 
+    [GoodsExistings].[PalletNo] AS [PalletNo], 
+    [GoodsExistings].[Quantity] AS [Quantity], 
+    [GoodsExistings].[LocaStatus] AS [LocaStatus], 
+    [GoodsExistings].[CreatedBy] AS [CreatedBy], 
+    [GoodsExistings].[CreatedOn] AS [CreatedOn], 
+    [GoodsExistings].[ModifiedBy] AS [ModifiedBy], 
+    [GoodsExistings].[ModifiedOn] AS [ModifiedOn], 
+    [GoodsExistings].[DeleteStatus] AS [DeleteStatus], 
+    [GoodsExistings].[Verify] AS [Verify]
+    FROM [dbo].[GoodsExistings] AS [GoodsExistings]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="GELoadingView" EntityType="Self.GELoadingView" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [GELoadingView].[MTransNo] AS [MTransNo], 
+    [GELoadingView].[LocationName] AS [LocationName], 
+    [GELoadingView].[Layer] AS [Layer], 
+    [GELoadingView].[Row] AS [Row], 
+    [GELoadingView].[Col] AS [Col], 
+    [GELoadingView].[ZoneCode] AS [ZoneCode], 
+    [GELoadingView].[ZoneName] AS [ZoneName], 
+    [GELoadingView].[MovementType] AS [MovementType], 
+    [GELoadingView].[ZonePriority] AS [ZonePriority], 
+    [GELoadingView].[FGModel] AS [FGModel], 
+    [GELoadingView].[FGDesc] AS [FGDesc], 
+    [GELoadingView].[FGCode] AS [FGCode], 
+    [GELoadingView].[PalletQr] AS [PalletQr], 
+    [GELoadingView].[PalletNo] AS [PalletNo], 
+    [GELoadingView].[Quantity] AS [Quantity], 
+    [GELoadingView].[LocaStatus] AS [LocaStatus], 
+    [GELoadingView].[CreatedBy] AS [CreatedBy], 
+    [GELoadingView].[CreatedOn] AS [CreatedOn], 
+    [GELoadingView].[ModifiedBy] AS [ModifiedBy], 
+    [GELoadingView].[ModifiedOn] AS [ModifiedOn], 
+    [GELoadingView].[DeleteStatus] AS [DeleteStatus], 
+    [GELoadingView].[Cat] AS [Cat], 
+    [GELoadingView].[status] AS [status], 
+    [GELoadingView].[sequence] AS [sequence]
+    FROM [dbo].[GELoadingView] AS [GELoadingView]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_AgeingReport" EntityType="Self.vw_AgeingReport" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_AgeingReport].[SrNo] AS [SrNo], 
+    [vw_AgeingReport].[MaterialCode] AS [MaterialCode], 
+    [vw_AgeingReport].[FGModel] AS [FGModel], 
+    [vw_AgeingReport].[FGDesc] AS [FGDesc], 
+    [vw_AgeingReport].[Quantity] AS [Quantity], 
+    [vw_AgeingReport].[LocationName] AS [LocationName], 
+    [vw_AgeingReport].[Col] AS [Col], 
+    [vw_AgeingReport].[PalletNo] AS [PalletNo], 
+    [vw_AgeingReport].[LoadedDate] AS [LoadedDate], 
+    [vw_AgeingReport].[AgeDays] AS [AgeDays], 
+    [vw_AgeingReport].[LocaStatus] AS [LocaStatus], 
+    [vw_AgeingReport].[CreatedOn] AS [CreatedOn]
+    FROM [dbo].[vw_AgeingReport] AS [vw_AgeingReport]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_TransactionHistory" EntityType="Self.vw_TransactionHistory" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_TransactionHistory].[TransactionId] AS [TransactionId], 
+    [vw_TransactionHistory].[TransactionType] AS [TransactionType], 
+    [vw_TransactionHistory].[TransactionDateTime] AS [TransactionDateTime], 
+    [vw_TransactionHistory].[TransactionDate] AS [TransactionDate], 
+    [vw_TransactionHistory].[TransactionTime] AS [TransactionTime], 
+    [vw_TransactionHistory].[MaterialCode] AS [MaterialCode], 
+    [vw_TransactionHistory].[FGModel] AS [FGModel], 
+    [vw_TransactionHistory].[FGDesc] AS [FGDesc], 
+    [vw_TransactionHistory].[Quantity] AS [Quantity], 
+    [vw_TransactionHistory].[LocationId] AS [LocationId], 
+    [vw_TransactionHistory].[LocationName] AS [LocationName], 
+    [vw_TransactionHistory].[PalletQR] AS [PalletQR], 
+    [vw_TransactionHistory].[Status] AS [Status], 
+    [vw_TransactionHistory].[Action] AS [Action], 
+    [vw_TransactionHistory].[Shift] AS [Shift], 
+    [vw_TransactionHistory].[PackingLineNo] AS [PackingLineNo], 
+    [vw_TransactionHistory].[UniqueId] AS [UniqueId], 
+    [vw_TransactionHistory].[PalletSrNo] AS [PalletSrNo], 
+    [vw_TransactionHistory].[Weight] AS [Weight], 
+    [vw_TransactionHistory].[OperatorName] AS [OperatorName], 
+    [vw_TransactionHistory].[ShiftSupervisor] AS [ShiftSupervisor], 
+    [vw_TransactionHistory].[TaskId] AS [TaskId], 
+    [vw_TransactionHistory].[InvoiceNo] AS [InvoiceNo], 
+    [vw_TransactionHistory].[CustomerName] AS [CustomerName], 
+    [vw_TransactionHistory].[LocationofDelivery] AS [LocationofDelivery], 
+    [vw_TransactionHistory].[FLCLocation] AS [FLCLocation], 
+    [vw_TransactionHistory].[VehicleSize] AS [VehicleSize], 
+    [vw_TransactionHistory].[VehicleNumber] AS [VehicleNumber], 
+    [vw_TransactionHistory].[TransporterName] AS [TransporterName], 
+    [vw_TransactionHistory].[LoadingStartTime] AS [LoadingStartTime], 
+    [vw_TransactionHistory].[LoadingEndTime] AS [LoadingEndTime], 
+    [vw_TransactionHistory].[VehicleSealNo] AS [VehicleSealNo], 
+    [vw_TransactionHistory].[DockNo] AS [DockNo], 
+    [vw_TransactionHistory].[BoxQty] AS [BoxQty], 
+    [vw_TransactionHistory].[TotalQty] AS [TotalQty], 
+    [vw_TransactionHistory].[CreatedBy] AS [CreatedBy], 
+    [vw_TransactionHistory].[CreatedOn] AS [CreatedOn], 
+    [vw_TransactionHistory].[ModifiedBy] AS [ModifiedBy], 
+    [vw_TransactionHistory].[ModifiedOn] AS [ModifiedOn], 
+    [vw_TransactionHistory].[DeleteStatus] AS [DeleteStatus]
+    FROM [dbo].[vw_TransactionHistory] AS [vw_TransactionHistory]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_TransactionReport" EntityType="Self.vw_TransactionReport" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_TransactionReport].[MTransNo] AS [MTransNo], 
+    [vw_TransactionReport].[TransactionType] AS [TransactionType], 
+    [vw_TransactionReport].[TransactionDate] AS [TransactionDate], 
+    [vw_TransactionReport].[TransactionTime] AS [TransactionTime], 
+    [vw_TransactionReport].[Shift] AS [Shift], 
+    [vw_TransactionReport].[MaterialCode] AS [MaterialCode], 
+    [vw_TransactionReport].[FGModel] AS [FGModel], 
+    [vw_TransactionReport].[FGDesc] AS [FGDesc], 
+    [vw_TransactionReport].[Quantity] AS [Quantity], 
+    [vw_TransactionReport].[LocationId] AS [LocationId], 
+    [vw_TransactionReport].[LocationName] AS [LocationName], 
+    [vw_TransactionReport].[PalletQR] AS [PalletQR], 
+    [vw_TransactionReport].[OperatorName] AS [OperatorName], 
+    [vw_TransactionReport].[ShiftSupervisor] AS [ShiftSupervisor], 
+    [vw_TransactionReport].[InvoiceNo] AS [InvoiceNo], 
+    [vw_TransactionReport].[CustomerName] AS [CustomerName], 
+    [vw_TransactionReport].[VehicleNumber] AS [VehicleNumber], 
+    [vw_TransactionReport].[TransporterName] AS [TransporterName], 
+    [vw_TransactionReport].[Status] AS [Status], 
+    [vw_TransactionReport].[Action] AS [Action], 
+    [vw_TransactionReport].[CreatedBy] AS [CreatedBy], 
+    [vw_TransactionReport].[CreatedOn] AS [CreatedOn]
+    FROM [dbo].[vw_TransactionReport] AS [vw_TransactionReport]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="S1947Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="S1947Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AndonTVDockMappings" EntityType="S1947Model.AndonTVDockMapping" />
+          <EntitySet Name="AndonTVMasters" EntityType="S1947Model.AndonTVMaster" />
+          <EntitySet Name="ApiErrorLogs" EntityType="S1947Model.ApiErrorLog" />
+          <EntitySet Name="ApiErrorMasters" EntityType="S1947Model.ApiErrorMaster" />
+          <EntitySet Name="App_Location" EntityType="S1947Model.App_Location" />
+          <EntitySet Name="ASRSLocationZoneMasters" EntityType="S1947Model.ASRSLocationZoneMaster" />
+          <EntitySet Name="AsrsZones" EntityType="S1947Model.AsrsZone" />
+          <EntitySet Name="CustomerMasters" EntityType="S1947Model.CustomerMaster" />
+          <EntitySet Name="Errorlogs" EntityType="S1947Model.Errorlog" />
+          <EntitySet Name="GEs" EntityType="S1947Model.GE" />
+          <EntitySet Name="GoodsExisitings" EntityType="S1947Model.GoodsExisiting" />
+          <EntitySet Name="GoodsExisiting_old" EntityType="S1947Model.GoodsExisiting_old" />
+          <EntitySet Name="LiftStatusMasters" EntityType="S1947Model.LiftStatusMaster" />
+          <EntitySet Name="LoadingLogs" EntityType="S1947Model.LoadingLog" />
+          <EntitySet Name="LoadingTemps" EntityType="S1947Model.LoadingTemp" />
+          <EntitySet Name="Menulists" EntityType="S1947Model.Menulist" />
+          <EntitySet Name="PartMasters" EntityType="S1947Model.PartMaster" />
+          <EntitySet Name="PokaYokaQCTransactions" EntityType="S1947Model.PokaYokaQCTransaction" />
+          <EntitySet Name="shift_master" EntityType="S1947Model.shift_master" />
+          <EntitySet Name="ShuttleDtls" EntityType="S1947Model.ShuttleDtl" />
+          <EntitySet Name="sysdiagrams" EntityType="S1947Model.sysdiagram" />
+          <EntitySet Name="TaskDtls" EntityType="S1947Model.TaskDtl" />
+          <EntitySet Name="TaskReports" EntityType="S1947Model.TaskReport" />
+          <EntitySet Name="TaskStatusCodes" EntityType="S1947Model.TaskStatusCode" />
+          <EntitySet Name="UnloadedDatas" EntityType="S1947Model.UnloadedData" />
+          <EntitySet Name="UnloadingLogs" EntityType="S1947Model.UnloadingLog" />
+          <EntitySet Name="UnloadMaterialTemps" EntityType="S1947Model.UnloadMaterialTemp" />
+          <EntitySet Name="UnloadTemps" EntityType="S1947Model.UnloadTemp" />
+          <EntitySet Name="UserAuthorizations" EntityType="S1947Model.UserAuthorization" />
+          <EntitySet Name="UserMasters" EntityType="S1947Model.UserMaster" />
+          <EntitySet Name="WcsApiLogs" EntityType="S1947Model.WcsApiLog" />
+          <EntitySet Name="GoodsExistings" EntityType="S1947Model.GoodsExisting" />
+          <EntitySet Name="GELoadingViews" EntityType="S1947Model.GELoadingView" />
+          <EntitySet Name="vw_AgeingReport" EntityType="S1947Model.vw_AgeingReport" />
+          <EntitySet Name="vw_TransactionHistory" EntityType="S1947Model.vw_TransactionHistory" />
+          <EntitySet Name="vw_TransactionReport" EntityType="S1947Model.vw_TransactionReport" />
+          <FunctionImport Name="InsertTaskDtl">
+            <Parameter Name="TaskNo" Mode="In" Type="Int32" />
+            <Parameter Name="TaskType" Mode="In" Type="String" />
+            <Parameter Name="Priority" Mode="In" Type="Int32" />
+            <Parameter Name="PalletNo" Mode="In" Type="String" />
+            <Parameter Name="SourceLocation" Mode="In" Type="String" />
+            <Parameter Name="DestinationLocation" Mode="In" Type="String" />
+            <Parameter Name="TaskStatus" Mode="In" Type="String" />
+            <Parameter Name="LiftNo" Mode="In" Type="Int32" />
+            <Parameter Name="LocatioNo" Mode="In" Type="String" />
+            <Parameter Name="TaskSent" Mode="In" Type="Int32" />
+            <Parameter Name="CreatedAt" Mode="In" Type="DateTime" />
+            <Parameter Name="StartedAt" Mode="In" Type="DateTime" />
+            <Parameter Name="CompletedAt" Mode="In" Type="DateTime" />
+            <Parameter Name="UUID" Mode="In" Type="String" />
+            <Parameter Name="SerialCode" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_alterdiagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="version" Mode="In" Type="Int32" />
+            <Parameter Name="definition" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="sp_creatediagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="version" Mode="In" Type="Int32" />
+            <Parameter Name="definition" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="sp_dropdiagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(S1947Model.sp_helpdiagramdefinition_Result4)">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(S1947Model.sp_helpdiagrams_Result4)">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_renamediagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="new_diagramname" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_upgraddiagrams" />
+          <EntitySet Name="Othermasters" EntityType="S1947Model.Othermaster" />
+        </EntityContainer>
+        <ComplexType Name="sp_helpdiagramdefinition_Result">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagramdefinition_Result1">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result1">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagramdefinition_Result2">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result2">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagramdefinition_Result3">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result3">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
+        <EntityType Name="AndonTVDockMapping">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TVId" Type="Int32" />
+          <Property Name="DockNo" Type="Int32" />
+        </EntityType>
+        <EntityType Name="AndonTVMaster">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TVName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="IPAddress" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="IsActive" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ApiErrorLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ApiName" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="HttpMethod" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ApiUrl" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="ErrorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="HttpStatusCode" Type="Int32" />
+          <Property Name="ErrorReason" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="OperatorMessage" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="ExceptionMessage" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="RequestBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UniqueId" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="TaskId" Type="Int32" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        <EntityType Name="ApiErrorMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ApiName" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="HttpMethod" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ErrorCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="HttpStatusCode" Type="Int32" Nullable="false" />
+          <Property Name="ErrorReason" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="OperatorMessage" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="ApiUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        <EntityType Name="App_Location">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Name="Code" Type="String" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Name="HouseNo" Type="String" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Name="LayerNo" Type="String" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Name="RoadWayNo" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Name="Layer" Type="Int32" Nullable="false" />
+          <Property Name="Row" Type="Int32" Nullable="false" />
+          <Property Name="Col" Type="Int32" Nullable="false" />
+          <Property Name="Direction" Type="Int32" Nullable="false" />
+          <Property Name="DirectionByRing" Type="Int32" Nullable="false" />
+          <Property Name="IsUse" Type="Int32" />
+          <Property Name="LocationType" Type="String" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Name="State" Type="Int32" Nullable="false" />
+          <Property Name="CreateTime" Type="DateTime" Precision="3" />
+          <Property Name="UpdateTime" Type="DateTime" Precision="3" />
+          <Property Name="CreateUserId" Type="Int64" />
+          <Property Name="CreateUserName" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="UpdateUserId" Type="Int64" />
+          <Property Name="UpdateUserName" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="CreateOrgId" Type="Int64" />
+          <Property Name="CreateOrgName" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="IsDelete" Type="Boolean" Nullable="false" />
+          <Property Name="RoadWayType" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="IsVirtual" Type="Int32" />
+          <Property Name="StemGroupNo" Type="String" MaxLength="32" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="ASRSLocationZoneMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ZoneCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ZoneName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MovementType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Priority" Type="Int32" Nullable="false" />
+          <Property Name="ColumnFrom" Type="Int32" Nullable="false" />
+          <Property Name="ColumnTo" Type="Int32" Nullable="false" />
+          <Property Name="RowFrom" Type="Int32" Nullable="false" />
+          <Property Name="RowTo" Type="Int32" Nullable="false" />
+          <Property Name="LevelFrom" Type="Int32" Nullable="false" />
+          <Property Name="LevelTo" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="AsrsZone">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Zone" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LocationFrom" Type="Int32" />
+          <Property Name="LocationTo" Type="Int32" />
+        </EntityType>
+        <EntityType Name="CustomerMaster">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Location" Type="String" MaxLength="400" FixedLength="false" Unicode="false" />
+          <Property Name="LockStatus" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Errorlog">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ErrorCode" Type="String" Nullable="false" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <Property Name="ErrorType" Type="String" Nullable="false" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <Property Name="ErrorMessage" Type="String" Nullable="false" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <Property Name="PlalletQR" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="LocationName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="TaskId" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="ModuleName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="GE">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LocationName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Layer" Type="Int32" Nullable="false" />
+          <Property Name="Row" Type="Int32" Nullable="false" />
+          <Property Name="Col" Type="Int32" Nullable="false" />
+          <Property Name="FGModel" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQr" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int32" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int32" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Cat" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="sequence" Type="Int32" />
+        </EntityType>
+        <EntityType Name="GoodsExisiting">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LocationName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Layer" Type="Int32" Nullable="false" />
+          <Property Name="Row" Type="Int32" Nullable="false" />
+          <Property Name="Col" Type="Int32" Nullable="false" />
+          <Property Name="FGModel" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQr" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+        </EntityType>
+        <EntityType Name="GoodsExisiting_old">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LocationName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="XPos" Type="Int32" Nullable="false" />
+          <Property Name="YPos" Type="Int32" Nullable="false" />
+          <Property Name="ZPos" Type="Int32" Nullable="false" />
+          <Property Name="CellNo" Type="Int32" Nullable="false" />
+          <Property Name="FGModel" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQr" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Verify" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="SerialCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="LiftStatusMaster">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LiftNo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RunMode" Type="Int32" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="Int32" />
+        </EntityType>
+        <EntityType Name="LoadingLog">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LoadLocationid" Type="Int32" />
+          <Property Name="LocationName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQR" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Date" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Time" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Shift" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PackingLineNo" Type="Int32" />
+          <Property Name="UniqueId" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="PalletSrNo" Type="Int32" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="FGModel" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="FGcode" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Weight" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="OperatorName" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="ShiftSupervisor" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Action" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="TaskId" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="SerialCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="LoadingTemp">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Date" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Time" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Shift" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PackingLineNo" Type="Int32" />
+          <Property Name="UniqueId" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="PalletSrNo" Type="Int32" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="FGModel" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="FGModelDesc" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="FGcode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="WeightTheo" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="ScannedQr" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="LocationName" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="LocationNo" Type="Int32" />
+          <Property Name="Status" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Action" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="UUID" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Station" Type="Int32" />
+          <Property Name="SerialCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Menulist">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ModuleType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MSLNo" Type="Int32" />
+          <Property Name="ModuleName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ModulePage" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ModuleLink" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="PartMaster">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FGCode" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FGModel" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Type" Type="String" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="LockStatus" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+        </EntityType>
+        <EntityType Name="PokaYokaQCTransaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="QRCode" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Model" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FGCode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="UniqueId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PalletNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ReceivedWeight" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="ReceivedQuantity" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="ActualWeight" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="ActualQuantity" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="WeightDifference" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="QuantityDifference" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="WeightTolerance" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="QuantityTolerance" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="QCStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="MachineIP" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MachineResponse" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="ScannedAt" Type="DateTime" Precision="3" />
+          <Property Name="WeighedAt" Type="DateTime" Precision="3" />
+          <Property Name="CompletedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="shift_master">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="shift_name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="start_time" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="end_time" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="is_active" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ShuttleDtl">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ShuttleNo" Type="Int32" />
+          <Property Name="LockStatus" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="TaskDtl">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TaskNo" Type="Int32" Nullable="false" />
+          <Property Name="TaskType" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Priority" Type="Int32" />
+          <Property Name="PalletNo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="SourceLocation" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="DestinationLocation" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TaskStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LiftNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LocatioNo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TaskSent" Type="Int32" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="StartedAt" Type="DateTime" Precision="3" />
+          <Property Name="CompletedAt" Type="DateTime" Precision="3" />
+          <Property Name="UUID" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="SerialCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="TaskReport">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TaskID" Type="Int32" />
+          <Property Name="SerialCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="StatusCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="StautusMessage" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="OperationType" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="TaskStatusCode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StatusId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="StatusMessage" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="UUID" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="UnloadedData">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InvoiceNo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQR" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CustomerName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LocationofDelivery" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FGModel" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FGModelDesc" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="SAPFGCode" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="PartQuantity" Type="Int32" />
+          <Property Name="BoxLocationNo" Type="Int32" />
+          <Property Name="FLCLocation" Type="Int32" />
+          <Property Name="VehicleSize" Type="Int32" />
+          <Property Name="VehicleNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TransporterName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LoadingstartTime" Type="DateTime" Precision="3" />
+          <Property Name="LoadingEndtime" Type="DateTime" Precision="3" />
+          <Property Name="VehicleSealNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DockNo" Type="Int32" />
+          <Property Name="BoxQty" Type="Int32" />
+          <Property Name="TotalQty" Type="Int32" />
+          <Property Name="SupervisiorName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoSupervisor" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="DriverName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoDriver" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="SecurityName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoSecurity" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Action" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="SerialCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="UnloadingLog">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InvoiceNo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CustomerName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LocationofDelivery" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FGModel" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FGCode" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="FLCLocation" Type="Int32" />
+          <Property Name="VehicleSize" Type="Int32" />
+          <Property Name="VehicleNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TransporterName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LoadingstartTime" Type="DateTime" Precision="3" />
+          <Property Name="LoadingEndtime" Type="DateTime" Precision="3" />
+          <Property Name="VehicleSealNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DockNo" Type="Int32" />
+          <Property Name="BoxQty" Type="Int32" />
+          <Property Name="TotalQty" Type="Int32" />
+          <Property Name="PlalletSrNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PlalletQR" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="LocationId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LocationName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SupervisiorName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoSupervisor" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="DriverName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoDriver" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="SecurityName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoSecurity" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="SerialCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="UnloadMaterialTemp">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InvoiceNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Customer" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Location" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Model" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="SAPFGCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="VehicleSize" Type="Int32" />
+          <Property Name="EnteredQty" Type="Int32" />
+          <Property Name="AvailableQty" Type="Int32" />
+          <Property Name="TransporterName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FLCQty" Type="Int32" />
+          <Property Name="VehicleRegNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="VehicleSealNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="DockNo" Type="Int32" />
+          <Property Name="Date" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Time" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Shift" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="SupervisiorName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoSupervisor" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="DriverName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoDriver" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="SecurityName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoSecurity" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="status" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Station" Type="Int32" />
+          <Property Name="SerialCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="UnloadTemp">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InvoiceNo" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="CustomerName" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="LocationofDelivery" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="FGModel" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="FGModelDesc" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="SAPFGCode" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="PartQuantity" Type="Int32" />
+          <Property Name="FLCLocation" Type="Int32" />
+          <Property Name="VehicleSize" Type="Int32" />
+          <Property Name="VehicleNumber" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="TransporterName" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="LoadingstartTime" Type="DateTime" Precision="3" />
+          <Property Name="LoadingEndtime" Type="DateTime" Precision="3" />
+          <Property Name="VehicleSealNo" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="DockNo" Type="Int32" />
+          <Property Name="Station" Type="Int32" />
+          <Property Name="TotalQty" Type="Int32" />
+          <Property Name="PalletNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PlalletQR" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="LocationId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LocationName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SupervisiorName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoSupervisor" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="DriverName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoDriver" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="SecurityName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNoSecurity" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="SerialCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="UserAuthorization">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserNo" Type="Int32" Nullable="false" />
+          <Property Name="ModuleNo" Type="Int32" Nullable="false" />
+          <Property Name="AuthType" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="ModuleType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="UserMaster">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="PW" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UserType" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="ContactNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="EmailId" Type="String" MaxLength="80" FixedLength="false" Unicode="false" />
+          <Property Name="BadLogins" Type="Byte" />
+          <Property Name="LockCounter" Type="Byte" />
+          <Property Name="LockStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="SubscID" Type="Int16" />
+          <Property Name="LastLogin" Type="DateTime" Precision="0" />
+          <Property Name="loginDate" Type="DateTime" Precision="0" />
+        </EntityType>
+        <EntityType Name="WcsApiLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ApiName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="RequestData" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ResponseData" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="HttpStatusCode" Type="Int32" />
+          <Property Name="WcsCode" Type="Int32" />
+          <Property Name="WcsStatus" Type="Boolean" />
+          <Property Name="Result" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="ErrorMessage" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="GoodsExisting">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="XPos" />
+            <PropertyRef Name="YPos" />
+            <PropertyRef Name="ZPos" />
+            <PropertyRef Name="CellNo" />
+            <PropertyRef Name="CreatedBy" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" />
+          <Property Name="LocationName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="XPos" Type="Int32" Nullable="false" />
+          <Property Name="YPos" Type="Int32" Nullable="false" />
+          <Property Name="ZPos" Type="Int32" Nullable="false" />
+          <Property Name="CellNo" Type="Int32" Nullable="false" />
+          <Property Name="FGModel" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQr" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Verify" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+        </EntityType>
+        <EntityType Name="GELoadingView">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="Layer" />
+            <PropertyRef Name="Row" />
+            <PropertyRef Name="Col" />
+            <PropertyRef Name="CreatedBy" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" />
+          <Property Name="LocationName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Layer" Type="Int32" Nullable="false" />
+          <Property Name="Row" Type="Int32" Nullable="false" />
+          <Property Name="Col" Type="Int32" Nullable="false" />
+          <Property Name="ZoneCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ZoneName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MovementType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ZonePriority" Type="Int32" />
+          <Property Name="FGModel" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQr" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int32" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int32" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Cat" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="sequence" Type="Int64" />
+        </EntityType>
+        <EntityType Name="vw_AgeingReport">
+          <Key>
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="Col" />
+          </Key>
+          <Property Name="SrNo" Type="Int64" />
+          <Property Name="MaterialCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGModel" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocationName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Col" Type="Int32" Nullable="false" />
+          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="LoadedDate" Type="DateTime" Precision="0" />
+          <Property Name="AgeDays" Type="Int32" />
+          <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="vw_TransactionHistory">
+          <Key>
+            <PropertyRef Name="TransactionId" />
+            <PropertyRef Name="TransactionType" />
+            <PropertyRef Name="CreatedBy" />
+          </Key>
+          <Property Name="TransactionId" Type="Int32" Nullable="false" />
+          <Property Name="TransactionType" Type="String" Nullable="false" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="TransactionDateTime" Type="DateTime" Precision="3" />
+          <Property Name="TransactionDate" Type="DateTime" Precision="0" />
+          <Property Name="TransactionTime" Type="Time" Precision="7" />
+          <Property Name="MaterialCode" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="FGModel" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocationId" Type="Int32" />
+          <Property Name="LocationName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQR" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Action" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Shift" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PackingLineNo" Type="Int32" />
+          <Property Name="UniqueId" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="PalletSrNo" Type="Int32" />
+          <Property Name="Weight" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="OperatorName" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="ShiftSupervisor" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="TaskId" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="InvoiceNo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CustomerName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LocationofDelivery" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FLCLocation" Type="Int32" />
+          <Property Name="VehicleSize" Type="Int32" />
+          <Property Name="VehicleNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TransporterName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LoadingStartTime" Type="DateTime" Precision="3" />
+          <Property Name="LoadingEndTime" Type="DateTime" Precision="3" />
+          <Property Name="VehicleSealNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DockNo" Type="Int32" />
+          <Property Name="BoxQty" Type="Int32" />
+          <Property Name="TotalQty" Type="Int32" />
+          <Property Name="CreatedBy" Type="Int16" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+        </EntityType>
+        <EntityType Name="vw_TransactionReport">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+            <PropertyRef Name="TransactionType" />
+            <PropertyRef Name="CreatedBy" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" />
+          <Property Name="TransactionType" Type="String" Nullable="false" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="TransactionDate" Type="DateTime" Precision="0" />
+          <Property Name="TransactionTime" Type="Time" Precision="7" />
+          <Property Name="Shift" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MaterialCode" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="FGModel" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocationId" Type="Int32" />
+          <Property Name="LocationName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQR" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="OperatorName" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="ShiftSupervisor" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="InvoiceNo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CustomerName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="VehicleNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TransporterName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Action" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+        </EntityType>
+        <ComplexType Name="sp_helpdiagramdefinition_Result4">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result4">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
+        <EntityType Name="Othermaster">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Autoscan" Type="Int32" />
+          <Property Name="EmptyPalletwight" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="MaxDockRange" Type="Int32" />
+        </EntityType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="S1947ModelStoreContainer" CdmEntityContainer="S1947Entities">
+          <EntitySetMapping Name="AndonTVDockMappings">
+            <EntityTypeMapping TypeName="S1947Model.AndonTVDockMapping">
+              <MappingFragment StoreEntitySet="AndonTVDockMapping">
+                <ScalarProperty Name="DockNo" ColumnName="DockNo" />
+                <ScalarProperty Name="TVId" ColumnName="TVId" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AndonTVMasters">
+            <EntityTypeMapping TypeName="S1947Model.AndonTVMaster">
+              <MappingFragment StoreEntitySet="AndonTVMaster">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="IPAddress" ColumnName="IPAddress" />
+                <ScalarProperty Name="TVName" ColumnName="TVName" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ApiErrorLogs">
+            <EntityTypeMapping TypeName="S1947Model.ApiErrorLog">
+              <MappingFragment StoreEntitySet="ApiErrorLog">
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="UniqueId" ColumnName="UniqueId" />
+                <ScalarProperty Name="RequestBody" ColumnName="RequestBody" />
+                <ScalarProperty Name="ExceptionMessage" ColumnName="ExceptionMessage" />
+                <ScalarProperty Name="OperatorMessage" ColumnName="OperatorMessage" />
+                <ScalarProperty Name="ErrorReason" ColumnName="ErrorReason" />
+                <ScalarProperty Name="HttpStatusCode" ColumnName="HttpStatusCode" />
+                <ScalarProperty Name="ErrorCode" ColumnName="ErrorCode" />
+                <ScalarProperty Name="ApiUrl" ColumnName="ApiUrl" />
+                <ScalarProperty Name="HttpMethod" ColumnName="HttpMethod" />
+                <ScalarProperty Name="ApiName" ColumnName="ApiName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ApiErrorMasters">
+            <EntityTypeMapping TypeName="S1947Model.ApiErrorMaster">
+              <MappingFragment StoreEntitySet="ApiErrorMaster">
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="ApiUrl" ColumnName="ApiUrl" />
+                <ScalarProperty Name="OperatorMessage" ColumnName="OperatorMessage" />
+                <ScalarProperty Name="ErrorReason" ColumnName="ErrorReason" />
+                <ScalarProperty Name="HttpStatusCode" ColumnName="HttpStatusCode" />
+                <ScalarProperty Name="ErrorCode" ColumnName="ErrorCode" />
+                <ScalarProperty Name="HttpMethod" ColumnName="HttpMethod" />
+                <ScalarProperty Name="ApiName" ColumnName="ApiName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="App_Location">
+            <EntityTypeMapping TypeName="S1947Model.App_Location">
+              <MappingFragment StoreEntitySet="App_Location">
+                <ScalarProperty Name="StemGroupNo" ColumnName="StemGroupNo" />
+                <ScalarProperty Name="IsVirtual" ColumnName="IsVirtual" />
+                <ScalarProperty Name="RoadWayType" ColumnName="RoadWayType" />
+                <ScalarProperty Name="IsDelete" ColumnName="IsDelete" />
+                <ScalarProperty Name="CreateOrgName" ColumnName="CreateOrgName" />
+                <ScalarProperty Name="CreateOrgId" ColumnName="CreateOrgId" />
+                <ScalarProperty Name="UpdateUserName" ColumnName="UpdateUserName" />
+                <ScalarProperty Name="UpdateUserId" ColumnName="UpdateUserId" />
+                <ScalarProperty Name="CreateUserName" ColumnName="CreateUserName" />
+                <ScalarProperty Name="CreateUserId" ColumnName="CreateUserId" />
+                <ScalarProperty Name="UpdateTime" ColumnName="UpdateTime" />
+                <ScalarProperty Name="CreateTime" ColumnName="CreateTime" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="LocationType" ColumnName="LocationType" />
+                <ScalarProperty Name="IsUse" ColumnName="IsUse" />
+                <ScalarProperty Name="DirectionByRing" ColumnName="DirectionByRing" />
+                <ScalarProperty Name="Direction" ColumnName="Direction" />
+                <ScalarProperty Name="Col" ColumnName="Col" />
+                <ScalarProperty Name="Row" ColumnName="Row" />
+                <ScalarProperty Name="Layer" ColumnName="Layer" />
+                <ScalarProperty Name="RoadWayNo" ColumnName="RoadWayNo" />
+                <ScalarProperty Name="LayerNo" ColumnName="LayerNo" />
+                <ScalarProperty Name="HouseNo" ColumnName="HouseNo" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ASRSLocationZoneMasters">
+            <EntityTypeMapping TypeName="S1947Model.ASRSLocationZoneMaster">
+              <MappingFragment StoreEntitySet="ASRSLocationZoneMaster">
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="LevelTo" ColumnName="LevelTo" />
+                <ScalarProperty Name="LevelFrom" ColumnName="LevelFrom" />
+                <ScalarProperty Name="RowTo" ColumnName="RowTo" />
+                <ScalarProperty Name="RowFrom" ColumnName="RowFrom" />
+                <ScalarProperty Name="ColumnTo" ColumnName="ColumnTo" />
+                <ScalarProperty Name="ColumnFrom" ColumnName="ColumnFrom" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="MovementType" ColumnName="MovementType" />
+                <ScalarProperty Name="ZoneName" ColumnName="ZoneName" />
+                <ScalarProperty Name="ZoneCode" ColumnName="ZoneCode" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AsrsZones">
+            <EntityTypeMapping TypeName="S1947Model.AsrsZone">
+              <MappingFragment StoreEntitySet="AsrsZone">
+                <ScalarProperty Name="LocationTo" ColumnName="LocationTo" />
+                <ScalarProperty Name="LocationFrom" ColumnName="LocationFrom" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Zone" ColumnName="Zone" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomerMasters">
+            <EntityTypeMapping TypeName="S1947Model.CustomerMaster">
+              <MappingFragment StoreEntitySet="CustomerMaster">
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LockStatus" ColumnName="LockStatus" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Errorlogs">
+            <EntityTypeMapping TypeName="S1947Model.Errorlog">
+              <MappingFragment StoreEntitySet="Errorlog">
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ModuleName" ColumnName="ModuleName" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="PlalletQR" ColumnName="PlalletQR" />
+                <ScalarProperty Name="ErrorMessage" ColumnName="ErrorMessage" />
+                <ScalarProperty Name="ErrorType" ColumnName="ErrorType" />
+                <ScalarProperty Name="ErrorCode" ColumnName="ErrorCode" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GEs">
+            <EntityTypeMapping TypeName="S1947Model.GE">
+              <MappingFragment StoreEntitySet="GE">
+                <ScalarProperty Name="sequence" ColumnName="sequence" />
+                <ScalarProperty Name="Cat" ColumnName="Cat" />
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="PalletQr" ColumnName="PalletQr" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="Col" ColumnName="Col" />
+                <ScalarProperty Name="Row" ColumnName="Row" />
+                <ScalarProperty Name="Layer" ColumnName="Layer" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GoodsExisitings">
+            <EntityTypeMapping TypeName="S1947Model.GoodsExisiting">
+              <MappingFragment StoreEntitySet="GoodsExisiting">
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="PalletQr" ColumnName="PalletQr" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="Col" ColumnName="Col" />
+                <ScalarProperty Name="Row" ColumnName="Row" />
+                <ScalarProperty Name="Layer" ColumnName="Layer" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GoodsExisiting_old">
+            <EntityTypeMapping TypeName="S1947Model.GoodsExisiting_old">
+              <MappingFragment StoreEntitySet="GoodsExisiting_old">
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="Verify" ColumnName="Verify" />
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="PalletQr" ColumnName="PalletQr" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="CellNo" ColumnName="CellNo" />
+                <ScalarProperty Name="ZPos" ColumnName="ZPos" />
+                <ScalarProperty Name="YPos" ColumnName="YPos" />
+                <ScalarProperty Name="XPos" ColumnName="XPos" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LiftStatusMasters">
+            <EntityTypeMapping TypeName="S1947Model.LiftStatusMaster">
+              <MappingFragment StoreEntitySet="LiftStatusMaster">
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="RunMode" ColumnName="RunMode" />
+                <ScalarProperty Name="LiftNo" ColumnName="LiftNo" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LoadingLogs">
+            <EntityTypeMapping TypeName="S1947Model.LoadingLog">
+              <MappingFragment StoreEntitySet="LoadingLog">
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="ShiftSupervisor" ColumnName="ShiftSupervisor" />
+                <ScalarProperty Name="OperatorName" ColumnName="OperatorName" />
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="FGcode" ColumnName="FGcode" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="PalletSrNo" ColumnName="PalletSrNo" />
+                <ScalarProperty Name="UniqueId" ColumnName="UniqueId" />
+                <ScalarProperty Name="PackingLineNo" ColumnName="PackingLineNo" />
+                <ScalarProperty Name="Shift" ColumnName="Shift" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="PalletQR" ColumnName="PalletQR" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="LoadLocationid" ColumnName="LoadLocationid" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LoadingTemps">
+            <EntityTypeMapping TypeName="S1947Model.LoadingTemp">
+              <MappingFragment StoreEntitySet="LoadingTemp">
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="Station" ColumnName="Station" />
+                <ScalarProperty Name="UUID" ColumnName="UUID" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="LocationNo" ColumnName="LocationNo" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="ScannedQr" ColumnName="ScannedQr" />
+                <ScalarProperty Name="WeightTheo" ColumnName="WeightTheo" />
+                <ScalarProperty Name="FGcode" ColumnName="FGcode" />
+                <ScalarProperty Name="FGModelDesc" ColumnName="FGModelDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="PalletSrNo" ColumnName="PalletSrNo" />
+                <ScalarProperty Name="UniqueId" ColumnName="UniqueId" />
+                <ScalarProperty Name="PackingLineNo" ColumnName="PackingLineNo" />
+                <ScalarProperty Name="Shift" ColumnName="Shift" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Menulists">
+            <EntityTypeMapping TypeName="S1947Model.Menulist">
+              <MappingFragment StoreEntitySet="Menulist">
+                <ScalarProperty Name="ModuleLink" ColumnName="ModuleLink" />
+                <ScalarProperty Name="ModulePage" ColumnName="ModulePage" />
+                <ScalarProperty Name="ModuleName" ColumnName="ModuleName" />
+                <ScalarProperty Name="MSLNo" ColumnName="MSLNo" />
+                <ScalarProperty Name="ModuleType" ColumnName="ModuleType" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PartMasters">
+            <EntityTypeMapping TypeName="S1947Model.PartMaster">
+              <MappingFragment StoreEntitySet="PartMaster">
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LockStatus" ColumnName="LockStatus" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PokaYokaQCTransactions">
+            <EntityTypeMapping TypeName="S1947Model.PokaYokaQCTransaction">
+              <MappingFragment StoreEntitySet="PokaYokaQCTransaction">
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CompletedAt" ColumnName="CompletedAt" />
+                <ScalarProperty Name="WeighedAt" ColumnName="WeighedAt" />
+                <ScalarProperty Name="ScannedAt" ColumnName="ScannedAt" />
+                <ScalarProperty Name="MachineResponse" ColumnName="MachineResponse" />
+                <ScalarProperty Name="MachineIP" ColumnName="MachineIP" />
+                <ScalarProperty Name="QCStatus" ColumnName="QCStatus" />
+                <ScalarProperty Name="QuantityTolerance" ColumnName="QuantityTolerance" />
+                <ScalarProperty Name="WeightTolerance" ColumnName="WeightTolerance" />
+                <ScalarProperty Name="QuantityDifference" ColumnName="QuantityDifference" />
+                <ScalarProperty Name="WeightDifference" ColumnName="WeightDifference" />
+                <ScalarProperty Name="ActualQuantity" ColumnName="ActualQuantity" />
+                <ScalarProperty Name="ActualWeight" ColumnName="ActualWeight" />
+                <ScalarProperty Name="ReceivedQuantity" ColumnName="ReceivedQuantity" />
+                <ScalarProperty Name="ReceivedWeight" ColumnName="ReceivedWeight" />
+                <ScalarProperty Name="PalletNumber" ColumnName="PalletNumber" />
+                <ScalarProperty Name="UniqueId" ColumnName="UniqueId" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="QRCode" ColumnName="QRCode" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="shift_master">
+            <EntityTypeMapping TypeName="S1947Model.shift_master">
+              <MappingFragment StoreEntitySet="shift_master">
+                <ScalarProperty Name="is_active" ColumnName="is_active" />
+                <ScalarProperty Name="end_time" ColumnName="end_time" />
+                <ScalarProperty Name="start_time" ColumnName="start_time" />
+                <ScalarProperty Name="shift_name" ColumnName="shift_name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ShuttleDtls">
+            <EntityTypeMapping TypeName="S1947Model.ShuttleDtl">
+              <MappingFragment StoreEntitySet="ShuttleDtl">
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LockStatus" ColumnName="LockStatus" />
+                <ScalarProperty Name="ShuttleNo" ColumnName="ShuttleNo" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="S1947Model.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TaskDtls">
+            <EntityTypeMapping TypeName="S1947Model.TaskDtl">
+              <MappingFragment StoreEntitySet="TaskDtl">
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="UUID" ColumnName="UUID" />
+                <ScalarProperty Name="CompletedAt" ColumnName="CompletedAt" />
+                <ScalarProperty Name="StartedAt" ColumnName="StartedAt" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="TaskSent" ColumnName="TaskSent" />
+                <ScalarProperty Name="LocatioNo" ColumnName="LocatioNo" />
+                <ScalarProperty Name="LiftNo" ColumnName="LiftNo" />
+                <ScalarProperty Name="TaskStatus" ColumnName="TaskStatus" />
+                <ScalarProperty Name="DestinationLocation" ColumnName="DestinationLocation" />
+                <ScalarProperty Name="SourceLocation" ColumnName="SourceLocation" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="TaskType" ColumnName="TaskType" />
+                <ScalarProperty Name="TaskNo" ColumnName="TaskNo" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TaskReports">
+            <EntityTypeMapping TypeName="S1947Model.TaskReport">
+              <MappingFragment StoreEntitySet="TaskReport">
+                <ScalarProperty Name="OperationType" ColumnName="OperationType" />
+                <ScalarProperty Name="StautusMessage" ColumnName="StautusMessage" />
+                <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TaskStatusCodes">
+            <EntityTypeMapping TypeName="S1947Model.TaskStatusCode">
+              <MappingFragment StoreEntitySet="TaskStatusCodes">
+                <ScalarProperty Name="UUID" ColumnName="UUID" />
+                <ScalarProperty Name="StatusMessage" ColumnName="StatusMessage" />
+                <ScalarProperty Name="StatusId" ColumnName="StatusId" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UnloadedDatas">
+            <EntityTypeMapping TypeName="S1947Model.UnloadedData">
+              <MappingFragment StoreEntitySet="UnloadedData">
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="MobileNoSecurity" ColumnName="MobileNoSecurity" />
+                <ScalarProperty Name="SecurityName" ColumnName="SecurityName" />
+                <ScalarProperty Name="MobileNoDriver" ColumnName="MobileNoDriver" />
+                <ScalarProperty Name="DriverName" ColumnName="DriverName" />
+                <ScalarProperty Name="MobileNoSupervisor" ColumnName="MobileNoSupervisor" />
+                <ScalarProperty Name="SupervisiorName" ColumnName="SupervisiorName" />
+                <ScalarProperty Name="TotalQty" ColumnName="TotalQty" />
+                <ScalarProperty Name="BoxQty" ColumnName="BoxQty" />
+                <ScalarProperty Name="DockNo" ColumnName="DockNo" />
+                <ScalarProperty Name="VehicleSealNo" ColumnName="VehicleSealNo" />
+                <ScalarProperty Name="LoadingEndtime" ColumnName="LoadingEndtime" />
+                <ScalarProperty Name="LoadingstartTime" ColumnName="LoadingstartTime" />
+                <ScalarProperty Name="TransporterName" ColumnName="TransporterName" />
+                <ScalarProperty Name="VehicleNumber" ColumnName="VehicleNumber" />
+                <ScalarProperty Name="VehicleSize" ColumnName="VehicleSize" />
+                <ScalarProperty Name="FLCLocation" ColumnName="FLCLocation" />
+                <ScalarProperty Name="BoxLocationNo" ColumnName="BoxLocationNo" />
+                <ScalarProperty Name="PartQuantity" ColumnName="PartQuantity" />
+                <ScalarProperty Name="SAPFGCode" ColumnName="SAPFGCode" />
+                <ScalarProperty Name="FGModelDesc" ColumnName="FGModelDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="LocationofDelivery" ColumnName="LocationofDelivery" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="PalletQR" ColumnName="PalletQR" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="InvoiceNo" ColumnName="InvoiceNo" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UnloadingLogs">
+            <EntityTypeMapping TypeName="S1947Model.UnloadingLog">
+              <MappingFragment StoreEntitySet="UnloadingLog">
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="MobileNoSecurity" ColumnName="MobileNoSecurity" />
+                <ScalarProperty Name="SecurityName" ColumnName="SecurityName" />
+                <ScalarProperty Name="MobileNoDriver" ColumnName="MobileNoDriver" />
+                <ScalarProperty Name="DriverName" ColumnName="DriverName" />
+                <ScalarProperty Name="MobileNoSupervisor" ColumnName="MobileNoSupervisor" />
+                <ScalarProperty Name="SupervisiorName" ColumnName="SupervisiorName" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="PlalletQR" ColumnName="PlalletQR" />
+                <ScalarProperty Name="PlalletSrNo" ColumnName="PlalletSrNo" />
+                <ScalarProperty Name="TotalQty" ColumnName="TotalQty" />
+                <ScalarProperty Name="BoxQty" ColumnName="BoxQty" />
+                <ScalarProperty Name="DockNo" ColumnName="DockNo" />
+                <ScalarProperty Name="VehicleSealNo" ColumnName="VehicleSealNo" />
+                <ScalarProperty Name="LoadingEndtime" ColumnName="LoadingEndtime" />
+                <ScalarProperty Name="LoadingstartTime" ColumnName="LoadingstartTime" />
+                <ScalarProperty Name="TransporterName" ColumnName="TransporterName" />
+                <ScalarProperty Name="VehicleNumber" ColumnName="VehicleNumber" />
+                <ScalarProperty Name="VehicleSize" ColumnName="VehicleSize" />
+                <ScalarProperty Name="FLCLocation" ColumnName="FLCLocation" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="LocationofDelivery" ColumnName="LocationofDelivery" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="InvoiceNo" ColumnName="InvoiceNo" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UnloadMaterialTemps">
+            <EntityTypeMapping TypeName="S1947Model.UnloadMaterialTemp">
+              <MappingFragment StoreEntitySet="UnloadMaterialTemp">
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="Station" ColumnName="Station" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="MobileNoSecurity" ColumnName="MobileNoSecurity" />
+                <ScalarProperty Name="SecurityName" ColumnName="SecurityName" />
+                <ScalarProperty Name="MobileNoDriver" ColumnName="MobileNoDriver" />
+                <ScalarProperty Name="DriverName" ColumnName="DriverName" />
+                <ScalarProperty Name="MobileNoSupervisor" ColumnName="MobileNoSupervisor" />
+                <ScalarProperty Name="SupervisiorName" ColumnName="SupervisiorName" />
+                <ScalarProperty Name="Shift" ColumnName="Shift" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="DockNo" ColumnName="DockNo" />
+                <ScalarProperty Name="VehicleSealNo" ColumnName="VehicleSealNo" />
+                <ScalarProperty Name="VehicleRegNo" ColumnName="VehicleRegNo" />
+                <ScalarProperty Name="FLCQty" ColumnName="FLCQty" />
+                <ScalarProperty Name="TransporterName" ColumnName="TransporterName" />
+                <ScalarProperty Name="AvailableQty" ColumnName="AvailableQty" />
+                <ScalarProperty Name="EnteredQty" ColumnName="EnteredQty" />
+                <ScalarProperty Name="VehicleSize" ColumnName="VehicleSize" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="SAPFGCode" ColumnName="SAPFGCode" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="Customer" ColumnName="Customer" />
+                <ScalarProperty Name="InvoiceNo" ColumnName="InvoiceNo" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UnloadTemps">
+            <EntityTypeMapping TypeName="S1947Model.UnloadTemp">
+              <MappingFragment StoreEntitySet="UnloadTemp">
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="MobileNoSecurity" ColumnName="MobileNoSecurity" />
+                <ScalarProperty Name="SecurityName" ColumnName="SecurityName" />
+                <ScalarProperty Name="MobileNoDriver" ColumnName="MobileNoDriver" />
+                <ScalarProperty Name="DriverName" ColumnName="DriverName" />
+                <ScalarProperty Name="MobileNoSupervisor" ColumnName="MobileNoSupervisor" />
+                <ScalarProperty Name="SupervisiorName" ColumnName="SupervisiorName" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="PlalletQR" ColumnName="PlalletQR" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="TotalQty" ColumnName="TotalQty" />
+                <ScalarProperty Name="Station" ColumnName="Station" />
+                <ScalarProperty Name="DockNo" ColumnName="DockNo" />
+                <ScalarProperty Name="VehicleSealNo" ColumnName="VehicleSealNo" />
+                <ScalarProperty Name="LoadingEndtime" ColumnName="LoadingEndtime" />
+                <ScalarProperty Name="LoadingstartTime" ColumnName="LoadingstartTime" />
+                <ScalarProperty Name="TransporterName" ColumnName="TransporterName" />
+                <ScalarProperty Name="VehicleNumber" ColumnName="VehicleNumber" />
+                <ScalarProperty Name="VehicleSize" ColumnName="VehicleSize" />
+                <ScalarProperty Name="FLCLocation" ColumnName="FLCLocation" />
+                <ScalarProperty Name="PartQuantity" ColumnName="PartQuantity" />
+                <ScalarProperty Name="SAPFGCode" ColumnName="SAPFGCode" />
+                <ScalarProperty Name="FGModelDesc" ColumnName="FGModelDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="LocationofDelivery" ColumnName="LocationofDelivery" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="InvoiceNo" ColumnName="InvoiceNo" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserAuthorizations">
+            <EntityTypeMapping TypeName="S1947Model.UserAuthorization">
+              <MappingFragment StoreEntitySet="UserAuthorization">
+                <ScalarProperty Name="ModuleType" ColumnName="ModuleType" />
+                <ScalarProperty Name="AuthType" ColumnName="AuthType" />
+                <ScalarProperty Name="ModuleNo" ColumnName="ModuleNo" />
+                <ScalarProperty Name="UserNo" ColumnName="UserNo" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserMasters">
+            <EntityTypeMapping TypeName="S1947Model.UserMaster">
+              <MappingFragment StoreEntitySet="UserMaster">
+                <ScalarProperty Name="loginDate" ColumnName="loginDate" />
+                <ScalarProperty Name="LastLogin" ColumnName="LastLogin" />
+                <ScalarProperty Name="SubscID" ColumnName="SubscID" />
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LockStatus" ColumnName="LockStatus" />
+                <ScalarProperty Name="LockCounter" ColumnName="LockCounter" />
+                <ScalarProperty Name="BadLogins" ColumnName="BadLogins" />
+                <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+                <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
+                <ScalarProperty Name="UserType" ColumnName="UserType" />
+                <ScalarProperty Name="PW" ColumnName="PW" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WcsApiLogs">
+            <EntityTypeMapping TypeName="S1947Model.WcsApiLog">
+              <MappingFragment StoreEntitySet="WcsApiLog">
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="ErrorMessage" ColumnName="ErrorMessage" />
+                <ScalarProperty Name="Result" ColumnName="Result" />
+                <ScalarProperty Name="WcsStatus" ColumnName="WcsStatus" />
+                <ScalarProperty Name="WcsCode" ColumnName="WcsCode" />
+                <ScalarProperty Name="HttpStatusCode" ColumnName="HttpStatusCode" />
+                <ScalarProperty Name="ResponseData" ColumnName="ResponseData" />
+                <ScalarProperty Name="RequestData" ColumnName="RequestData" />
+                <ScalarProperty Name="ApiName" ColumnName="ApiName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GoodsExistings">
+            <EntityTypeMapping TypeName="S1947Model.GoodsExisting">
+              <MappingFragment StoreEntitySet="GoodsExistings">
+                <ScalarProperty Name="Verify" ColumnName="Verify" />
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="PalletQr" ColumnName="PalletQr" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="CellNo" ColumnName="CellNo" />
+                <ScalarProperty Name="ZPos" ColumnName="ZPos" />
+                <ScalarProperty Name="YPos" ColumnName="YPos" />
+                <ScalarProperty Name="XPos" ColumnName="XPos" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GELoadingViews">
+            <EntityTypeMapping TypeName="S1947Model.GELoadingView">
+              <MappingFragment StoreEntitySet="GELoadingView">
+                <ScalarProperty Name="sequence" ColumnName="sequence" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="Cat" ColumnName="Cat" />
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="PalletQr" ColumnName="PalletQr" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="ZonePriority" ColumnName="ZonePriority" />
+                <ScalarProperty Name="MovementType" ColumnName="MovementType" />
+                <ScalarProperty Name="ZoneName" ColumnName="ZoneName" />
+                <ScalarProperty Name="ZoneCode" ColumnName="ZoneCode" />
+                <ScalarProperty Name="Col" ColumnName="Col" />
+                <ScalarProperty Name="Row" ColumnName="Row" />
+                <ScalarProperty Name="Layer" ColumnName="Layer" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_AgeingReport">
+            <EntityTypeMapping TypeName="S1947Model.vw_AgeingReport">
+              <MappingFragment StoreEntitySet="vw_AgeingReport">
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
+                <ScalarProperty Name="AgeDays" ColumnName="AgeDays" />
+                <ScalarProperty Name="LoadedDate" ColumnName="LoadedDate" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="Col" ColumnName="Col" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="MaterialCode" ColumnName="MaterialCode" />
+                <ScalarProperty Name="SrNo" ColumnName="SrNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_TransactionHistory">
+            <EntityTypeMapping TypeName="S1947Model.vw_TransactionHistory">
+              <MappingFragment StoreEntitySet="vw_TransactionHistory">
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="TotalQty" ColumnName="TotalQty" />
+                <ScalarProperty Name="BoxQty" ColumnName="BoxQty" />
+                <ScalarProperty Name="DockNo" ColumnName="DockNo" />
+                <ScalarProperty Name="VehicleSealNo" ColumnName="VehicleSealNo" />
+                <ScalarProperty Name="LoadingEndTime" ColumnName="LoadingEndTime" />
+                <ScalarProperty Name="LoadingStartTime" ColumnName="LoadingStartTime" />
+                <ScalarProperty Name="TransporterName" ColumnName="TransporterName" />
+                <ScalarProperty Name="VehicleNumber" ColumnName="VehicleNumber" />
+                <ScalarProperty Name="VehicleSize" ColumnName="VehicleSize" />
+                <ScalarProperty Name="FLCLocation" ColumnName="FLCLocation" />
+                <ScalarProperty Name="LocationofDelivery" ColumnName="LocationofDelivery" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="InvoiceNo" ColumnName="InvoiceNo" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="ShiftSupervisor" ColumnName="ShiftSupervisor" />
+                <ScalarProperty Name="OperatorName" ColumnName="OperatorName" />
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="PalletSrNo" ColumnName="PalletSrNo" />
+                <ScalarProperty Name="UniqueId" ColumnName="UniqueId" />
+                <ScalarProperty Name="PackingLineNo" ColumnName="PackingLineNo" />
+                <ScalarProperty Name="Shift" ColumnName="Shift" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="PalletQR" ColumnName="PalletQR" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="MaterialCode" ColumnName="MaterialCode" />
+                <ScalarProperty Name="TransactionTime" ColumnName="TransactionTime" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="TransactionDateTime" ColumnName="TransactionDateTime" />
+                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
+                <ScalarProperty Name="TransactionId" ColumnName="TransactionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_TransactionReport">
+            <EntityTypeMapping TypeName="S1947Model.vw_TransactionReport">
+              <MappingFragment StoreEntitySet="vw_TransactionReport">
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="TransporterName" ColumnName="TransporterName" />
+                <ScalarProperty Name="VehicleNumber" ColumnName="VehicleNumber" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="InvoiceNo" ColumnName="InvoiceNo" />
+                <ScalarProperty Name="ShiftSupervisor" ColumnName="ShiftSupervisor" />
+                <ScalarProperty Name="OperatorName" ColumnName="OperatorName" />
+                <ScalarProperty Name="PalletQR" ColumnName="PalletQR" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="MaterialCode" ColumnName="MaterialCode" />
+                <ScalarProperty Name="Shift" ColumnName="Shift" />
+                <ScalarProperty Name="TransactionTime" ColumnName="TransactionTime" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="InsertTaskDtl" FunctionName="S1947Model.Store.InsertTaskDtl" />
+          <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="S1947Model.Store.sp_alterdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="S1947Model.Store.sp_creatediagram" />
+          <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="S1947Model.Store.sp_dropdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_helpdiagramdefinition" FunctionName="S1947Model.Store.sp_helpdiagramdefinition">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="S1947Model.sp_helpdiagramdefinition_Result4">
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_helpdiagrams" FunctionName="S1947Model.Store.sp_helpdiagrams">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="S1947Model.sp_helpdiagrams_Result4">
+                <ScalarProperty Name="Database" ColumnName="Database" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="S1947Model.Store.sp_renamediagram" />
+          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="S1947Model.Store.sp_upgraddiagrams" />
+          <EntitySetMapping Name="Othermasters">
+            <EntityTypeMapping TypeName="S1947Model.Othermaster">
+              <MappingFragment StoreEntitySet="Othermaster">
+                <ScalarProperty Name="MaxDockRange" ColumnName="MaxDockRange" />
+                <ScalarProperty Name="EmptyPalletwight" ColumnName="EmptyPalletwight" />
+                <ScalarProperty Name="Autoscan" ColumnName="Autoscan" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

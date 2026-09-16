@@ -1,0 +1,96 @@
+/*-----------------------------------------------------------*/
+/* This is the "border-box hack" providing intuitive control */
+/* over the height and width of elements on the screen.      */
+/* Courtesy of:                                              */
+/* https://www.paulirish.com/2012/box-sizing-border-box-ftw/ */
+/*-----------------------------------------------------------*/
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+
+/*-----------------------------------------------------------*/
+/* We want the page to be black and our game board centered. */
+/*-----------------------------------------------------------*/
+body {
+  background-color: white;
+}
+
+body > div {
+  /*margin: 120px auto;*/
+  /*text-align: center;*/
+  margin-left: 20px;
+}
+
+
+/*-----------------------------------------------------------*/
+/* Every game tile should be 50px by 50px and sitting next   */
+/* one another.                                              */
+/*-----------------------------------------------------------*/
+.tile {
+  /* Set the dimensions of each tile. */
+  width: 36px;
+  height: 36px;
+
+  /* Make them sit snugly together */
+  display: inline-block;
+  vertical-align: top;
+}
+
+
+/*-----------------------------------------------------------*/
+/* Pacman will encounter walls and coins.                    */
+/* Pacman can't move through walls, but can eat coins.       */
+/*-----------------------------------------------------------*/
+
+/* Walls are blue with an off-blue border. */
+.wall {
+  background-color: white;
+  border: 2px solid grey;
+}
+
+.rack {
+    background-color: green;
+    border: 2px solid grey;
+}
+
+.bdr {
+    
+}
+
+
+/* Coins are made by rounding the corners and  */
+/* making them much smaller than 50px by 50px. */
+.coin {
+    background-color: cornflowerblue;
+    border-radius: 50%;
+    transform: scale(0.3);
+}
+
+
+/*-----------------------------------------------------------*/
+/* We make pacman appear to face different directions by     */
+/* using different background images based on class name.    */
+/*-----------------------------------------------------------*/
+.pacman {
+  /* Image urls are relative to the stylesheet.      */
+  /* The '../images' means: "go to the parent folder */
+  /* then look inside the images folder.             */
+  background-image: url('../Content/images/mizpacman.png');
+}
+
+.left {
+    background-image: url('../Content/images/mizpacman-left.png');
+}
+
+.up {
+    background-image: url('../Content/images/mizpacman-up.png');
+}
+
+.down {
+    background-image: url('../Content/images/mizpacman-down.png');
+}

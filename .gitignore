@@ -1,0 +1,17 @@
+# ignore ALL files in ANY directory named temp
+.vs/
+packages/
+App_Data/
+App_Start/
+ReportsService/
+obj/
+Properties/
+Web.Release.config/
+Web.Debug.config/
+Web.config/
+S1834.csproj.user/
+Global.asax/
+Global.asax.cs/
+
+
+

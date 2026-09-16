@@ -1,0 +1,54 @@
+﻿body {
+}
+/* styles.css or main.css */
+.custom-light-blue {
+    background-color: #add8e6; /* Light Blue */
+    color: black;
+}
+
+.custom-light-green {
+    background-color: #90ee90; /* Light Green */
+    color: black;
+}
+
+.custom-light-yellow {
+    background-color: #ffffe0; /* Light Yellow */
+    color: black;
+}
+
+.custom-crimson {
+    background-color: #dc143c; /* Crimson Red */
+    color: white;
+}
+
+.custom-forest-green {
+    background-color: #228b22; /* Forest Green */
+    color: white;
+}
+
+.custom-dark-blue {
+    background-color: #00008b; /* Dark Blue */
+    color: white;
+}
+
+.custom-deep-orange {
+    background-color: #ff5722; /* Deep Orange */
+    color: white;
+}
+
+.custom-sky-blue {
+    background-color: #87ceeb; /* Sky Blue */
+    color: black;
+}
+
+.custom-gold {
+    background-color: #ffd700; /* Gold */
+    color: black;
+}
+
+.custom-slate-gray {
+    background-color: #708090; /* Slate Gray */
+    color: white;
+}
+
+/* Optional: Add hover effects */

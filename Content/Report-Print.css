@@ -1,0 +1,78 @@
+﻿@media print {
+
+    @page {
+        size: A4 landscape;
+        margin: 10mm;
+    }
+
+    html,
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        overflow: visible !important;
+    }
+
+    /* Hide everything except report */
+    nav,
+    .sidebar,
+    #sidebarToggle,
+    .sidebar-user,
+    .menu-item,
+    .page-header,
+    .report-header,
+    .btn,
+    .dt-buttons,
+    .dataTables_filter,
+    .dataTables_length,
+    .dataTables_info,
+    .dataTables_paginate,
+    #toast-container,
+    #loading1 {
+        display: none !important;
+    }
+
+    section.body {
+        display: block !important;
+    }
+
+    .content-body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .report-card {
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: auto;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+
+    tr {
+        page-break-inside: avoid;
+    }
+
+    th,
+    td {
+        border: 1px solid #000 !important;
+        padding: 6px !important;
+        font-size: 11px !important;
+        white-space: nowrap;
+    }
+}

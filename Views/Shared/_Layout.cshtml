@@ -1,0 +1,1405 @@
+﻿@RenderSection("scripts", required: false)
+@using S1947.Models;
+@{
+    S1947.Models.S1947Entities conn = new S1947.Models.S1947Entities();
+    var userType = Session["UserType"]?.ToString() ?? "";
+    var userName = Session["UserName"]?.ToString() ?? "";
+    var UserNo = Session["Userid"];
+    if (UserNo == null || (string)UserNo == "")
+    {
+        Response.Redirect("~/Home/Login");
+    }
+    var AdminMenuList = (from M in conn.Menulists
+                         select new
+                         {
+                             ModuleType = M.ModuleType
+                         }).Distinct().OrderByDescending(x => x.ModuleType).Distinct().ToList();
+
+
+    int user = conn.UserMasters.Where(x => x.UserId == (string)UserNo).Select(x => x.MTransNo).FirstOrDefault();
+    var UserData = conn.UserMasters.Where(x => x.UserId == (string)UserNo).FirstOrDefault();
+
+    bool isAdmin = UserData.UserType.Equals("ADMIN", StringComparison.OrdinalIgnoreCase);
+    bool isOperator = UserData.UserType.Equals("OPERATOR", StringComparison.OrdinalIgnoreCase);
+
+}
+<!DOCTYPE html>
+<html class="sidebar-dark sidebar-left-big-icons">
+<head>
+    <style>
+        .words9 {
+            overflow: hidden;
+            position: relative;
+            top: 21px;
+            left: -5px;
+            color: rgb(0, 0, 0);
+        }
+
+        .page-header {
+            margin: -25px -28px 41px -27px;
+            border-bottom: 5px solid #ff6a00;
+        }
+    </style>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="~/Content/img/C_icon.png">
+    <title>WMS</title>
+    <meta name="keywords" content="HTML5 Admin Template" />
+    <meta name="description" content="Porto Admin - Responsive HTML5 Template">
+    <meta name="author" content="okler.net">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script src="~/Content/vendor/jquery/jquery-3.6.0.min.js"></script>
+    <!-- Web Fonts  -->
+    @Html.Partial("_jsHeader")
+    <link rel="stylesheet" href="@Url.Content("~/Content/vendor/font-awesome/css/all.min.css")" />
+    <link href="@Url.Content("~/Content/css/Layout.css")" rel="stylesheet" />
+    <style>
+        
+        .sidebar {
+            width: 220px;
+            /*background: linear-gradient( 180deg, #2E1414 0%, #3A1A18 25%, #381815 50%, #2A0F0F 75%, #1F0B0B 100% );*/
+            background: black;
+            color: #fff;
+            height: 100vh;
+            padding: 10px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* IMPORTANT */
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            left: auto;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 22px;
+        }
+
+        /* Closed Sidebar */
+        .sidebar.collapsed {
+        width: 70px;
+        }
+
+        /* Hide Text When Closed */
+            .sidebar.collapsed .menu-item span,
+            .sidebar.collapsed .user-details,
+            .sidebar.collapsed .words9 {
+                display: none !important;
+            }
+            /* Center icons when collapsed */
+            .sidebar.collapsed .menu-item {
+                justify-content: center;
+                padding: 14px 0;
+            }
+
+                /* Optional: remove gaps */
+                .sidebar.collapsed .menu-item i {
+                    margin: 0;
+                    font-size: 20px;
+                }
+
+            /* Hide logo text + shrink header */
+            .sidebar.collapsed .sidebar-header {
+                justify-content: center;
+            }
+
+            .sidebar.collapsed .loader9 {
+                justify-content: center;
+            }
+
+        /* Move Content */
+        .content-body {
+            margin-left: 220px;
+            transition: all 0.3s ease;
+
+        }
+
+        .content-body.expanded {
+            margin-left: 70px;
+        }
+
+        * {
+            box-sizing: border-box;
+            /*font-family: Arial, sans-serif;*/
+        }
+
+        .menu-item.dashboard {
+            margin-top: -12px !important;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #ffffff;
+            display: flex;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 14px 22px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 14px;
+            transition: 0.3s;
+            margin-top: 08px;
+        }
+
+        .menu-item:hover,
+        .active {
+            background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+            color: #fff;
+            border-radius: 17px;
+        }
+
+        .menu-item i {
+            font-size: 20px;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+         
+            .menu-item span,
+            .sidebar-header span {
+                display: none;
+            }
+        }
+        
+            
+        .menu-item.active {
+            background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+        }
+
+        .content-body {
+            display: block;
+            padding: 35px;
+            margin-left: 220px;
+            width: calc(100% - 220px);
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            transition: all .3s ease;
+        }
+
+            .content-body.expanded {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+        .menu-item.dashboard {
+            margin-top: 25px !important;
+        }
+   
+        .loader9 {
+            color: rgb(124, 124, 124);
+            font-family: "Poppins", sans-serif;
+            font-weight: 500;
+            font-size: 26px;
+            -webkit-box-sizing: content-box;
+            box-sizing: content-box;
+            height: 40px;
+            padding: 2px 10px;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            border-radius: 8px;
+        }
+
+        .words9 {
+            overflow: hidden;
+            position: relative;
+            top: 21px;
+            left: -5px;
+            color: rgb(0, 0, 0);
+        }
+
+        .words9::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient( var(--bg-color) 10%, transparent 30%, transparent 70%, var(--bg-color) 90% );
+            z-index: 20;
+        }
+
+        .word9 {
+            display: block;
+            height: 100%;
+            padding-left: 6px;
+            color: white;
+            text-align: left;
+            animation: spin_4991 10s infinite;
+        }
+
+        @@keyframes spin_4991 {
+            10% {
+                -webkit-transform: translateY(-102%);
+                transform: translateY(-102%);
+            }
+
+            25% {
+                -webkit-transform: translateY(-100%);
+                transform: translateY(-100%);
+            }
+
+            35% {
+                -webkit-transform: translateY(-202%);
+                transform: translateY(-202%);
+            }
+
+            50% {
+                -webkit-transform: translateY(-200%);
+                transform: translateY(-200%);
+            }
+
+            60% {
+                -webkit-transform: translateY(-302%);
+                transform: translateY(-302%);
+            }
+
+            75% {
+                -webkit-transform: translateY(-300%);
+                transform: translateY(-300%);
+            }
+
+            85% {
+                -webkit-transform: translateY(-402%);
+                transform: translateY(-402%);
+            }
+
+            100% {
+                -webkit-transform: translateY(-400%);
+                transform: translateY(-400%);
+            }
+        }
+
+       
+        
+        /*Kundan*/
+        /*====================================  start===================*/
+        body.dark-mode .reportAccess {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .sidebar-title {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .fp-card {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .section-title {
+            color: #ffffff;
+        }
+
+        body.dark-mode input.disabled,
+        body.dark-mode input[disabled],
+        body.dark-mode input[readonly],
+        body.dark-mode textarea.disabled,
+        body.dark-mode textarea[disabled],
+        body.dark-mode textarea[readonly],
+        body.dark-mode select.disabled,
+        body.dark-mode select.readonly-select,
+        body.dark-mode selected,
+        body.dark-mode select[disabled] {
+            background-color: #7c7c7c !important; /* solid gray */
+            color: #e2e8f0 !important;
+            opacity: 1 !important; /* remove faded look */
+            cursor: not-allowed;
+        }
+
+        /* Fake readonly select */
+        select.readonly-select {
+            pointer-events: none;
+            background-color: #e9ecef !important;
+            color: #495057;
+            opacity: 1;
+        }
+
+
+        body.dark-mode
+        .select2-container--default.select2-container--disabled
+        .select2-selection--single {
+            background-color: #7c7c7c !important; /* solid gray */
+            color: #e2e8f0 !important;
+            opacity: 1 !important; /* remove faded look */
+            cursor: not-allowed;
+        }
+
+
+        /*====================================  End===================*/
+        body.dark-mode .content-body th,
+        body.dark-mode .content-body td {
+            border-bottom: 1px solid #334155;
+        }
+
+        body.dark-mode .content-body tbody tr:hover {
+            background: #57677e;
+        }
+
+        /* =======================
+                               REPORT PANELS
+                            ======================= */
+        body.dark-mode .report-container .report-sidebar,
+        body.dark-mode .card-modern,
+        body.dark-mode .card-body,
+        body.dark-mode .report-container .report-right {
+            /*      background-color: #1e293b;*/
+            /*background-color: black;*/
+            background-color: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8);
+        }
+
+
+        /* =======================
+                               LABELS (LIGHT + DARK)
+                            ======================= */
+        .content-body label {
+            color: #1f2937;
+        }
+
+        body.dark-mode .content-body label {
+            color: #e2e8f0;
+        }
+
+        /* =======================
+                               INPUTS / SELECTS
+                            ======================= */
+        .content-body input,
+        .content-body select,
+        .content-body textarea {
+            color: #1f2937;
+            background-color: #ffffff;
+        }
+
+        body.dark-mode .content-body input,
+        body.dark-mode .content-body select,
+        body.dark-mode .content-body textarea {
+            color: black;
+            background-color: #ffffff;
+            border-color: #334155;
+        }
+
+        /* =======================
+                           TOP BAR
+                        ======================= */
+        body.dark-mode #top-bar select,
+        body.dark-mode #top-bar button {
+            background: #1f2937;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+        }
+
+            body.dark-mode #top-bar select:hover,
+            body.dark-mode #top-bar button:hover {
+                background: #2d3748;
+            }
+
+        /* =======================
+                           DASHBOARD
+                        ======================= */
+        body.dark-mode #dashboard-header {
+            color: #e2e8f0;
+            border-bottom-color: #334155;
+        }
+
+        body.dark-mode .chart-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+            body.dark-mode .chart-box h3 {
+                color: #60a5fa;
+            }
+
+        body.dark-mode #storage-legend {
+            border-left-color: #334155;
+            color: #94a3b8;
+        }
+
+        body.dark-mode .dashboard-title {
+            color: #e2e8f0;
+        }
+
+            body.dark-mode .dashboard-title i {
+                color: #fbbf24;
+            }
+
+        /* =======================
+                           TABLES (GLOBAL)
+                        ======================= */
+        /* =======================
+           TABLE DARK MODE
+        ======================= */
+        /* ---------- Light Mode ---------- */
+        #myTable tbody tr:nth-child(odd) {
+            background-color: #ffffff; /* white */
+        }
+
+        #myTable tbody tr:nth-child(even) {
+            background-color: #f9fafb; /* very light gray */
+        }
+
+        /* Hover effect */
+        #myTable tbody tr:hover {
+            background-color: #e2e8f0; /* light gray hover */
+            transition: background-color 0.3s ease;
+        }
+
+        /* ---------- Dark Mode ---------- */
+        body.dark-mode #myTable tbody tr:nth-child(odd) {
+            background-color: #2d3748; /* dark gray */
+        }
+
+        body.dark-mode #myTable tbody tr:nth-child(even) {
+            background-color: #374151; /* slightly lighter gray */
+        }
+
+        body.dark-mode #myTable tbody tr:hover {
+            background-color: #475569; /* hover color for dark mode */
+            transition: background-color 0.3s ease;
+        }
+
+        #myTable th, #myTable td {
+            border: 1px solid #e5e7eb; /* light mode */
+        }
+
+        body.dark-mode #myTable th, body.dark-mode #myTable td {
+            border: 1px solid #334155; /* dark mode */
+        }
+
+
+        /* =======================
+                            THEME SWITCH
+                         ======================= */
+        .theme-switch {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 70px;
+            height: 34px;
+        }
+
+            .theme-switch input {
+                display: none;
+            }
+
+        .toggle-label {
+            position: relative;
+            display: block;
+            width: 70px;
+            height: 34px;
+            background: #e5e7eb;
+            border-radius: 34px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+            .toggle-label i {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 16px;
+                pointer-events: none;
+            }
+
+                .toggle-label i.moon {
+                    right: 7px;
+                    color: #394046;
+                }
+
+                .toggle-label i.sun {
+                    left: 7px;
+                    color: #fbbf24;
+                }
+
+            .toggle-label .slider {
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: 30px;
+                height: 30px;
+                background: #fff;
+                border-radius: 50%;
+                transition: transform 0.3s;
+            }
+
+        .theme-switch input:checked + .toggle-label {
+            /*background-color: black;*/
+            background-color: #1e293b;
+        }
+
+            .theme-switch input:checked + .toggle-label .slider {
+                transform: translateX(36px);
+            }
+
+        @@media (max-width: 992px) {
+            #main-content {
+                padding: 20px;
+            }
+
+            #charts-tables,
+            #tables {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .chart-box,
+            table {
+                flex: 1 1 100% !important;
+                min-width: unset;
+            }
+        }
+
+        @@media (max-width: 600px) {
+            #main-content {
+                padding: 15px;
+            }
+
+            #top-bar {
+                justify-content: space-between;
+                margin-bottom: 20px;
+            }
+        }
+
+        .header-flex {
+            position: fixed;
+            display: flex;
+            align-items: center; /* vertical center */
+            width: 100%;
+        }
+
+        /* Keep logo + animation inline */
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Push toggle to right end */
+        .theme-right {
+            margin-left: auto;
+        }
+
+        /* Prevent wrapping */
+        .header-flex > * {
+            white-space: nowrap;
+        }
+
+        .header {
+            position: fixed;
+        }
+
+
+        .custom-toast1 {
+            background: linear-gradient(to right, #28a745, #218838); /* Strong, modern success green */
+            border-radius: 10px;
+            padding: 20px 28px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #fff;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25); /* More natural elevation */
+            max-width: 600px;
+            min-width: 400px;
+            text-align: center;
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: none;
+        }
+
+        .custom-toast {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            border-radius: 10px;
+            padding: 20px 28px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #fff;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            min-width: 400px;
+            text-align: center;
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: none;
+        }
+
+
+
+        #globalToast {
+            position: fixed;
+            bottom: 55px;
+            right: 25px;
+            z-index: 999999;
+        }
+
+        .toast-message {
+            min-width: 320px;
+            max-width: 450px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,.25);
+            opacity: 0;
+            transform: translateX(120%);
+            transition: all .35s ease;
+        }
+
+            .toast-message.show {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+        .toast-success {
+            background: linear-gradient(135deg,#28a745,#218838);
+        }
+
+        .toast-error {
+            background: linear-gradient(135deg,#dc3545,#c82333);
+        }
+
+        .toast-warning {
+            background: linear-gradient(135deg,#ff9800,#f57c00);
+        }
+
+        .toast-info {
+            background: linear-gradient(135deg,#2196f3,#1565c0);
+        }
+
+        /* Button Css*/
+        .button-group {
+            display: flex;
+            justify-content: center; /* centers horizontally */
+            align-items: center;
+            gap: 20px; /* spacing between buttons */
+        }
+
+        .theme-btn {
+            border-radius: 10px;
+            padding: 10px 40px;
+            font-weight: 600;
+            border: none;
+            transition: .3s ease;
+            display: inline-block;
+            text-align: center;
+            min-width: 170px;
+        }
+
+        /* Orange button */
+        .btn-orange {
+            background: linear-gradient(45deg, #ff9800, #ff6d00);
+            color: #fff;
+        }
+
+        /* Black button */
+        .btn-black {
+            background: #4f4b4b;
+            color: #fff;
+        }
+
+
+        select.input-box {
+            height: 42px !important; /* SAME as textbox */
+            padding-top: 8px;
+            padding-bottom: 8px;
+            line-height: 42px;
+        }
+
+
+        .theme-btn:focus,
+        .theme-btn:active,
+        .theme-btn:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        .sidebar.collapsed .logo-wrapper {
+            justify-content: center;
+        }
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            transition: 0.2s;
+        }
+
+            .logo-wrapper:hover {
+                opacity: 0.8;
+            }
+
+        .fa-sign-out-alt {
+            font-size: 1.7rem;
+        }
+
+        .page-header {
+            position: sticky;
+            top: 0;
+            z-index: 1050;
+        }
+    </style>
+    <style>
+        .dark-mode-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px; /* optional spacing */
+        }
+
+        .theme-switch {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        function showToastMessage(message, type = "success", speak = false) {
+
+            const container = document.getElementById("globalToast");
+
+            const toast = document.createElement("div");
+
+            toast.className = "toast-message toast-" + type;
+
+            toast.innerHTML = message;
+
+            container.appendChild(toast);
+
+            setTimeout(function () {
+                toast.classList.add("show");
+            }, 50);
+
+            if (speak) {
+                voiceMsg(message);
+            }
+
+            setTimeout(function () {
+
+                toast.classList.remove("show");
+
+                setTimeout(function () {
+                    toast.remove();
+                }, 350);
+
+            }, 3000);
+        }
+    </script>
+    <div id="loading1"></div>
+    <div id="globalToast"></div>
+    <section class="body">
+        <!-- start: header -->
+        <!-- end: header -->
+        @*<div class="inner-wrapper">*@
+        <nav>
+           
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <div class="loader9 floating-character" alt="Character Illustration" id="sidebarToggle">
+                        <div class="loader9">
+                            <img src="~/Content/img/CAUTOMATION.png"
+                                 alt="C Logo"
+                                 style="height:45px; width:auto; object-fit:contain; margin:0 !important; padding:0; display:block;" />
+                            <div class="words9">
+                                <span class="word9">automate</span>
+                                <span class="word9">reintors</span>
+                                <span class="word9">automate</span>
+                                <span class="word9">reintors</span>
+                                <span class="word9">automate</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item dark-mode-item" hidden>
+                    <span>Dark Mode</span>
+                    <div class="theme-switch">
+                        <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode">
+                        <label for="theme-toggle" class="toggle-label">
+                            <i class="fa-solid fa-sun sun"></i>
+                            <i class="fa-solid fa-moon moon"></i>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                @{
+                    // Fetch all modules for current user
+                    var modulesList = (from MO in conn.Menulists
+                                       select new
+                                       {
+                                           MO.ModuleType,
+                                           MO.ModuleName,
+                                           MO.ModulePage,
+                                           MO.ModuleLink,
+                                           MO.MTransNo
+                                       }).ToList();
+
+                    if (UserData.UserType != "ADMIN")
+                    {
+                        modulesList = (from UA in conn.UserAuthorizations
+                                       join MO in conn.Menulists
+                                       on UA.ModuleNo equals MO.MTransNo
+                                       where UA.UserNo == UserData.MTransNo && UA.AuthType != "N"
+                                       select new
+                                       {
+                                           MO.ModuleType,
+                                           MO.ModuleName,
+                                           MO.ModulePage,
+                                           MO.ModuleLink,
+                                           MO.MTransNo
+                                       }).ToList();
+                    }
+
+                    bool isNotCautomate = userName != "cautomate";
+                }
+
+                @if (isNotCautomate)
+                {
+                    <!-- Dashboard (always visible) -->
+                    <div class="menu-item dashboard" onclick="location.href='/Home/Dashboard'">
+                        <i class="fa-solid fa-house"></i><span>Dashboard</span>
+                    </div>
+                    // ==========================
+                    // ADMIN
+                    // ==========================
+                    if (isAdmin)
+                    {
+
+                        if (modulesList.Any(m => m.ModuleType == "MASTERS"))
+                        {
+                            <div class="menu-item master" onclick="location.href='/Home/MastersManagement'">
+                                <i class="fa-solid fa-angles-right"></i><span>Masters</span>
+                            </div>
+                        }
+                        <!-- Masters -->
+                        if (modulesList.Any(m => m.ModuleType == "OPERATIONS"))
+                        {
+                            <div class="menu-item operation" onclick="location.href='/Home/operationManagement'">
+                                <i class="fa-solid fa-box"></i><span>Operations</span>
+                            </div>
+                        }
+                        <!-- Operations -->
+                        if (modulesList.Any(m => m.ModuleType == "REPORTS"))
+                        {
+                            <div class="menu-item operation" onclick="location.href='/reports/Index'">
+                                <i class="fa-solid fa-adjust"></i> <span>Reports</span>
+                            </div>
+                        }
+
+                        if (userName != "cautomate")
+                        {
+                            <div class="menu-item liveStock"
+                                 onclick="location.href='/Andon/AndonScreen'">
+                                <i class="fas fa-boxes"></i>
+                                <span>Display Screen</span>
+                            </div>
+                        }
+                    }
+                    // ==========================
+                    // OPERATOR
+                    // ==========================
+                    else if (isOperator)
+                    {
+                        <div class="menu-item operation" onclick="location.href='/Home/operationManagement'">
+                            <i class="fa-solid fa-box"></i>
+                            <span>Operations</span>
+                        </div>
+
+                        <div class="menu-item operation" onclick="location.href='/reports/Index'">
+                            <i class="fa-solid fa-adjust"></i>
+                            <span>Reports</span>
+                        </div>
+                    }
+
+                    <!-- Logout (always visible) -->
+                    <div class="menu-item" onclick="location.href='/Home/Login'">
+                        <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+                    </div>
+
+                    <div class="sidebar-user">
+                        <div class="user-profile">
+                            <i class="fa-solid fa-circle-user user-icon"></i>
+                            <div class="user-details">
+                                <span class="user-name">@userName</span>
+                            </div>
+                        </div>
+                    </div>
+                    <style>
+                        .sidebar {
+                            display: flex;
+                            flex-direction: column;
+                        }
+
+                        .sidebar-user {
+                            margin-top: auto;
+                            padding: 15px;
+                        }
+
+                        .user-profile {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            padding: 12px;
+                            background: linear-gradient(135deg, #1e3c72, #2a5298);
+                            border-radius: 12px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        }
+
+                        .user-icon {
+                            font-size: 38px;
+                            color: #ffffff;
+                        }
+
+                        .user-details {
+                            display: flex;
+                            flex-direction: column;
+                        }
+
+                        .user-label {
+                            font-size: 11px;
+                            color: #cbd5e1;
+                            letter-spacing: 1px;
+                            text-transform: uppercase;
+                        }
+
+                        .user-name {
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: #ffffff;
+                        }
+                    </style>
+                    <style>
+                        .session-timer {
+                            margin-top: 15px;
+                            padding: 8px 12px;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            background: linear-gradient(90deg, rgba(17,80,216,0.2), rgba(33,150,243,0.2));
+                            border-radius: 25px;
+                            font-family: 'Big Shoulders', sans-serif;
+                            color: #fff;
+                            font-weight: 600;
+                            font-size: 13px;
+                            box-shadow: 0 2px 6px rgba(17,80,216,0.4);
+                            transition: background 0.3s ease;
+                        }
+
+                            .session-timer:hover {
+                                background: linear-gradient(90deg, rgba(17,80,216,0.4), rgba(33,150,243,0.4));
+                            }
+
+                        .timer-icon {
+                            font-size: 16px;
+                            animation: pulse 1.5s infinite;
+                        }
+
+                        .timer-label {
+                            font-size: 10px;
+                            text-transform: uppercase;
+                            color: #aad1ff;
+                            letter-spacing: 1px;
+                        }
+
+                        @@keyframes pulse {
+                            0% {
+                                transform: scale(1);
+                            }
+
+                            50% {
+                                transform: scale(1.2);
+                            }
+
+                            100% {
+                                transform: scale(1);
+                            }
+                        }
+                    </style>
+
+                }
+            </div>
+
+        </nav>
+        <div class="content-body">
+            @RenderBody()
+        </div>
+
+    </section>
+
+
+    <script src="~/Content/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+    <script src="~/Content/vendor/popper/umd/popper.min.js"></script>
+    <script src="~/Content/vendor/bootstrap/js/bootstrap.js"></script>
+    <script src="~/Content/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="~/Content/vendor/common/common.js"></script>
+    <script src="~/Content/vendor/nanoscroller/nanoscroller.js"></script>
+    <script src="~/Content/vendor/magnific-popup/jquery.magnific-popup.js"></script>
+    <script src="~/Content/vendor/jquery-placeholder/jquery-placeholder.js"></script>
+    <script>
+      
+        let timerInterval; // global so we can stop it
+
+        window.addEventListener("load", function () {
+            var duration = 60 * 5; // 5 min
+            var display = document.querySelector('#time');
+            //startTimer(duration, display);
+
+            // Stop timer immediately if we're on LoadMaterial page
+            if (window.location.pathname === "/Load/LoadMaterial") {
+                stopTimer();
+            }
+            else if (window.location.pathname === "/Issue/AddEdit") {
+                stopTimer();
+            } else if (window.location.pathname === "/Return/ReturnMaterial") {
+                stopTimer();
+            } else if (window.location.pathname === "/UnloadOperation/UnloadMaterial") {
+                stopTimer();
+            }
+        });
+
+     
+        // Stop the timer function
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+
+    </script>
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            $("#loading1").hide();
+        });
+        function loading() {
+            $("#loading1").show();
+        }
+
+        $(".pro").click(function () {
+            $("#loading1").show();
+        });
+
+
+    </script>
+    <script>
+        const body = document.body;
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeKey = 'isDarkMode';
+
+        function setDark(isDark) {
+            if (isDark) {
+                body.classList.add('dark-mode');
+                themeToggle.checked = true;
+            } else {
+                body.classList.remove('dark-mode');
+                themeToggle.checked = false;
+            }
+            localStorage.setItem(themeKey, isDark ? 'true' : 'false');
+            updateChartTheme(); // optional: for charts
+        }
+
+        themeToggle.addEventListener('change', () => {
+            setDark(themeToggle.checked);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Apply saved theme
+            const storedTheme = localStorage.getItem(themeKey) === 'true';
+            setDark(storedTheme);
+
+            // Initialize charts or other UI
+            if (typeof initCharts === 'function') initCharts();
+        });
+
+        function updateChartTheme() {
+            if (typeof getChartColors !== 'function') return;
+            const colors = getChartColors();
+
+            if (typeof costChart !== 'undefined' && costChart) {
+                costChart.options.plugins.legend.labels.color = colors.textColor;
+                costChart.options.scales.x.ticks.color = colors.textColor;
+                costChart.options.scales.y.ticks.color = colors.textColor;
+                costChart.options.scales.y.grid.color = colors.gridColor;
+                costChart.update();
+            }
+
+            if (typeof issueReturnChart !== 'undefined' && issueReturnChart) {
+                issueReturnChart.options.plugins.legend.labels.color = colors.textColor;
+                issueReturnChart.update();
+            }
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const sidebar = document.querySelector(".sidebar");
+            const content = document.querySelector(".content-body");
+            const toggleBtn = document.getElementById("sidebarToggle");
+
+            if (localStorage.getItem("sidebarCollapsed") === "true") {
+                sidebar.classList.add("collapsed");
+                content.classList.add("expanded");
+            }
+
+            toggleBtn.addEventListener("click", function () {
+
+                sidebar.classList.toggle("collapsed");
+                content.classList.toggle("expanded");
+
+                localStorage.setItem(
+                    "sidebarCollapsed",
+                    sidebar.classList.contains("collapsed")
+                );
+            });
+        });
+    </script>
+
+
+    <script>
+        function pNof(til, txt) {
+            new PNotify({
+                title: til,
+                text: txt,
+                shadow: true,
+                addclass: 'stack-topright'
+            });
+        }
+
+        //Success notify method
+        function pNofsuc(til, txt) {
+            new PNotify({
+                title: til,
+                text: txt,
+                type: 'success',
+                shadow: true,
+                addclass: 'stack-topright'
+            });
+        }
+        //Fail notify method
+        function pNoffail(til, txt) {
+            new PNotify({
+                title: til,
+                text: txt,
+                type: 'error',
+                shadow: true,
+                addclass: 'stack-topright'
+            });
+        }
+
+        function voiceMsg(voice_msg) {
+            var msg = new SpeechSynthesisUtterance(voice_msg);
+
+            // Get available voices (this may take time to load)
+            var voices = window.speechSynthesis.getVoices();
+
+            // Pick a specific voice by name (example: "Google US English")
+            msg.voice = voices.find(voice => voice.name === "Google US English");
+
+            window.speechSynthesis.speak(msg);
+        }
+
+        // Ensure voices are loaded before use
+        window.speechSynthesis.onvoiceschanged = function () {
+            // Call once to preload voices
+            window.speechSynthesis.getVoices();
+        };
+        function showMessage(message) {
+            // Create a div element for the message container
+            var messageContainer = document.createElement("div");
+
+            // Set styles for the message container
+            messageContainer.style.position = "fixed";
+            messageContainer.style.top = "20%";
+            messageContainer.style.right = "20px"; // Adjust this value as needed
+            messageContainer.style.transform = "translateY(-50%)";
+            messageContainer.style.zIndex = "9999"; // Ensure the message appears above other content
+
+            // Create a div element for the message text
+            var messageDiv = document.createElement("div");
+
+            // Set the message text
+            messageDiv.textContent = message;
+
+            // Optionally, you can style the message text
+            messageDiv.style.backgroundColor = "rgba(255, 0, 0, 0.7)"; // Red with some transparency
+            messageDiv.style.color = "white";
+            messageDiv.style.padding = "10px";
+            messageDiv.style.borderRadius = "5px"; // Rounded corners
+            messageDiv.style.boxShadow = "0px 0px 5px rgba(0, 0, 0, 0.5)"; // Shadow effect
+
+            // Append the message text to the container
+            messageContainer.appendChild(messageDiv);
+
+            // Append the container to the body
+            document.body.appendChild(messageContainer);
+
+            // Set a timeout to remove the message after 5 seconds (adjust the duration as needed)
+            setTimeout(function () {
+                document.body.removeChild(messageContainer);
+            }, 5000); // 5000 milliseconds = 5 seconds
+        }
+
+        function addTempMessage(element, message) {
+            // Remove any existing temporary messages
+            $('.temp-message').remove();
+
+            // Create temporary message element next to the target element
+            var tempMessage = $('<div>').text(message).addClass('temp-message');
+            element.after(tempMessage);
+
+            // Remove temporary message after 3 seconds
+            setTimeout(function () {
+                tempMessage.remove();
+            }, 3000);
+        }
+
+        function showHeaderMessage(message, type) {
+            const header = document.getElementById('drawerMessage');
+            header.textContent = message;
+            header.style.display = "block";
+            // Optionally style based on type
+            switch (type) {
+                case "success":
+                    header.style.color = "green";
+                    break;
+                case "error":
+                    header.style.color = "red";
+                    break;
+                case "warning":
+                    header.style.color = "orange";
+                    break;
+                default:
+                    header.style.color = "black";
+            }
+
+            header.style.display = "block";
+        }
+
+
+        let linkClickHandlers = [];
+        let formSubmitHandlers = [];
+
+       
+
+
+        let navBlocked = false;
+
+        /* ================= BLOCK ================= */
+
+        function blockNav() {
+            navBlocked = true;
+
+            // Block refresh
+            document.addEventListener('keydown', blockRefresh);
+
+            // Block back/forward
+            history.pushState(null, null, location.href);
+            window.addEventListener('popstate', blockBack);
+
+            // Block all anchor tags (Home icon)
+            document.querySelectorAll('a').forEach(a => {
+                a.addEventListener('click', blockAnchors, true);
+            });
+
+            // Block sidebar menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', blockSidebar, true);
+            });
+        }
+
+        /* ================= UNBLOCK ================= */
+
+        function unblockNav() {
+            navBlocked = false;
+
+            document.removeEventListener('keydown', blockRefresh);
+            window.removeEventListener('popstate', blockBack);
+
+            document.querySelectorAll('a').forEach(a => {
+                a.removeEventListener('click', blockAnchors, true);
+            });
+
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.removeEventListener('click', blockSidebar, true);
+            });
+        }
+
+        /* ================= HANDLERS ================= */
+
+        function blockAnchors(e) {
+            if (navBlocked) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
+        }
+
+        function blockSidebar(e) {
+            if (navBlocked) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
+        }
+
+        function blockRefresh(e) {
+            if (e.key === 'F5' || (e.ctrlKey && e.key.toLowerCase() === 'r')) {
+                e.preventDefault();
+            }
+        }
+
+        function blockBack() {
+            history.pushState(null, null, location.href);
+        }
+
+
+
+        function showCustomToast(message) {
+            $('#customToast').text(message).stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+        }
+        function showCustomToast1(message) {
+            $('#customToast1').text(message).stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+        }
+       
+
+    </script>
+
+    <link href="~/Content/vendor/select2/css/select2.min.css" rel="stylesheet" />
+
+    <script src="~/Content/vendor/select2/js/select2.min.js"></script>
+    <!-- Specific Page Vendor -->
+    <script src="~/Content/vendor/jquery-appear/jquery-appear.js"></script>
+    <script src="~/Content/vendor/owl.carousel/owl.carousel.js"></script>
+    <script src="~/Content/vendor/isotope/isotope.js"></script>
+
+
+</body>
+</html>

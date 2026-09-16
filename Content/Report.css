@@ -1,0 +1,271 @@
+/*=========================================================
+                COMMON REPORT CSS
+          ASRS Warehouse Management System
+=========================================================*/
+
+/* ==========================
+   Page Header (Dashboard Style)
+========================== */
+
+.page-header {
+    background: #000 !important;
+    color: #fff;
+    margin-top: 0 !important;
+    border-bottom: 4px solid #ff6a00; /* Orange line */
+    padding: 15px 20px;
+    border-radius: 0;
+}
+
+    .page-header h3 {
+        margin: 0;
+        color: #fff;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .page-header i {
+        margin-right: 8px;
+    }
+
+.content-body {
+    padding-top: 0 !important;
+}
+
+
+/*-------------------------
+      Report Card
+--------------------------*/
+
+.report-card {
+    background: #fff;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    overflow: hidden;
+}
+
+
+/*-------------------------
+      Card Header
+--------------------------*/
+
+.report-header {
+    background: #3b3b3b;
+    color: #fff;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .report-header h4 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+
+/*-------------------------
+      Card Body
+--------------------------*/
+
+.report-body {
+    padding: 20px;
+}
+
+
+/*-------------------------
+      Search Title
+--------------------------*/
+
+.filter-title {
+    background: #f3f3f3;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #333;
+}
+
+    .filter-title i {
+        margin-right: 8px;
+    }
+
+
+/*-------------------------
+      Labels
+--------------------------*/
+
+.form-label {
+    font-weight: 600;
+    color: #444;
+    font-size: 13px;
+}
+
+
+/*-------------------------
+      Controls
+--------------------------*/
+
+.form-control {
+    border-radius: 6px;
+}
+
+
+/*-------------------------
+      Search Button
+--------------------------*/
+
+.btn-search {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    min-width: 120px;
+}
+
+    .btn-search:hover {
+        background: #0b5ed7;
+        color: white;
+    }
+
+
+/*-------------------------
+      DataTable
+--------------------------*/
+
+.dataTables_wrapper {
+    padding-top: 10px;
+}
+
+.dataTables_filter {
+    margin-bottom: 15px;
+}
+
+.dataTables_length {
+    margin-bottom: 15px;
+}
+
+.dataTables_info {
+    padding-top: 12px;
+}
+
+.dataTables_paginate {
+    margin-top: 12px;
+}
+
+.dataTables_filter label {
+    font-weight: 600;
+}
+
+.dataTables_filter input {
+    border-radius: 6px;
+    width: 280px;
+}
+
+.dataTables_length select {
+    border-radius: 6px;
+}
+
+
+/*-------------------------
+      Export Buttons
+--------------------------*/
+
+.dt-buttons {
+    float: right;
+    margin-bottom: 15px;
+}
+
+.dt-button {
+    border: none !important;
+    border-radius: 5px !important;
+    margin-left: 6px !important;
+    padding: 7px 15px !important;
+    color: white !important;
+    padding: 8px 18px !important;
+    font-size: 13px !important;
+    font-weight: 600;
+}
+
+.buttons-excel {
+    background: #198754 !important;
+}
+
+.buttons-pdf {
+    background: #dc3545 !important;
+}
+
+.buttons-print {
+    background: #d77f40 !important;
+}
+
+
+/*-------------------------
+      Table
+--------------------------*/
+
+.report-table {
+    border: 1px solid #cfcfcf !important;
+}
+
+    .report-table thead th {
+        background: #2f2f2f !important;
+        color: #fff !important;
+        border: 1px solid #555 !important;
+        padding: 12px !important;
+        font-weight: 600;
+    }
+
+    .report-table tbody td {
+        border: 1px solid #ddd !important;
+        padding: 10px !important;
+    }
+
+    .report-table tbody tr:nth-child(even) {
+        background: #f8f8f8;
+    }
+
+    .report-table tbody tr:hover {
+        background: #e9f3ff !important;
+    }
+
+
+.table td,
+.table th {
+    padding: 10px;
+}
+
+
+/*-------------------------
+      Badges
+--------------------------*/
+
+.badge-success {
+    background: #198754;
+    color: white;
+}
+
+.badge-danger {
+    background: #dc3545;
+    color: white;
+}
+
+
+/*-------------------------
+      Utilities
+--------------------------*/
+.btn-search {
+    height: 38px;
+}
+.mb-20 {
+    margin-bottom: 25px;
+}
+
+.mt-20 {
+    margin-top: 25px;
+}
+
+.text-right {
+    text-align: right;
+}

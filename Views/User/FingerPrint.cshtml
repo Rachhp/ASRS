@@ -1,0 +1,664 @@
+﻿
+@using S1947.Models;
+@model S1947.Models.UserValidation
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //string mSubscID = Convert.ToString(Session["SubscID"]);
+
+    S1947Entities conn = new S1947Entities();
+
+    //var successMessage = TempData["SuccessMessage"] as string;
+
+
+}
+@*<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">*@
+@*<link rel="stylesheet" href="~/Content/css/googlefont.css" />*@
+<!-- Vendor CSS -->
+<link href="@Url.Content("~/Content/cssfont/all.min.css")" rel="stylesheet" />
+<link rel="stylesheet" href="~/Content/vendor/bootstrap/css/bootstrap.css" />
+<link rel="stylesheet" href="~/Content/vendor/bootstrap/css/bootstrap.css" />
+<link rel="stylesheet" href="~/Content/vendor/animate/animate.css">
+
+<link rel="stylesheet" href="~/Content/vendor/font-awesome/css/fontawesome-all.min.css" />
+<link rel="stylesheet" href="~/Content/vendor/magnific-popup/magnific-popup.css" />
+<link rel="stylesheet" href="~/Content/vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" href="~/Content/css/theme.css" />
+
+<!-- Skin CSS -->
+<link rel="stylesheet" href="~/Content/css/skins/default.css" />
+
+<!-- Theme Custom CSS -->
+<link rel="stylesheet" href="~/Content/css/custom.css">
+
+<!-- Head Libs -->
+<script src="~/Content/vendor/modernizr/modernizr.js"></script>
+
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<style>
+    .master {
+        background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+        color: #fff;
+        border-radius: 17px;
+    }
+    #loading {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(192, 192, 192, 0.2);
+        background-image: url("../Content/img/Loader.gif");
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+        .autocomplete-items div {
+            padding: 3px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+            /*when hovering an item:*/
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
+            }
+
+    /*when navigating through the items using the arrow keys:*/
+    .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+    }
+
+    .page-header {
+        background: #171717;
+        border-bottom: none;
+        border-left: 1px solid #3A3A3A;
+        -webkit-box-shadow: 1px 3px 0 1px #CCCCCC;
+        box-shadow: 1px 3px 0 1px #CCCCCC;
+        height: 50px;
+        border-bottom: 5px solid #ff6a00;
+        padding: 0;
+        margin: -41px -37px 40px -41px;
+    }
+</style>
+
+
+
+<style>
+    /* Card enhancement */
+    .card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 8px 22px rgba(0,0,0,0.1);
+        background: #ffffff;
+    }
+
+    /* Section headings */
+    .finger-title {
+        text-align: center;
+        font-weight: bold;
+        color: #000;
+        margin: 35px 0 20px;
+        position: relative;
+    }
+
+        .finger-title::after {
+            content: "";
+            width: 60px;
+            height: 4px;
+            background: #f39c12;
+            display: block;
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+
+    /* Buttons common */
+    .finger-btn {
+        border-radius: 30px;
+        padding: 12px 20px;
+        font-weight: 600;
+        transition: 0.3s ease;
+    }
+
+        .finger-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+    /* Enroll */
+    .btn-enroll {
+        background: #f39c12;
+        color: #fff;
+    }
+
+        .btn-enroll:hover {
+            background: #d68910;
+        }
+
+    /* Restore */
+    .btn-restore {
+        background: #000;
+        color: #fff;
+    }
+
+        .btn-restore:hover {
+            background: #333;
+        }
+
+    /* Delete */
+    .btn-delete {
+        background: #c0392b;
+        color: #fff;
+    }
+
+        .btn-delete:hover {
+            background: #922b21;
+        }
+</style>
+
+
+
+<style>
+    .action-box {
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        background: #fff;
+    }
+
+    .enroll-box {
+        border-top: 5px solid #f39c12;
+    }
+
+    .restore-box {
+        border-top: 5px solid #000;
+    }
+
+    .delete-box {
+        border-top: 5px solid #c0392b;
+    }
+
+    .box-title {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .restore {
+        color: black;
+    }
+</style>
+
+
+@*<div id="loading"></div>*@
+<section role="main" class="content-body">
+
+    <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm" style="background: #000; color: #fff; ">
+        <h3 class="mb-4 font-weight-bold"> <i class="fas fa-fingerprint card-icon" style="font-size: 30px;">  </i> Finger Print Registration </h3>
+        <div class="right-wrapper text-right" style="margin-right: 2%;">
+            <ol class="breadcrumbs">
+                <li><a href="~/Home/Dashboard"><i class="fas fa-home"></i></a></li>
+                <li><a href="~/Home/MaterialManagement"><i class="fas fa-sign-out-alt"></i></a></li>
+            </ol>
+        </div>
+    </header>
+    <!-- start: page -->
+    <div class="row">
+        <div class="col">
+
+        
+
+            <div id="customToast1" class="custom-toast1"></div>
+            <div id="customToast" class="custom-toast"></div>
+            <section class="card">
+                <div class="card-body">
+
+                    <!-- USER NAME -->
+                    <div class="form-group row justify-content-center align-items-center mb-4">
+                        <label class="col-lg-2 col-md-3 col-sm-12 text-lg-right text-md-right text-sm-center font-weight-bold">
+                            <span class="required">*</span> User Name
+                        </label>
+
+                        <div class="col-lg-4 col-md-5 col-sm-12">
+                            @Html.DropDownListFor(model => model.UserId, null, "-- Select User --",
+                                new { @class = "form-control populate" })
+                            @Html.ValidationMessageFor(model => model.UserId, "",
+                                new { style = "color:red" })
+                        </div>
+                    </div>
+
+                    <!-- ================= ENROLL BOX ================= -->
+                    <div class="action-box enroll-box">
+                        <h4 class="box-title text-warning">
+                            <i class="fas fa-fingerprint mr-2"></i> ENROLL FINGER
+                        </h4>
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <button type="submit" id="BioData1" name="FingerPrint1"
+                                        class="btn btn-lg btn-enroll finger-btn w-100">
+                                    <i class="fas fa-fingerprint mr-2"></i>
+                                    Enroll Finger 1
+                                </button>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <button type="submit" id="BioData2" name="FingerPrint2"
+                                        class="btn btn-lg btn-enroll finger-btn w-100">
+                                    <i class="fas fa-fingerprint mr-2"></i>
+                                    Enroll Finger 2
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= RESTORE BOX ================= -->
+                    <div class="action-box restore-box">
+                        <h4 class="box-title white restore">
+                            <i class="fas fa-sync-alt mr-2"></i> RESTORE FINGER
+                        </h4>
+
+                        <p class="text-center font-weight-bold">
+                            If Bio-Metric Module Replaced:
+                        </p>
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <button type="submit" id="restore1" name="FingerPrint1"
+                                        class="btn btn-lg btn-restore finger-btn w-100">
+                                    <i class="fas fa-sync-alt mr-2"></i>
+                                    Restore Finger 1
+                                </button>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <button type="submit" id="restore2" name="FingerPrint2"
+                                        class="btn btn-lg btn-restore finger-btn w-100">
+                                    <i class="fas fa-sync-alt mr-2"></i>
+                                    Restore Finger 2
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= DELETE BOX ================= -->
+                    <div class="action-box delete-box">
+                        <h4 class="box-title text-danger">
+                            <i class="fas fa-trash-alt mr-2"></i> DELETE FINGER
+                        </h4>
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <button type="submit" id="delete1" name="FingerPrint1"
+                                        class="btn btn-lg btn-delete finger-btn w-100">
+                                    <i class="fas fa-trash-alt mr-2"></i>
+                                    Delete Finger 1
+                                </button>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <button type="submit" id="delete2" name="FingerPrint2"
+                                        class="btn btn-lg btn-delete finger-btn w-100">
+                                    <i class="fas fa-trash-alt mr-2"></i>
+                                    Delete Finger 2
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <br />
+        </div>
+    </div>
+</section>
+<style>
+    /* Force black text for table headers and cells */
+    #datatable-tabletools th,
+    #datatable-tabletools td {
+        color: black !important;
+    }
+
+
+
+    /* Common button styles */
+    .finger-btn {
+        transition: all 0.3s ease;
+    }
+
+        /* Disabled style */
+        .finger-btn:disabled {
+            background: #dcdcdc !important; /* Greyed out */
+            color: #888 !important; /* Text grey */
+            cursor: not-allowed; /* Not clickable */
+            opacity: 0.7;
+            box-shadow: none;
+            position: relative;
+        }
+
+            /* Lock icon on disabled buttons using FontAwesome */
+            .finger-btn:disabled::after {
+                content: "\f023"; /* Lock icon */
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #888;
+            }
+
+        /* Optional: hover effect for active buttons */
+        .finger-btn:not(:disabled):hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+</style>
+<script>
+
+
+
+
+
+
+
+
+
+
+    $(document).ready(function () {
+        $('#UserId').on('change', function () {
+            var userCode = $(this).val();
+
+            $.ajax({
+                url: '/User/GetDtlFinger',
+                type: 'POST',
+                data: { userCode: userCode },
+                success: function (result) {
+                    if (!result) return;
+
+                    // BioId1 logic
+                    if (result.BioId1 && result.BioId1 !== "NULL") {
+                        $('#BioData1').prop('disabled', true);    // Enroll Finger 1
+                        $('#restore1').prop('disabled', false);   // Restore Finger 1
+                        $('#delete1').prop('disabled', false);    // Delete Finger 1
+                    } else {
+                        $('#BioData1').prop('disabled', false);
+                        $('#restore1').prop('disabled', true);
+                        $('#delete1').prop('disabled', true);
+                    }
+
+                    // BioId2 logic
+                    if (result.BioId2 && result.BioId2 !== "NULL") {
+                        $('#BioData2').prop('disabled', true);    // Enroll Finger 2
+                        $('#restore2').prop('disabled', false);   // Restore Finger 2
+                        $('#delete2').prop('disabled', false);    // Delete Finger 2
+                    } else {
+                        $('#BioData2').prop('disabled', false);
+                        $('#restore2').prop('disabled', true);
+                        $('#delete2').prop('disabled', true);
+                    }
+                },
+                error: function () {
+                    // No message, just leave buttons disabled
+                }
+            });
+        });
+    });
+
+    $(function () {
+        $('#BioData1').on('click', function () {
+            $("#loading").show();
+            if ($("#UserId").val() != "") {
+                enroll_finger($("#UserId").val(), "1");
+            } else {
+                $("#loading").hide();
+                // pNof("", "Please select user name");
+                showCustomToast("Please Select User Name");
+                voiceMsg("Please Select User Name");
+                $("#UserId").focus();
+            }
+
+        });
+    });
+    $(function () {
+        $('#BioData2').on('click', function () {
+            $("#loading").show();
+            if ($("#UserId").val() != "") {
+                enroll_finger($("#UserId").val(), "2");
+            } else {
+                $("#loading").hide();
+                // pNof("", "Please select user name");
+                showCustomToast("Please Select User Name");
+
+                voiceMsg("Please Select User Name");
+                $("#UserId").focus();
+            }
+        });
+    });
+    $(function () {
+        $('#restore1').on('click', function () {
+            $("#loading").show();
+            if ($("#UserId").val() != "") {
+                restore_finger($("#UserId").val(), "1");
+            } else {
+                $("#loading").hide();
+                // pNof("", "Please select user name");
+                showCustomToast("Please Select User Name");
+                $("#UserId").focus();
+            }
+
+        });
+    });
+    $(function () {
+        $('#restore2').on('click', function () {
+            //  alert("");
+            $("#loading").show();
+            if ($("#UserId").val() != "") {
+                restore_finger($("#UserId").val(), "2");
+            } else {
+                $("#loading").hide();
+                //  pNof("", "Please select user name");
+                showCustomToast("Please Select User Name");
+                $("#UserId").focus();
+            }
+
+        });
+    });
+    $(function () {
+        $('#delete1').on('click', function () {
+            $("#loading").show();
+            if ($("#UserId").val() != "") {
+                delete_finger($("#UserId").val(), "1");
+            } else {
+                $("#loading").hide();
+                // pNof("", "Please select user name");
+                showCustomToast("Please Select User Name");
+                $("#UserId").focus();
+            }
+
+        });
+    });
+    $(function () {
+        $('#delete2').on('click', function () {
+            //  alert("");
+            $("#loading").show();
+            if ($("#UserId").val() != "") {
+                delete_finger($("#UserId").val(), "2");
+            } else {
+                $("#loading").hide();
+                //  pNof("", "Please select user name");
+                showCustomToast1("Please Select User Name");
+                $("#UserId").focus();
+            }
+
+        });
+    });
+
+
+    function enroll_finger(finger, id) {
+
+
+        $("#loading").show()
+        $.ajax({
+            url: "/Utility/ExecuteCommand",
+            type: 'POST',
+            data:
+            {
+                finger_name: finger,
+                fid: id
+            },
+            success: function (response) {
+                //  alert("response" + response);
+                if (response == "Success") {
+                    $("#loading").hide();
+                    voiceMsg("Successfully Registered");
+                    //    pNofsuc("", "Successfully Registered");
+                    showCustomToast1("Successfully Registered");
+
+
+                } else {
+                    /*  voiceMsg(response);*/
+                    // alert("response" + response);
+                    $("#loading").hide();
+                    //  pNoffail(response, "");
+                    showCustomToast1(response);
+                }
+                setTimeout(function () {
+                    window.location.href = '/User/FingerPrint';
+                }, 5000);
+            },
+            error: function (data) {
+                // alert(data);
+                $("#loading").hide();
+
+                showToast(response, "error");
+                //  pNoffail(response, "");
+            }
+        });
+    }
+
+
+    function restore_finger(finger, id) {
+        $("#loading").show();
+        $.ajax({
+            url: "/Utility/restoreFinger",
+            data:
+            {
+                finger_name: finger,
+                fid: id
+            },
+            success: function (response) {
+                if (response == "Fingerprint restored successfully.") {
+                    $("#loading").hide();
+                    //    pNofsuc("", "Successfully Registered");
+                    showCustomToast1("Restored Successfully");
+                } else {
+                    // pNoffail(response, "From biometric");
+                    showCustomToast(response + "From Biometric");
+                }
+                setTimeout(function () {
+                    window.location.href = '/User/FingerPrint';
+                }, 5000);
+            },
+            error: function (data) {
+                $("#loading").hide();
+            }
+        });
+    } function delete_finger(finger, id) {
+        $("#loading").show();
+        $.ajax({
+            url: "/Utility/deleteFinger",
+            data:
+            {
+                finger_name: finger,
+                fid: id
+            },
+            success: function (response) {
+                if (response == "Fingerprint Deleted successfully.") {
+                    $("#loading").hide();
+                    // pNofsuc("", "Fingerprint Deleted successfully.");
+                    showCustomToast1("Fingerprint Deleted Successfully");
+                } else {
+                    //  pNoffail(response, "From biometric");
+                    showCustomToast1(response);
+                }
+                setTimeout(function () {
+                    window.location.href = '/User/FingerPrint';
+                }, 5000);
+            },
+            error: function (data) {
+                $("#loading").hide();
+            }
+        });
+    }
+
+    function showCustomToast(message) {
+        alert('hii');
+        $('#customToast').text(message).stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+    }
+    function showCustomToast1(message) {
+        alert('hii');
+        $('#customToast1').text(message).stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+    }
+
+
+</script>
+
+<script src="~/Content/vendor/jquery-appear/jquery-appear.js"></script>
+<script src="~/Content/vendor/jquery.easy-pie-chart/jquery.easy-pie-chart.js"></script>
+<script src="~/Content/vendor/flot/jquery.flot.js"></script>
+<script src="~/Content/vendor/flot.tooltip/flot.tooltip.js"></script>
+<script src="~/Content/vendor/flot/jquery.flot.pie.js"></script>
+<script src="~/Content/vendor/flot/jquery.flot.categories.js"></script>
+<script src="~/Content/vendor/flot/jquery.flot.resize.js"></script>
+<script src="~/Content/vendor/jquery-sparkline/jquery-sparkline.js"></script>
+<script src="~/Content/vendor/raphael/raphael.js"></script>
+<script src="~/Content/vendor/morris/morris.js"></script>
+<script src="~/Content/vendor/owl.carousel/owl.carousel.js"></script>
+<script src="~/Content/vendor/chartist/chartist.js"></script>
+
+<script src="~/Content/vendor/liquid-meter/liquid.meter.js"></script>
+<script src="~/Content/vendor/snap.svg/snap.svg.js"></script>
+
+<script src="~/Scripts/js/modernizr/2.8.3/modernizr.js"></script>
+
+<script src="~/Content/vendor/jquery-ui/jquery-ui.js"></script>
+<script src="~/Content/vendor/jqueryui-touch-punch/jqueryui-touch-punch.js"></script>
+<script src="~/Content/vendor/select2/js/select2.js"></script>
+
+
+<!-- Theme Base, Components and Settings -->
+<script src="~/Scripts/js/theme.js"></script>
+
+<!-- Theme Custom -->
+<script src="~/Scripts/js/custom.js"></script>
+
+<!-- Theme Initialization Files -->
+<script src="~/Scripts/js/theme.init.js"></script>
+
+
+
+

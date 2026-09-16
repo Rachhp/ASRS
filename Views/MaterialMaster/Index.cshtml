@@ -1,0 +1,202 @@
+﻿@using S1947.Models;
+@{
+    ViewBag.Title = "Material Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    S1947Entities conn = new S1947Entities();
+    var AllList = conn.PartMasters.ToList();
+
+    var loadedMaterialCodes = conn.GoodsExisitings
+     .Where(x => (x.LocaStatus == "OCCUPIED" || x.LocaStatus == "LOADED")
+              && x.DeleteStatus == "N")
+     .Select(x => x.FGCode)
+     .Distinct()
+     .ToList();
+
+
+
+}
+<style>
+    .master {
+        background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+        color: #fff;
+        border-radius: 17px;
+    }
+/*    body {
+        background: #f1f4f9;
+        font-family: Arial, sans-serif; 
+    }*/
+    .page-header {
+        margin: -36px -37px 40px -37px;
+        border-bottom: 5px solid #ff6a00;
+    }
+    .form-section {
+        display: flex;
+    }
+
+
+    .table-responsive {
+        max-height: 600px; /* set the max height for scrolling */
+        overflow-y: auto; /* enable vertical scroll */
+    }
+
+    #datatable-tabletools thead th {
+        position: sticky;
+        top: 0;
+        color: #fff;
+        z-index: 10; /* make sure header stays on top */
+    }
+
+
+
+    .table-container {
+        width: 100%;
+    }
+
+    .table-scroll {
+        max-height: 600px; /* height of scrollable area */
+        overflow-y: auto; /* vertical scrollbar */
+        overflow-x: auto; /* horizontal scrollbar if table is wide */
+        border: 1px solid #ccc; /* optional, to show boundary */
+    }
+
+    #datatable-tabletools thead th {
+        position: sticky;
+        top: 0;
+        color: #fff;
+        z-index: 10;
+    }
+
+</style>
+<head>
+    <link href="@Url.Content("~/Content/css/MaterialMaster.css")" rel="stylesheet" />
+</head>
+
+<section role="main">
+    <header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm"  style="background: #000; color: #fff; ">
+        <div>
+            <h3 class="mb-4 font-weight-bold"> <i class="fas fa-box-open"></i> Part Master </h3>
+        </div>
+        <div class="text-center flex-grow-1">
+            <a href="~/MaterialMaster/AddEdit" class="btn btn-primary btn-lg px-4" style="border-radius: 30px;">  <i class="fas fa-plus-circle mr-1"></i> Add New Part </a>
+        </div>
+        <div>
+            <ol class="breadcrumbs mb-0" style="list-style: none; padding-left: 0; display: flex; gap: 15px; font-size: 18px;">
+                <li class="breadcrumb-item">
+                    <a href="~/Home/Dashboard" style="color: #fff;">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="~/Home/MastersManagement"><i class="fas fa-sign-out-alt"></i></a>
+                </li>
+            </ol>
+        </div>
+    </header>
+    <!-- Main Content -->
+    <div class="card-modern">
+        <div class="table-responsive">
+            <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search here..." />
+            <table class="table table-bordered table-hover table-scroll" id="datatable-tabletools">
+                <thead>
+                    <tr>
+                        <th width="5%">SlNo</th>
+                        <th width="20%">Part Code</th>
+                        <th width="30%">Part Name</th>
+                        <th width="30%">Type</th>
+                        <th width="10%">Status</th>
+                        <th width="5%">Edit</th>
+                        <th hidden>ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int row = 0;
+                    }
+                    @foreach (var item in AllList)
+                    {
+                        <tr>
+                            <td class="text-center">@(++row)</td>
+                            <td class="text-center">@item.FGCode</td>
+                            <td class="text-center">@item.FGModel</td>
+                            <td class="text-center">
+                                @(item.Type.Trim() == "A" ? "A - Runner" :item.Type.Trim() == "B" ? "B - Medium" : "C - Slower")
+                            </td>
+                            <td class="text-center">
+                                @if (item.LockStatus.Trim() == "Y")
+                                {
+                                    <span class="badge badge-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger" style="">Inactive</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (loadedMaterialCodes.Contains(item.FGCode))
+                                {
+                                    <button type="button"
+                                            class="btn btn-sm btn-secondary"
+                                            onclick="showLockMessage()"
+                                            title="Material is loaded and cannot be edited">
+                                        <i class="fa fa-lock"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("AddEdit", "MaterialMaster", new { MTransNo = item.MTransNo })"
+                                       class="btn btn-sm btn-primary"
+                                       title="Edit">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                }
+                            </td>
+
+                            @*<td class="text-center">
+            <a href="@Url.Action("AddEdit","MaterialMaster",new { MTransNo=item.MTransNo })"
+               class="btn btn-sm btn-primary">
+                <i class="fa fa-edit"></i>
+            </a>
+        </td>*@
+                            <td hidden>@item.MTransNo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function () {
+        $("#searchInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("table tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+
+<!-- Scripts -->
+<script>
+    $(document).ready(function () {
+        //$("#datatable-tabletools").on('click', '.RecEdit', function () {
+        //    var row = $(this).closest("tr");
+        //    var MTransNo = row.find("td:eq(6)").html();
+
+        //    $.post('/SetSession/SetVariable',
+        //        { key: "MTransNo", value: MTransNo },
+        //        function () {
+        //            window.location.href = "/User/AddEdit";
+        //        }
+        //    );
+        //});
+    });
+
+    function showLockMessage() {
+        alert("This Material Is Loaded Cannot Be Changed");
+    }
+</script>
+
+
+

@@ -1,0 +1,443 @@
+﻿@model S1947.Models.Shuttlemastervalidationcs
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Lift Control Dashboard";
+}
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+
+<style>
+    body {
+        background: #f4f6f9;
+    }
+
+
+    .page-header {
+        margin: -35px -35px 25px -35px;
+        border-bottom: 5px solid #ff6a00;
+    }
+
+    .status-bar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        color: white;
+        font-size: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        margin-bottom: 20px;
+    }
+
+    .mode-1 {
+        background: linear-gradient(45deg,#ff9800,#ffb74d);
+    }
+
+    .mode-2 {
+        background: linear-gradient(45deg,#1976d2,#42a5f5);
+    }
+
+    .mode-3 {
+        background: linear-gradient(45deg,#4caf50,#81c784);
+    }
+    /* CARDS */
+    .lift-container {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .lift-card::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: #ccc;
+    }
+
+    .lift-card.active {
+        background: #eef7ff;
+        border: 2px solid #0d6efd;
+        box-shadow: 0 10px 25px rgba(13,110,253,.25);
+    }
+
+    .lift-card {
+        width: 240px;
+        background: linear-gradient(145deg, #ffffff, #ccc);
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.25s ease-in-out;
+        border: 2px solid transparent;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+        color: #1f2d3d;
+    }
+
+        .lift-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px #42a5f5;
+        }
+
+            .lift-card:hover h3,
+            .lift-card:hover p {
+                color: #1f2d3d !important;
+            }
+
+        .lift-card.active {
+            background: linear-gradient(135deg, #1f2d3d, white);
+            border: 2px solid #00c853;
+            box-shadow: 0 10px 25px rgba(0,200,83,0.35);
+            color: #0b1b0f;
+        }
+
+    .lift-icon {
+        font-size: 40px;
+        margin-top: 30px;
+    }
+
+    /* LIVE PANEL */
+    .live-panel {
+        margin-top: 25px;
+        background: #0f172a;
+        color: #00e5ff;
+        padding: 18px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        width: 380px;
+        margin-left: auto;
+        margin-right: auto;
+        font-family: monospace;
+    }
+
+        .live-panel h4 {
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+    /* BUTTON */
+    .btn-save {
+        margin-top: 25px;
+        padding: 12px 40px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(45deg,#007bff,#00bcd4);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(0,123,255,0.3);
+        transition: 0.3s;
+    }
+
+    .mode-box {
+        background: #bcd7f5;
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        max-width: 900px;
+        margin: 25px auto;
+        border: 1px solid #eef2f7;
+    }
+
+    .mode-title {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #1f2d3d;
+    }
+
+    .btn-save:hover {
+        transform: scale(1.05);
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .lift-icon i {
+        font-size: 42px;
+        color: #007bff;
+    }
+    .lift-side-selector {
+        width: 100%;
+        max-width: 900px;
+        margin: 20px auto 10px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        min-height: 52px;
+    }
+        .lift-side-selector #statusBar {
+            margin-bottom: 0;
+            margin-top: 0;
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+
+    .lift-side-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: #1f2d3d;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+        .lift-side-label i {
+            color: #007bff;
+            font-size: 16px;
+        }
+
+    .lift-side-dropdown {
+        width: 200px;
+        height: 42px;
+        padding: 0 14px;
+        border: 2px solid #dce3eb;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #1f2d3d;
+        font-size: 14px;
+        font-weight: 600;
+        outline: none;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transition: all 0.2s ease;
+    }
+
+        .lift-side-dropdown:hover {
+            border-color: #42a5f5;
+            box-shadow: 0 6px 16px rgba(66,165,245,0.18);
+        }
+
+        .lift-side-dropdown:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.12);
+        }
+
+        .lift-side-dropdown option {
+            background: #ffffff;
+            color: #1f2d3d;
+        }
+
+
+</style>
+
+
+<header class="page-header d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm" style="background: #1D2127; color: #fff;">
+    <div>
+        <h3 class="mb-4 font-weight-bold">
+            Lift Control Configuration
+        </h3>
+    </div>
+    <div>
+        <ol class="breadcrumbs mb-0" style="list-style: none; padding-left: 0; display: flex; gap: 15px; font-size: 18px;">
+            <li class="breadcrumb-item">
+                <a href="~/Home/Dashboard" style="color: #fff;">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li>
+                <a href="~/Home/MastersManagement"><i class="fas fa-sign-out-alt"></i></a>
+            </li>
+        </ol>
+    </div>
+</header>
+@Html.HiddenFor(m => m.MTransNo)
+<input type="hidden" id="RunMode" value="@Model.RunMode" />
+<div class="lift-side-selector">
+    <div class="lift-side-label">
+        <i class="fas fa-exchange-alt"></i>
+        <span>Lift Side</span>
+    </div>
+
+    <select id="LiftNo" class="lift-side-dropdown">
+        <option value="LOAD" @(Model.LiftNo == "LOAD" ? "selected" : "")>
+            Loading Side
+        </option>
+
+        <option value="UNLOAD" @(Model.LiftNo == "UNLOAD" ? "selected" : "")>
+            Unloading Side
+        </option>
+    </select>
+
+    <!-- SYSTEM STATUS -->
+    <div id="statusBar" class="status-bar"></div>
+</div>
+
+
+<div class="mode-box">
+    <h4 class="mode-title">Select Operating Mode</h4>
+    <!-- LIFT MODE CARDS -->
+    <div class="lift-container">
+
+        <div class="lift-card" data-mode="1">
+            <div class="lift-icon">
+                <i class="fas fa-warehouse"></i>
+            </div>
+            <h3>Lift 1 Only</h3>
+            <p>Lift 1: 🟢 ON<br>Lift 2: 🔴 OFF</p>
+        </div>
+
+        <div class="lift-card" data-mode="2">
+            <div class="lift-icon">
+                <i class="fas fa-warehouse"></i>
+            </div>
+            <h3>Lift 2 Only</h3>
+            <p>Lift 1: 🔴 OFF<br>Lift 2: 🟢 ON</p>
+        </div>
+
+        <div class="lift-card" data-mode="3">
+            <div class="lift-icon">
+                <i class="fas fa-warehouse"></i>
+            </div>
+            <h3>Both Lifts</h3>
+            <p>Lift 1: 🟢 ON<br>Lift 2: 🟢 ON</p>
+        </div>
+    </div>
+</div>
+
+<div class="center">
+    <button class="btn-save" id="btnSave">
+        💾 Save Mode
+    </button>
+</div>
+
+<script>
+
+    const MODE1 = 1;
+    const MODE2 = 2;
+    const MODE3 = 3;
+    let selectedMode = parseInt($("#RunMode").val()) || MODE1;
+
+// initial load highlight
+$(".lift-card").each(function () {
+    if ($(this).data("mode") == selectedMode) {
+        $(this).addClass("active");
+        updateUI(selectedMode);
+    }
+});
+
+// click selection
+    $(".lift-card").click(function () {
+
+        $(".lift-card").removeClass("active");
+
+        $(this).addClass("active");
+
+        selectedMode = $(this).data("mode");
+
+    });
+
+// update UI
+function updateUI(mode) {
+
+    let statusText = "";
+    let l1 = "OFF";
+    let l2 = "OFF";
+
+    if (mode == 1) {
+        statusText = "🟠 Current Mode: Lift 1 Only";
+        l1 = "ON";
+    }
+    else if (mode == 2) {
+        statusText = "🔴 Current Mode: Lift 2 Only";
+        l2 = "ON";
+    }
+    else if (mode == 3) {
+        statusText = "🟢 Current Mode: Both Lifts";
+        l1 = "ON";
+        l2 = "ON";
+    }
+
+    $("#statusBar")
+        .removeClass("mode-1 mode-2 mode-3")
+        .addClass("mode-" + mode)
+        .text(statusText);
+
+}
+
+$("#LiftNo").change(function () {
+
+    var liftNo = $(this).val();
+
+    window.location.href =
+        '@Url.Action("AddEdit", "LiftStatusMaster")?LiftNo=' + liftNo;
+});
+
+
+// save
+$("#btnSave").click(function () {
+
+    //let MTransNo = $("#MTransNo").val();
+    $("#btnSave")
+        .prop("disabled", true)
+        .text("Saving...");
+    $.ajax({
+        url: '@Url.Action("SaveData","LiftStatusMaster")',
+        type: 'POST',
+        data: {
+            //MTransNo: MTransNo,
+            LiftNo: $("#LiftNo").val(),
+            RunMode: selectedMode
+        },
+        success: function (res) {
+
+            if (res.operationInProcess) {
+
+                alert("⚠️ " + res.message);
+                showToastMessage(res.message, "error");
+                $("#btnSave")
+                    .prop("disabled", false)
+                    .text("💾 Save Mode");
+
+                return;
+
+            }
+            
+            if (res.success) {
+                showToastMessage(res.message, "success");
+                $("#btnSave")
+                    .text("✔ Mode Updated")
+                    .css("background", "#28a745");
+                updateUI(selectedMode);
+
+            } else {
+
+                $("#btnSave")
+                    .text(res.message)
+                    .css("background", "#dc3545");
+            }
+
+        },
+        complete: function () {
+
+            $("#btnSave")
+                .prop("disabled", false)
+                .text("💾 Save Mode");
+
+        },
+        error: function () {
+
+            $("#btnSave")
+                .text("Server Error")
+                .css("background", "#dc3545");
+        }
+    });
+
+});
+</script>

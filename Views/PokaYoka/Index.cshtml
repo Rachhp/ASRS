@@ -1,0 +1,815 @@
+﻿@model S1947.Models.PokaYoka.PokaYokaViewModel
+@{
+    ViewBag.Title = "PolaYoka Operation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery-3.6.0.min.js"></script>
+<style>
+    .poka-page {
+        width: 100%;
+    }
+
+    .poka-card {
+        background: #fff;
+        border: 1px solid #d7dee8;
+        border-radius: 10px;
+        margin-bottom: 18px;
+        box-shadow: 0 3px 14px rgba(15, 23, 42, .07);
+        overflow: hidden;
+    }
+
+    .poka-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        background: #f8fafc;
+        border-bottom: 1px solid #dbe3ec;
+        color: #172033;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .poka-card-header .header-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .header-icon {
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: #fff7ed;
+        color: #ea580c;
+        font-size: 14px;
+        border: 1px solid #fed7aa;
+    }
+
+    .poka-card-body {
+        padding: 20px;
+    }
+
+    .qr-search-box {
+        background: #f8fafc;
+        border: 1px solid #dbe3ec;
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    .poka-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #334155;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .qr-input {
+        height: 42px;
+        border: 1px solid #94a3b8;
+        border-radius: 6px;
+        color: #0f172a !important;
+        background: #fff !important;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .qr-input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .btn-poka {
+        height: 42px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+
+    .btn-scan {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .btn-scan:hover {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+    }
+
+    .hidden-section {
+        display: none !important;
+    }
+
+    /* QR DETAILS */
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .detail-item {
+        padding: 13px 14px;
+        background: #f8fafc;
+        border: 1px solid #dbe3ec;
+        border-radius: 7px;
+    }
+
+    .detail-label {
+        display: block;
+        margin-bottom: 6px;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .35px;
+    }
+
+    .detail-value {
+        display: block;
+        color: #0f172a;
+        font-size: 13px;
+        font-weight: 700;
+        min-height: 18px;
+    }
+
+    .detail-value.code {
+        color: #334155;
+        font-family: Consolas, monospace;
+        font-size: 11px;
+    }
+
+    .received-section {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .received-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .received-box {
+        padding: 15px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 7px;
+    }
+
+    .received-value {
+        display: block;
+        color: #1e40af;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    /* WEIGHT ACTION */
+
+    .weight-action {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .machine-info {
+        color: #475569;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .machine-info span {
+        color: #b45309;
+        font-weight: 800;
+    }
+
+    .btn-fetch {
+        min-width: 190px;
+        background: #f59e0b;
+        border-color: #f59e0b;
+        color: #fff;
+    }
+
+    .btn-fetch:hover {
+        background: #d97706;
+        border-color: #d97706;
+        color: #fff;
+    }
+
+    /* RESULT */
+
+    .result-card .poka-card-header {
+        background: #f0fdf4;
+        border-bottom-color: #bbf7d0;
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .result-item {
+        padding: 15px;
+        background: #fff;
+        border: 1px solid #dbe3ec;
+        border-radius: 7px;
+    }
+
+    .result-item.actual {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+    }
+
+    .result-item.difference {
+        background: #fff7ed;
+        border-color: #fed7aa;
+    }
+
+    .result-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .result-value {
+        color: #0f172a;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .actual .result-value {
+        color: #047857;
+    }
+
+    .difference .result-value {
+        color: #c2410c;
+    }
+
+    .qc-status {
+        margin-top: 16px;
+        padding: 17px;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: .4px;
+    }
+
+    .status-ok {
+        color: #047857;
+        background: #dcfce7;
+        border: 1px solid #86efac;
+    }
+
+    .status-not-ok {
+        color: #b91c1c;
+        background: #fee2e2;
+        border: 1px solid #fca5a5;
+    }
+
+    @@media (max-width: 900px) {
+        .details-grid,
+        .result-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .details-grid,
+        .result-grid,
+        .received-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .weight-action {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .btn-fetch {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="poka-page">
+
+    <!-- QR SCANNER -->
+    <div class="poka-card">
+        <div class="poka-card-body">
+
+            <div class="qr-search-box">
+                <div class="row">
+
+                    <div class="col-md-10">
+                        <label class="poka-label">Scan QR Code</label>
+
+                        <input type="text" id="txtQRCode"
+                               class="form-control qr-input"
+                               maxlength="100"
+                               autocomplete="off"
+                               placeholder="Scan QR code..." />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="poka-label">&nbsp;</label>
+                        <button type="button"
+                                id="btnScanQr"
+                                class="btn btn-primary btn-block btn-poka btn-scan">
+                            SCAN QR
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- SCANNED QR DETAILS -->
+    <div id="qrDetails" class="poka-card hidden-section">
+
+        <div class="poka-card-header">
+            <div class="header-title">
+                <span class="header-icon">✓</span>
+                Scanned Material Details
+            </div>
+        </div>
+
+        <div class="poka-card-body">
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+                    <span class="detail-label">Model</span>
+                    <span id="lblModel" class="detail-value">-</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">FG Code</span>
+                    <span id="lblFGCode" class="detail-value code">-</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Unique ID</span>
+                    <span id="lblUniqueId" class="detail-value code">-</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Pallet Number</span>
+                    <span id="lblPalletNumber" class="detail-value">-</span>
+                </div>
+
+            </div>
+
+            <div class="received-section">
+
+                <div class="received-grid">
+
+                    <div class="received-box">
+                        <span class="detail-label">Received Weight</span>
+                        <span id="lblReceivedWeight"
+                              class="received-value">
+                            0.000 KG
+                        </span>
+                    </div>
+
+                    <div class="received-box">
+                        <span class="detail-label">Received Quantity</span>
+                        <span id="lblReceivedQuantity"
+                              class="received-value">
+                            0 PCS
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- WEIGHT ACTION -->
+    <div id="weightSection" class="poka-card hidden-section">
+
+        <div class="poka-card-header">
+            <div class="header-title">
+                <span class="header-icon">⚖</span>
+                Weight Verification
+            </div>
+        </div>
+
+        <div class="poka-card-body">
+
+            <div class="weight-action">
+
+                <div class="machine-info">
+                    Machine Status:
+                    <span id="machineStatus">NOT CONNECTED</span>
+                </div>
+
+                <button type="button"
+                        id="btnFetchWeight"
+                        class="btn btn-warning btn-poka btn-fetch">
+                    FETCH WEIGHT
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- QC RESULT -->
+    <div id="resultSection"
+         class="poka-card result-card hidden-section">
+
+        <div class="poka-card-header">
+            <div class="header-title">
+                <span class="header-icon">QC</span>
+                Weight Verification Result
+            </div>
+        </div>
+
+        <div class="poka-card-body">
+
+            <div class="result-grid">
+
+                <div class="result-item actual">
+                    <span class="result-label">Actual Weight</span>
+                    <span id="lblActualWeight"
+                          class="result-value">
+                        0.000 KG
+                    </span>
+                </div>
+
+                <div class="result-item actual">
+                    <span class="result-label">Actual Quantity</span>
+                    <span id="lblActualQuantity"
+                          class="result-value">
+                        0 PCS
+                    </span>
+                </div>
+
+                <div class="result-item difference">
+                    <span class="result-label">Weight Difference</span>
+                    <span id="lblWeightDifference"
+                          class="result-value">
+                        0.000 KG
+                    </span>
+                </div>
+
+                <div class="result-item difference">
+                    <span class="result-label">Quantity Difference</span>
+                    <span id="lblQuantityDifference"
+                          class="result-value">
+                        0 PCS
+                    </span>
+                </div>
+
+            </div>
+
+            <div id="qcStatus" class="qc-status"></div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+    var currentModel = null;
+
+    $(document).ready(function () {
+
+        $("#txtQRCode").focus();
+        $("#btnScanQr").click(function () {
+            scanQr();
+        });
+
+        $("#txtQRCode").keypress(function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                scanQr();
+            }
+        });
+
+        $("#btnFetchWeight").click(function () {
+            fetchWeight();
+        });
+
+    });
+
+
+    function scanQr() {
+        var qrCode = $("#txtQRCode").val().trim();
+        if (!qrCode) {
+            alert("Please scan QR code.");
+            $("#txtQRCode").focus();
+            return;
+        }
+
+        $("#btnScanQr").prop("disabled", true);
+
+        $.ajax({
+            url: '@Url.Action("ScanQr", "PokaYoka")',
+            type: 'POST',
+            data: {
+                qrCode: qrCode
+            },
+            success: function (response) {
+                if (!response.success) {
+                    alert(response.message);
+                    return;
+                }
+                currentModel = response.data;
+
+                $("#lblModel").text(currentModel.Model || "-");
+                $("#lblFGCode").text(currentModel.FGCode || "-");
+                $("#lblUniqueId").text(currentModel.UniqueId || "-");
+                $("#lblPalletNumber").text(currentModel.PalletNumber || "-");
+                $("#lblReceivedWeight").text( currentModel.ReceivedWeight +" KG");
+                $("#lblReceivedQuantity").text( currentModel.ReceivedQuantity +" PCS");
+                $("#qrDetails").removeClass("hidden-section");
+                $("#weightSection").removeClass("hidden-section");
+                $("#resultSection").addClass("hidden-section");
+
+            },
+            error: function () {
+                alert("Error while processing QR code.");
+
+            },
+            complete: function () {
+                $("#btnScanQr").prop("disabled", false);
+            }
+
+        });
+
+    }
+
+        function fetchWeight() {
+
+        if (!currentModel) {
+
+            alert("Please scan QR first.");
+
+            return;
+        }
+
+        $("#btnFetchWeight")
+            .prop("disabled", true)
+            .text("READING WEIGHT...");
+
+        // Serialize decimals with invariant culture (dot separator)
+        // so the MVC model binder never fails on culture.
+        var postData = {
+            QRCode: currentModel.QRCode,
+            Model: currentModel.Model,
+            FGCode: currentModel.FGCode,
+            PalletNumber: currentModel.PalletNumber,
+            ReceivedWeight: String(currentModel.ReceivedWeight),
+            ReceivedQuantity: String(currentModel.ReceivedQuantity),
+            ActualWeight: String(currentModel.ActualWeight || 0),
+            ActualQuantity: String(currentModel.ActualQuantity || 0),
+            WeightDifference: String(currentModel.WeightDifference || 0),
+            QuantityDifference: String(currentModel.QuantityDifference || 0),
+            QCStatus: currentModel.QCStatus || "",
+            QRScanned: currentModel.QRScanned,
+            WeightFetched: currentModel.WeightFetched || false,
+            MachineStatus: currentModel.MachineStatus || "",
+            Message: currentModel.Message || ""
+        };
+
+        $.ajax({
+
+            url: '@Url.Action("FetchWeight", "PokaYoka")',
+
+            type: 'POST',
+
+            data: postData,
+
+            success: function (response) {
+
+                if (!response.success) {
+
+                    alert(response.message);
+
+                    return;
+                }
+
+                currentModel = response.data;
+
+                $("#lblActualWeight")
+                    .text(
+                        currentModel.ActualWeight +
+                        " KG"
+                    );
+
+                $("#lblActualQuantity")
+                    .text(
+                        currentModel.ActualQuantity +
+                        " PCS"
+                    );
+
+                $("#lblWeightDifference")
+                    .text(
+                        currentModel.WeightDifference +
+                        " KG"
+                    );
+
+                $("#lblQuantityDifference")
+                    .text(
+                        currentModel.QuantityDifference +
+                        " PCS"
+                    );
+
+                $("#machineStatus")
+                    .html(
+                        "Machine: <b>" +
+                        currentModel.MachineStatus +
+                        "</b>"
+                    );
+
+                var status =
+                    currentModel.QCStatus;
+
+                var statusBox =
+                    $("#qcStatus");
+
+                statusBox
+                    .removeClass(
+                        "status-ok status-not-ok"
+                    );
+
+                if (status === "OK") {
+
+                    statusBox
+                        .addClass("status-ok")
+                        .text("QC OK");
+
+                }
+                else {
+
+                    statusBox
+                        .addClass("status-not-ok")
+                        .text("QC NOT OK");
+
+                }
+
+                $("#resultSection")
+                    .removeClass("hidden-section");
+
+            },
+
+            error: function (xhr) {
+
+                alert(
+                    "Error while fetching weight: " +
+                    xhr.status + " " + xhr.statusText
+                );
+
+            },
+
+            complete: function () {
+
+                $("#btnFetchWeight")
+                    .prop("disabled", false)
+                    .text("FETCH WEIGHT");
+
+            }
+
+        });
+
+    }
+
+    @*function fetchWeight() {
+
+        if (!currentModel) {
+
+            alert("Please scan QR first.");
+            return;
+        }
+
+        $("#btnFetchWeight")
+            .prop("disabled", true)
+            .text("READING WEIGHT...");
+
+        $.ajax({
+
+            url: '@Url.Action("FetchWeight", "PokaYoka")',
+
+            type: 'POST',
+
+            data: currentModel,
+
+            success: function (response) {
+
+                if (!response.success) {
+
+                    alert(response.message);
+
+                    return;
+                }
+
+                currentModel = response.data;
+
+                $("#lblActualWeight")
+                    .text(
+                        currentModel.ActualWeight +
+                        " KG"
+                    );
+
+                $("#lblActualQuantity")
+                    .text(
+                        currentModel.ActualQuantity +
+                        " PCS"
+                    );
+
+                $("#lblWeightDifference")
+                    .text(
+                        currentModel.WeightDifference +
+                        " KG"
+                    );
+
+                $("#lblQuantityDifference")
+                    .text(
+                        currentModel.QuantityDifference +
+                        " PCS"
+                    );
+
+                $("#machineStatus")
+                    .html(
+                        "Machine: <b>" +
+                        currentModel.MachineStatus +
+                        "</b>"
+                    );
+
+                var status =
+                    currentModel.QCStatus;
+
+                var statusBox =
+                    $("#qcStatus");
+
+                statusBox
+                    .removeClass(
+                        "status-ok status-not-ok"
+                    );
+
+                if (status === "OK") {
+
+                    statusBox
+                        .addClass("status-ok")
+                        .text("QC OK");
+
+                }
+                else {
+
+                    statusBox
+                        .addClass("status-not-ok")
+                        .text("QC NOT OK");
+
+                }
+
+                $("#resultSection")
+                    .removeClass("hidden-section");
+
+            },
+
+            error: function () {
+
+                alert(
+                    "Error while fetching weight."
+                );
+
+            },
+
+            complete: function () {
+
+                $("#btnFetchWeight")
+                    .prop("disabled", false)
+                    .text("FETCH WEIGHT");
+
+            }
+
+        });
+
+    }*@
+
+</script>

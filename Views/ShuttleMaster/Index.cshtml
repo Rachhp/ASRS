@@ -1,0 +1,53 @@
+﻿
+
+@model IEnumerable<S1947.Models.ShuttleDtl>
+    <div class="table-responsive mt-4">
+
+        <table class="table table-bordered table-striped">
+
+            <thead style="background:#003366;color:white;">
+
+                <tr>
+                    <th>Shuttle No</th>
+                    <th>Status</th>
+                    <th width="120">Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>@item.ShuttleNo</td>
+
+                        <td>
+                            @(item.LockStatus == "Y"
+                        ? "Active"
+                        : "Inactive")
+                        </td>
+
+                        <td>
+
+                            <button type="button"
+                                    class="btn btn-primary btn-sm editBtn"
+                                    data-id="@item.MTransNo"
+                                    data-shuttle="@item.ShuttleNo"
+                                    data-status="@item.LockStatus">
+
+                                Edit
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>

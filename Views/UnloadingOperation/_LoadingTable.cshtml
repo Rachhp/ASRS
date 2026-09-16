@@ -1,0 +1,272 @@
+﻿@using S1947.Models
+@model S1947.Models.LoadingTableViewModel
+<input type="hidden" id="dockVehicleSize" value="@Model.VehicleSize" />
+
+<input type="hidden" id="dockVehicleNumber" value="@Model.VehicleNumber" />
+
+<input type="hidden" id="dockTransporter" value="@Model.TransporterName" />
+
+<input type="hidden" id="dockVehicleSealNo" value="@Model.VehicleSealNo" />
+
+
+<input type="hidden" id="dockDriverName" value="@Model.DriverName" />
+
+<input type="hidden" id="dockDriverMobile" value="@Model.MobileNoDriver" />
+
+
+<input type="hidden" id="dockSecurityName" value="@Model.SecurityName" />
+
+<input type="hidden" id="dockSecurityMobile" value="@Model.MobileNoSecurity" />
+
+
+<input type="hidden" id="dockSupervisorName" value="@Model.SupervisiorName" />
+
+<input type="hidden" id="dockSupervisorMobile" value="@Model.MobileNoSupervisor" />
+<input type="hidden" id="dockExistingData" value="@Model.IsExistingData" />
+
+
+@if (Model.LoadingHistory != null && Model.LoadingHistory.Count > 0)
+{
+    int sr = 1;
+
+    foreach (var item in Model.LoadingHistory)
+    {
+        <tr>
+
+            <td class="srNo">
+                @sr
+            </td>
+
+
+            <td>
+                <input type="text"
+                       class="form-control invoiceNo"
+                       value="@item.InvoiceNo"
+                       readonly />
+            </td>
+
+
+            <td>
+                <select class="form-select customer" disabled>
+
+                    @foreach (var c in Model.CustomerList)
+                    {
+                        if (c == item.Customer)
+                        {
+                            <option selected>
+                                @c
+                            </option>
+                        }
+                        else
+                        {
+                            <option>
+                                @c
+                            </option>
+                        }
+                    }
+
+                </select>
+            </td>
+
+
+            <td>
+                <input type="text"
+                       class="form-control location"
+                       value="@item.Location"
+                       readonly />
+            </td>
+
+
+            <td>
+
+                <select class="form-select model" disabled>
+
+                    @foreach (var m in Model.ModelList)
+                    {
+                        if (m == item.Model)
+                        {
+                            <option selected>
+                                @m
+                            </option>
+                        }
+                        else
+                        {
+                            <option>
+                                @m
+                            </option>
+                        }
+                    }
+
+                </select>
+
+            </td>
+            <td>
+                <input type="text"
+                       class="form-control description"
+                       value="@item.Description"
+                       readonly />
+            </td>
+
+            <td>
+                <input type="text"
+                       class="form-control fgCode"
+                       value="@item.SAPFGCode"
+                       readonly />
+            </td>
+
+
+
+
+
+            <td  style="display:none;">
+                <input type="text"
+                       class="form-control availableQty"
+                       value="@item.AvailableQty"
+                       readonly  />
+            </td>
+
+
+            <td>
+                <input type="number"
+                       class="form-control qty"
+                       value="@item.EnteredQty"
+                       readonly />
+            </td>
+
+
+            <td>
+                <input type="text"
+                       class="form-control flcQty"
+                       value="@item.FLCQty"
+                       readonly />
+            </td>
+
+
+            <td>
+                <button type="button"
+                        class="btn btn-secondary btn-sm"
+                        disabled>
+                    Saved
+                </button>
+            </td>
+
+
+        </tr>
+
+        sr++;
+    }
+}
+
+
+
+<!-- NEW ENTRY ROW -->
+
+<tr>
+
+    <td class="srNo">
+        @(Model.LoadingHistory == null ? 1 : Model.LoadingHistory.Count + 1)
+    </td>
+
+
+    <td>
+        <input type="text"
+               class="form-control invoiceNo" />
+    </td>
+
+
+    <td>
+
+        <select class="form-select customer">
+
+            <option value="">
+                --Select--
+            </option>
+
+            @foreach (var item in Model.CustomerList)
+            {
+                <option value="@item">
+                    @item
+                </option>
+            }
+
+        </select>
+
+    </td>
+
+
+    <td>
+
+        <input type="text"
+               class="form-control location"
+               readonly />
+
+    </td>
+
+
+    <td>
+
+        <select class="form-select model">
+
+            <option value="">
+                --Select--
+            </option>
+
+            @foreach (var item in Model.ModelList)
+            {
+                <option value="@item">
+                    @item
+                </option>
+            }
+
+        </select>
+
+    </td>
+
+
+    <td>
+        <input type="text"
+               class="form-control fgCode"
+               readonly />
+    </td>
+
+
+    <td>
+        <input type="text"
+               class="form-control description"
+               readonly />
+    </td>
+
+
+    <td  style="display:none;">
+        <input type="text"
+               class="form-control availableQty"
+               readonly />
+    </td>
+
+
+    <td>
+        <input type="number"
+               class="form-control qty"
+               min="0" />
+    </td>
+
+
+    <td>
+        <input type="text"
+               class="form-control flcQty"
+               readonly />
+    </td>
+
+
+    <td>
+
+        <button type="button"
+                class="btn btn-success btn-sm saveRow">
+            Add
+        </button>
+
+    </td>
+
+
+</tr>
+
