@@ -20,16 +20,20 @@ namespace S1947.Models.PokaYoka
 
         // QR received values
         public decimal ReceivedWeight { get; set; }
-        public decimal ReceivedQuantity { get; set; }
+        public int  ReceivedQuantity { get; set; }
 
         // Machine values
         public decimal ActualWeight { get; set; }
-        public decimal ActualQuantity { get; set; }
+        public int ActualQuantity { get; set; }
 
         // Comparison
         public decimal WeightDifference { get; set; }
-        public decimal QuantityDifference { get; set; }
+        public int QuantityDifference { get; set; }
 
+        // Validation checks
+        public bool Check1_QtyPass { get; set; }
+        public bool Check2_QrWeightPass { get; set; }
+        public bool Check3_ExpectedWeightPass { get; set; }
         public string QCStatus { get; set; }
 
         public bool QRScanned { get; set; }

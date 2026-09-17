@@ -10,6 +10,7 @@ namespace S1947.Services.Interfaces
     {
         PokaYokaViewModel ScanQr(string qrCode);
 
-        PokaYokaViewModel FetchWeight(PokaYokaViewModel model);
+        //PokaYokaViewModel FetchWeight(PokaYokaViewModel model);
+        PokaYokaViewModel FetchWeight(long transactionId);
     }
 }

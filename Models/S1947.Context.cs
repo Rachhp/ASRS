@@ -43,6 +43,7 @@ namespace S1947.Models
         public virtual DbSet<LoadingLog> LoadingLogs { get; set; }
         public virtual DbSet<LoadingTemp> LoadingTemps { get; set; }
         public virtual DbSet<Menulist> Menulists { get; set; }
+        public virtual DbSet<Othermaster> Othermasters { get; set; }
         public virtual DbSet<PartMaster> PartMasters { get; set; }
         public virtual DbSet<PokaYokaQCTransaction> PokaYokaQCTransactions { get; set; }
         public virtual DbSet<shift_master> shift_master { get; set; }
@@ -63,7 +64,6 @@ namespace S1947.Models
         public virtual DbSet<vw_AgeingReport> vw_AgeingReport { get; set; }
         public virtual DbSet<vw_TransactionHistory> vw_TransactionHistory { get; set; }
         public virtual DbSet<vw_TransactionReport> vw_TransactionReport { get; set; }
-        public virtual DbSet<Othermaster> Othermasters { get; set; }
     
         public virtual int InsertTaskDtl(Nullable<int> taskNo, string taskType, Nullable<int> priority, string palletNo, string sourceLocation, string destinationLocation, string taskStatus, Nullable<int> liftNo, string locatioNo, Nullable<int> taskSent, Nullable<System.DateTime> createdAt, Nullable<System.DateTime> startedAt, Nullable<System.DateTime> completedAt, string uUID, string serialCode)
         {

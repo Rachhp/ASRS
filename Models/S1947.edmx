@@ -362,7 +362,7 @@ warning 6002: The table/view 'S1947.dbo.GoodsExistings' does not have a primary 
           </Key>
           <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="QRCode" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Model" Type="nvarchar" MaxLength="100" />
+          <Property Name="FGModel" Type="nvarchar" MaxLength="100" />
           <Property Name="FGCode" Type="nvarchar" MaxLength="100" />
           <Property Name="UniqueId" Type="nvarchar" MaxLength="100" />
           <Property Name="PalletNumber" Type="nvarchar" MaxLength="100" />
@@ -1013,42 +1013,6 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
     <edmx:ConceptualModels>
       <Schema Namespace="S1947Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="S1947Entities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="AndonTVDockMappings" EntityType="S1947Model.AndonTVDockMapping" />
-          <EntitySet Name="AndonTVMasters" EntityType="S1947Model.AndonTVMaster" />
-          <EntitySet Name="ApiErrorLogs" EntityType="S1947Model.ApiErrorLog" />
-          <EntitySet Name="ApiErrorMasters" EntityType="S1947Model.ApiErrorMaster" />
-          <EntitySet Name="App_Location" EntityType="S1947Model.App_Location" />
-          <EntitySet Name="ASRSLocationZoneMasters" EntityType="S1947Model.ASRSLocationZoneMaster" />
-          <EntitySet Name="AsrsZones" EntityType="S1947Model.AsrsZone" />
-          <EntitySet Name="CustomerMasters" EntityType="S1947Model.CustomerMaster" />
-          <EntitySet Name="Errorlogs" EntityType="S1947Model.Errorlog" />
-          <EntitySet Name="GEs" EntityType="S1947Model.GE" />
-          <EntitySet Name="GoodsExisitings" EntityType="S1947Model.GoodsExisiting" />
-          <EntitySet Name="GoodsExisiting_old" EntityType="S1947Model.GoodsExisiting_old" />
-          <EntitySet Name="LiftStatusMasters" EntityType="S1947Model.LiftStatusMaster" />
-          <EntitySet Name="LoadingLogs" EntityType="S1947Model.LoadingLog" />
-          <EntitySet Name="LoadingTemps" EntityType="S1947Model.LoadingTemp" />
-          <EntitySet Name="Menulists" EntityType="S1947Model.Menulist" />
-          <EntitySet Name="PartMasters" EntityType="S1947Model.PartMaster" />
-          <EntitySet Name="PokaYokaQCTransactions" EntityType="S1947Model.PokaYokaQCTransaction" />
-          <EntitySet Name="shift_master" EntityType="S1947Model.shift_master" />
-          <EntitySet Name="ShuttleDtls" EntityType="S1947Model.ShuttleDtl" />
-          <EntitySet Name="sysdiagrams" EntityType="S1947Model.sysdiagram" />
-          <EntitySet Name="TaskDtls" EntityType="S1947Model.TaskDtl" />
-          <EntitySet Name="TaskReports" EntityType="S1947Model.TaskReport" />
-          <EntitySet Name="TaskStatusCodes" EntityType="S1947Model.TaskStatusCode" />
-          <EntitySet Name="UnloadedDatas" EntityType="S1947Model.UnloadedData" />
-          <EntitySet Name="UnloadingLogs" EntityType="S1947Model.UnloadingLog" />
-          <EntitySet Name="UnloadMaterialTemps" EntityType="S1947Model.UnloadMaterialTemp" />
-          <EntitySet Name="UnloadTemps" EntityType="S1947Model.UnloadTemp" />
-          <EntitySet Name="UserAuthorizations" EntityType="S1947Model.UserAuthorization" />
-          <EntitySet Name="UserMasters" EntityType="S1947Model.UserMaster" />
-          <EntitySet Name="WcsApiLogs" EntityType="S1947Model.WcsApiLog" />
-          <EntitySet Name="GoodsExistings" EntityType="S1947Model.GoodsExisting" />
-          <EntitySet Name="GELoadingViews" EntityType="S1947Model.GELoadingView" />
-          <EntitySet Name="vw_AgeingReport" EntityType="S1947Model.vw_AgeingReport" />
-          <EntitySet Name="vw_TransactionHistory" EntityType="S1947Model.vw_TransactionHistory" />
-          <EntitySet Name="vw_TransactionReport" EntityType="S1947Model.vw_TransactionReport" />
           <FunctionImport Name="InsertTaskDtl">
             <Parameter Name="TaskNo" Mode="In" Type="Int32" />
             <Parameter Name="TaskType" Mode="In" Type="String" />
@@ -1096,7 +1060,43 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
             <Parameter Name="new_diagramname" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_upgraddiagrams" />
+          <EntitySet Name="AndonTVDockMappings" EntityType="S1947Model.AndonTVDockMapping" />
+          <EntitySet Name="AndonTVMasters" EntityType="S1947Model.AndonTVMaster" />
+          <EntitySet Name="ApiErrorLogs" EntityType="S1947Model.ApiErrorLog" />
+          <EntitySet Name="ApiErrorMasters" EntityType="S1947Model.ApiErrorMaster" />
+          <EntitySet Name="App_Location" EntityType="S1947Model.App_Location" />
+          <EntitySet Name="ASRSLocationZoneMasters" EntityType="S1947Model.ASRSLocationZoneMaster" />
+          <EntitySet Name="AsrsZones" EntityType="S1947Model.AsrsZone" />
+          <EntitySet Name="CustomerMasters" EntityType="S1947Model.CustomerMaster" />
+          <EntitySet Name="Errorlogs" EntityType="S1947Model.Errorlog" />
+          <EntitySet Name="GEs" EntityType="S1947Model.GE" />
+          <EntitySet Name="GoodsExisitings" EntityType="S1947Model.GoodsExisiting" />
+          <EntitySet Name="GoodsExisiting_old" EntityType="S1947Model.GoodsExisiting_old" />
+          <EntitySet Name="LiftStatusMasters" EntityType="S1947Model.LiftStatusMaster" />
+          <EntitySet Name="LoadingLogs" EntityType="S1947Model.LoadingLog" />
+          <EntitySet Name="LoadingTemps" EntityType="S1947Model.LoadingTemp" />
+          <EntitySet Name="Menulists" EntityType="S1947Model.Menulist" />
           <EntitySet Name="Othermasters" EntityType="S1947Model.Othermaster" />
+          <EntitySet Name="PartMasters" EntityType="S1947Model.PartMaster" />
+          <EntitySet Name="PokaYokaQCTransactions" EntityType="S1947Model.PokaYokaQCTransaction" />
+          <EntitySet Name="shift_master" EntityType="S1947Model.shift_master" />
+          <EntitySet Name="ShuttleDtls" EntityType="S1947Model.ShuttleDtl" />
+          <EntitySet Name="sysdiagrams" EntityType="S1947Model.sysdiagram" />
+          <EntitySet Name="TaskDtls" EntityType="S1947Model.TaskDtl" />
+          <EntitySet Name="TaskReports" EntityType="S1947Model.TaskReport" />
+          <EntitySet Name="TaskStatusCodes" EntityType="S1947Model.TaskStatusCode" />
+          <EntitySet Name="UnloadedDatas" EntityType="S1947Model.UnloadedData" />
+          <EntitySet Name="UnloadingLogs" EntityType="S1947Model.UnloadingLog" />
+          <EntitySet Name="UnloadMaterialTemps" EntityType="S1947Model.UnloadMaterialTemp" />
+          <EntitySet Name="UnloadTemps" EntityType="S1947Model.UnloadTemp" />
+          <EntitySet Name="UserAuthorizations" EntityType="S1947Model.UserAuthorization" />
+          <EntitySet Name="UserMasters" EntityType="S1947Model.UserMaster" />
+          <EntitySet Name="WcsApiLogs" EntityType="S1947Model.WcsApiLog" />
+          <EntitySet Name="GoodsExistings" EntityType="S1947Model.GoodsExisting" />
+          <EntitySet Name="GELoadingViews" EntityType="S1947Model.GELoadingView" />
+          <EntitySet Name="vw_AgeingReport" EntityType="S1947Model.vw_AgeingReport" />
+          <EntitySet Name="vw_TransactionHistory" EntityType="S1947Model.vw_TransactionHistory" />
+          <EntitySet Name="vw_TransactionReport" EntityType="S1947Model.vw_TransactionReport" />
         </EntityContainer>
         <ComplexType Name="sp_helpdiagramdefinition_Result">
           <Property Type="Int32" Name="version" Nullable="true" />
@@ -1136,6 +1136,17 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Type="Binary" Name="definition" Nullable="true" />
         </ComplexType>
         <ComplexType Name="sp_helpdiagrams_Result3">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagramdefinition_Result4">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result4">
           <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
           <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -1436,6 +1447,15 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="ModulePage" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="ModuleLink" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="Othermaster">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Autoscan" Type="Int32" />
+          <Property Name="EmptyPalletwight" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="MaxDockRange" Type="Int32" />
+        </EntityType>
         <EntityType Name="PartMaster">
           <Key>
             <PropertyRef Name="MTransNo" />
@@ -1458,7 +1478,7 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           </Key>
           <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="QRCode" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Model" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FGModel" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="FGCode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="UniqueId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="PalletNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
@@ -1907,32 +1927,37 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="CreatedBy" Type="Int16" Nullable="false" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
         </EntityType>
-        <ComplexType Name="sp_helpdiagramdefinition_Result4">
-          <Property Type="Int32" Name="version" Nullable="true" />
-          <Property Type="Binary" Name="definition" Nullable="true" />
-        </ComplexType>
-        <ComplexType Name="sp_helpdiagrams_Result4">
-          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
-          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
-          <Property Type="Int32" Name="ID" Nullable="false" />
-          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
-          <Property Type="Int32" Name="OwnerID" Nullable="false" />
-        </ComplexType>
-        <EntityType Name="Othermaster">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Autoscan" Type="Int32" />
-          <Property Name="EmptyPalletwight" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="MaxDockRange" Type="Int32" />
-        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="S1947ModelStoreContainer" CdmEntityContainer="S1947Entities">
+          <FunctionImportMapping FunctionImportName="InsertTaskDtl" FunctionName="S1947Model.Store.InsertTaskDtl" />
+          <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="S1947Model.Store.sp_alterdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="S1947Model.Store.sp_creatediagram" />
+          <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="S1947Model.Store.sp_dropdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_helpdiagramdefinition" FunctionName="S1947Model.Store.sp_helpdiagramdefinition">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="S1947Model.sp_helpdiagramdefinition_Result4">
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_helpdiagrams" FunctionName="S1947Model.Store.sp_helpdiagrams">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="S1947Model.sp_helpdiagrams_Result4">
+                <ScalarProperty Name="Database" ColumnName="Database" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="S1947Model.Store.sp_renamediagram" />
+          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="S1947Model.Store.sp_upgraddiagrams" />
           <EntitySetMapping Name="AndonTVDockMappings">
             <EntityTypeMapping TypeName="S1947Model.AndonTVDockMapping">
               <MappingFragment StoreEntitySet="AndonTVDockMapping">
@@ -2243,6 +2268,16 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Othermasters">
+            <EntityTypeMapping TypeName="S1947Model.Othermaster">
+              <MappingFragment StoreEntitySet="Othermaster">
+                <ScalarProperty Name="MaxDockRange" ColumnName="MaxDockRange" />
+                <ScalarProperty Name="EmptyPalletwight" ColumnName="EmptyPalletwight" />
+                <ScalarProperty Name="Autoscan" ColumnName="Autoscan" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="PartMasters">
             <EntityTypeMapping TypeName="S1947Model.PartMaster">
               <MappingFragment StoreEntitySet="PartMaster">
@@ -2282,7 +2317,7 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
                 <ScalarProperty Name="PalletNumber" ColumnName="PalletNumber" />
                 <ScalarProperty Name="UniqueId" ColumnName="UniqueId" />
                 <ScalarProperty Name="FGCode" ColumnName="FGCode" />
-                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
                 <ScalarProperty Name="QRCode" ColumnName="QRCode" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -2715,41 +2750,6 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
                 <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
                 <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
                 <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="InsertTaskDtl" FunctionName="S1947Model.Store.InsertTaskDtl" />
-          <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="S1947Model.Store.sp_alterdiagram" />
-          <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="S1947Model.Store.sp_creatediagram" />
-          <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="S1947Model.Store.sp_dropdiagram" />
-          <FunctionImportMapping FunctionImportName="sp_helpdiagramdefinition" FunctionName="S1947Model.Store.sp_helpdiagramdefinition">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="S1947Model.sp_helpdiagramdefinition_Result4">
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="definition" ColumnName="definition" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="sp_helpdiagrams" FunctionName="S1947Model.Store.sp_helpdiagrams">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="S1947Model.sp_helpdiagrams_Result4">
-                <ScalarProperty Name="Database" ColumnName="Database" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Owner" ColumnName="Owner" />
-                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="S1947Model.Store.sp_renamediagram" />
-          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="S1947Model.Store.sp_upgraddiagrams" />
-          <EntitySetMapping Name="Othermasters">
-            <EntityTypeMapping TypeName="S1947Model.Othermaster">
-              <MappingFragment StoreEntitySet="Othermaster">
-                <ScalarProperty Name="MaxDockRange" ColumnName="MaxDockRange" />
-                <ScalarProperty Name="EmptyPalletwight" ColumnName="EmptyPalletwight" />
-                <ScalarProperty Name="Autoscan" ColumnName="Autoscan" />
-                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

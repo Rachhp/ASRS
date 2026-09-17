@@ -314,7 +314,6 @@
 
             <div class="qr-search-box">
                 <div class="row">
-
                     <div class="col-md-10">
                         <label class="poka-label">Scan QR Code</label>
 
@@ -324,7 +323,6 @@
                                autocomplete="off"
                                placeholder="Scan QR code..." />
                     </div>
-
                     <div class="col-md-2">
                         <label class="poka-label">&nbsp;</label>
                         <button type="button"
@@ -340,7 +338,6 @@
         </div>
     </div>
 
-
     <!-- SCANNED QR DETAILS -->
     <div id="qrDetails" class="poka-card hidden-section">
 
@@ -350,37 +347,28 @@
                 Scanned Material Details
             </div>
         </div>
-
         <div class="poka-card-body">
-
             <div class="details-grid">
-
                 <div class="detail-item">
-                    <span class="detail-label">Model</span>
+                    <span class="detail-label">FG Model</span>
                     <span id="lblModel" class="detail-value">-</span>
                 </div>
-
                 <div class="detail-item">
                     <span class="detail-label">FG Code</span>
                     <span id="lblFGCode" class="detail-value code">-</span>
                 </div>
-
                 <div class="detail-item">
                     <span class="detail-label">Unique ID</span>
                     <span id="lblUniqueId" class="detail-value code">-</span>
                 </div>
-
                 <div class="detail-item">
                     <span class="detail-label">Pallet Number</span>
                     <span id="lblPalletNumber" class="detail-value">-</span>
                 </div>
-
             </div>
 
             <div class="received-section">
-
                 <div class="received-grid">
-
                     <div class="received-box">
                         <span class="detail-label">Received Weight</span>
                         <span id="lblReceivedWeight"
@@ -407,7 +395,6 @@
 
     <!-- WEIGHT ACTION -->
     <div id="weightSection" class="poka-card hidden-section">
-
         <div class="poka-card-header">
             <div class="header-title">
                 <span class="header-icon">⚖</span>
@@ -416,25 +403,17 @@
         </div>
 
         <div class="poka-card-body">
-
             <div class="weight-action">
-
                 <div class="machine-info">
-                    Machine Status:
-                    <span id="machineStatus">NOT CONNECTED</span>
+                    Machine Status:<span id="machineStatus">NOT CONNECTED</span>
                 </div>
-
-                <button type="button"
-                        id="btnFetchWeight"
-                        class="btn btn-warning btn-poka btn-fetch">
+                <button type="button" id="btnFetchWeight" class="btn btn-warning btn-poka btn-fetch">
                     FETCH WEIGHT
                 </button>
-
             </div>
 
         </div>
     </div>
-
 
     <!-- QC RESULT -->
     <div id="resultSection"
@@ -482,21 +461,14 @@
                         0 PCS
                     </span>
                 </div>
-
             </div>
-
             <div id="qcStatus" class="qc-status"></div>
-
         </div>
     </div>
-
 </div>
-
-
 <script>
 
     var currentModel = null;
-
     $(document).ready(function () {
 
         $("#txtQRCode").focus();
@@ -514,14 +486,13 @@
         $("#btnFetchWeight").click(function () {
             fetchWeight();
         });
-
     });
 
 
     function scanQr() {
         var qrCode = $("#txtQRCode").val().trim();
         if (!qrCode) {
-            alert("Please scan QR code.");
+            alert("Please Scan QR Code.");
             $("#txtQRCode").focus();
             return;
         }
@@ -540,7 +511,6 @@
                     return;
                 }
                 currentModel = response.data;
-
                 $("#lblModel").text(currentModel.Model || "-");
                 $("#lblFGCode").text(currentModel.FGCode || "-");
                 $("#lblUniqueId").text(currentModel.UniqueId || "-");
@@ -554,7 +524,6 @@
             },
             error: function () {
                 alert("Error while processing QR code.");
-
             },
             complete: function () {
                 $("#btnScanQr").prop("disabled", false);
@@ -564,140 +533,54 @@
 
     }
 
-        function fetchWeight() {
+  function fetchWeight() {
+    if (!currentModel || !currentModel.TransactionId) {
+        alert("Please scan QR first.");
+        return;
+    }
 
-        if (!currentModel) {
+    $("#btnFetchWeight").prop("disabled", true).text("READING WEIGHT...");
 
-            alert("Please scan QR first.");
-
-            return;
-        }
-
-        $("#btnFetchWeight")
-            .prop("disabled", true)
-            .text("READING WEIGHT...");
-
-        // Serialize decimals with invariant culture (dot separator)
-        // so the MVC model binder never fails on culture.
-        var postData = {
-            QRCode: currentModel.QRCode,
-            Model: currentModel.Model,
-            FGCode: currentModel.FGCode,
-            PalletNumber: currentModel.PalletNumber,
-            ReceivedWeight: String(currentModel.ReceivedWeight),
-            ReceivedQuantity: String(currentModel.ReceivedQuantity),
-            ActualWeight: String(currentModel.ActualWeight || 0),
-            ActualQuantity: String(currentModel.ActualQuantity || 0),
-            WeightDifference: String(currentModel.WeightDifference || 0),
-            QuantityDifference: String(currentModel.QuantityDifference || 0),
-            QCStatus: currentModel.QCStatus || "",
-            QRScanned: currentModel.QRScanned,
-            WeightFetched: currentModel.WeightFetched || false,
-            MachineStatus: currentModel.MachineStatus || "",
-            Message: currentModel.Message || ""
-        };
-
-        $.ajax({
-
-            url: '@Url.Action("FetchWeight", "PokaYoka")',
-
-            type: 'POST',
-
-            data: postData,
-
-            success: function (response) {
-
-                if (!response.success) {
-
-                    alert(response.message);
-
-                    return;
-                }
-
-                currentModel = response.data;
-
-                $("#lblActualWeight")
-                    .text(
-                        currentModel.ActualWeight +
-                        " KG"
-                    );
-
-                $("#lblActualQuantity")
-                    .text(
-                        currentModel.ActualQuantity +
-                        " PCS"
-                    );
-
-                $("#lblWeightDifference")
-                    .text(
-                        currentModel.WeightDifference +
-                        " KG"
-                    );
-
-                $("#lblQuantityDifference")
-                    .text(
-                        currentModel.QuantityDifference +
-                        " PCS"
-                    );
-
-                $("#machineStatus")
-                    .html(
-                        "Machine: <b>" +
-                        currentModel.MachineStatus +
-                        "</b>"
-                    );
-
-                var status =
-                    currentModel.QCStatus;
-
-                var statusBox =
-                    $("#qcStatus");
-
-                statusBox
-                    .removeClass(
-                        "status-ok status-not-ok"
-                    );
-
-                if (status === "OK") {
-
-                    statusBox
-                        .addClass("status-ok")
-                        .text("QC OK");
-
-                }
-                else {
-
-                    statusBox
-                        .addClass("status-not-ok")
-                        .text("QC NOT OK");
-
-                }
-
-                $("#resultSection")
-                    .removeClass("hidden-section");
-
-            },
-
-            error: function (xhr) {
-
-                alert(
-                    "Error while fetching weight: " +
-                    xhr.status + " " + xhr.statusText
-                );
-
-            },
-
-            complete: function () {
-
-                $("#btnFetchWeight")
-                    .prop("disabled", false)
-                    .text("FETCH WEIGHT");
-
+    $.ajax({
+        url: '@Url.Action("FetchWeight", "PokaYoka")',
+        type: 'POST',
+        data: {
+            transactionId: currentModel.TransactionId
+        },
+        success: function (response) {
+            if (!response.success) {
+                alert(response.message);
+                return;
             }
 
-        });
+            currentModel = response.data;
 
-    }
+            $("#lblActualWeight").text(currentModel.ActualWeight + " KG");
+            $("#lblActualQuantity").text(currentModel.ActualQuantity + " PCS");
+            $("#lblWeightDifference").text(currentModel.WeightDifference + " KG");
+            $("#lblQuantityDifference").text(currentModel.QuantityDifference + " PCS");
+            $("#machineStatus").text(currentModel.MachineStatus);
+
+            // QC Status
+            var qcDiv = $("#qcStatus");
+            qcDiv.removeClass("status-ok status-not-ok");
+
+            if (currentModel.QCStatus === "OK") {
+                qcDiv.addClass("status-ok").text("QC PASSED");
+            } else {
+                qcDiv.addClass("status-not-ok").text("QC FAILED");
+            }
+
+            $("#resultSection").removeClass("hidden-section");
+        },
+        error: function () {
+            alert("Error while fetching weight.");
+        },
+        complete: function () {
+            $("#btnFetchWeight").prop("disabled", false).text("FETCH WEIGHT");
+        }
+    });
+}
 
     @*function fetchWeight() {
 

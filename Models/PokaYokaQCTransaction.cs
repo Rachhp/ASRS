@@ -16,7 +16,7 @@ namespace S1947.Models
     {
         public long Id { get; set; }
         public string QRCode { get; set; }
-        public string Model { get; set; }
+        public string FGModel { get; set; }
         public string FGCode { get; set; }
         public string UniqueId { get; set; }
         public string PalletNumber { get; set; }
