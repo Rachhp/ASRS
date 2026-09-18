@@ -12,23 +12,26 @@ namespace S1947.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class PokaYokaQCTransaction
+    public partial class PokaYokaQCHistory
     {
-        public long Id { get; set; }
-        public string QRCode { get; set; }
-        public string FGModel { get; set; }
-        public string FGCode { get; set; }
-        public string UniqueId { get; set; }
-        public string PalletNumber { get; set; }
+        public int AttemptId { get; set; }
+        public int TransactionId { get; set; }
+        public int AttemptNo { get; set; }
         public Nullable<decimal> ReceivedWeight { get; set; }
-        public Nullable<decimal> ReceivedQuantity { get; set; }
+        public Nullable<int> ReceivedQuantity { get; set; }
+        public Nullable<decimal> SinglePartWeight { get; set; }
+        public Nullable<decimal> EmptyPalletWeight { get; set; }
+        public Nullable<int> MaxQtyPerPallet { get; set; }
+        public Nullable<decimal> ExpectedProductWeight { get; set; }
+        public Nullable<decimal> ExpectedGrossWeight { get; set; }
         public Nullable<decimal> ActualWeight { get; set; }
-        public Nullable<decimal> ActualQuantity { get; set; }
+        public Nullable<int> ActualQuantity { get; set; }
         public Nullable<decimal> WeightDifference { get; set; }
-        public Nullable<decimal> QuantityDifference { get; set; }
+        public Nullable<int> QuantityDifference { get; set; }
         public Nullable<decimal> WeightTolerance { get; set; }
-        public Nullable<decimal> QuantityTolerance { get; set; }
+        public Nullable<int> QuantityTolerance { get; set; }
         public string QCStatus { get; set; }
+        public string QCReason { get; set; }
         public string MachineIP { get; set; }
         public string MachineResponse { get; set; }
         public Nullable<System.DateTime> ScannedAt { get; set; }

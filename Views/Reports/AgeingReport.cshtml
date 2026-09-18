@@ -252,14 +252,8 @@
                         <div class="ageing-card-title">
                             Total Loaded Stock
                         </div>
-
-                        <div class="ageing-card-count">
-                            @totalRecords
-                        </div>
-
+                        <div class="ageing-card-count"> @totalRecords</div>
                     </div>
-
-
                     <!-- 0-15 DAYS -->
 
                     <div class="ageing-card card-fresh">
@@ -347,8 +341,6 @@
 
                 @using (Html.BeginForm("AgeingReport", "Reports", FormMethod.Get))
                 {
-
-
                     <!-- ================================
                          AGEING TABLE
                          ================================ -->
@@ -358,9 +350,7 @@
                            style="width:100%">
 
                         <thead>
-
                             <tr>
-
                                 <th class="text-center">
                                     Sr No
                                 </th>
@@ -407,29 +397,6 @@
                                 string badgeClass;
                                 string ageingCategory;
 
-
-                                /* ==========================
-                                   AGEING LOGIC
-                                   ========================== */
-
-                                //if (item.AgeDays <= 15)
-                                //{
-                                //    rowClass = "age-fresh";
-                                //    badgeClass = "age-badge-fresh";
-                                //    ageingCategory = "0–15 Days";
-                                //}
-                                //else if (item.AgeDays <= 60)
-                                //{
-                                //    rowClass = "age-ageing";
-                                //    badgeClass = "age-badge-ageing";
-                                //    ageingCategory = "16–60 Days";
-                                //}
-                                //else
-                                //{
-                                //    rowClass = "age-critical";
-                                //    badgeClass = "age-badge-critical";
-                                //    ageingCategory = "60+ Days";
-                                //}
 
                                 if (item.AgeDays <= 15)
                                 {

@@ -8,6 +8,7 @@ namespace S1947.Services.Interfaces
 {
     public interface IPokaYokaService
     {
+        //@authour rachana
         PokaYokaViewModel ScanQr(string qrCode);
 
         //PokaYokaViewModel FetchWeight(PokaYokaViewModel model);

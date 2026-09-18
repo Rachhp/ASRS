@@ -230,6 +230,9 @@
     <Compile Include="Models\GELoadingView.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\GetFastMediumLocation_Result.cs">
+      <DependentUpon>S1947.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\GoodsExisiting.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
@@ -275,7 +278,10 @@
     </Compile>
     <Compile Include="Models\PdfReportGenerator.cs" />
     <Compile Include="Models\PdfReportGenerator1.cs" />
-    <Compile Include="Models\PokaYokaQCTransaction.cs">
+    <Compile Include="Models\PokaYokaPallet.cs">
+      <DependentUpon>S1947.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PokaYokaQCHistory.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PokaYoka\PokaYokaViewModel.cs" />

@@ -319,7 +319,7 @@
 
                         <input type="text" id="txtQRCode"
                                class="form-control qr-input"
-                               maxlength="100"
+                               @*maxlength="100"*@
                                autocomplete="off"
                                placeholder="Scan QR code..." />
                     </div>
@@ -340,7 +340,7 @@
 
     <!-- SCANNED QR DETAILS -->
     <div id="qrDetails" class="poka-card hidden-section">
-
+        <input type="hidden" id="TransactionId" />
         <div class="poka-card-header">
             <div class="header-title">
                 <span class="header-icon">✓</span>
@@ -510,7 +510,9 @@
                     alert(response.message);
                     return;
                 }
+                console.log(response.data);
                 currentModel = response.data;
+                $("#TransactionId").val(currentModel.TransactionId);
                 $("#lblModel").text(currentModel.Model || "-");
                 $("#lblFGCode").text(currentModel.FGCode || "-");
                 $("#lblUniqueId").text(currentModel.UniqueId || "-");
@@ -534,7 +536,11 @@
     }
 
   function fetchWeight() {
-    if (!currentModel || !currentModel.TransactionId) {
+    //if (!currentModel || !currentModel.TransactionId) {
+    //    alert("Please scan QR first.");
+    //    return;
+    //}
+      if (!$("#TransactionId").val()) {
         alert("Please scan QR first.");
         return;
     }
@@ -545,7 +551,8 @@
         url: '@Url.Action("FetchWeight", "PokaYoka")',
         type: 'POST',
         data: {
-            transactionId: currentModel.TransactionId
+            //transactionId: currentModel.TransactionId
+            transactionId: $("#TransactionId").val()
         },
         success: function (response) {
             if (!response.success) {

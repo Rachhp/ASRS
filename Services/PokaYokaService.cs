@@ -1,4 +1,7 @@
-﻿using S1947.Models;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Org.BouncyCastle.Bcpg;
+using S1947.Models;
 using S1947.Models.PokaYoka;
 using S1947.Services.Interfaces;
 using System;
@@ -8,44 +11,48 @@ using System.Web;
 
 namespace S1947.Services
 {
-        public class PokaYokaService : IPokaYokaService
+    public class PokaYokaService : IPokaYokaService
+    {
+        private readonly IQrCodeParser _qrCodeParser;
+        private readonly IWeighingMachineService _weighingMachine;
+
+
+        public PokaYokaService(IQrCodeParser qrCodeParser, IWeighingMachineService weighingMachine)
         {
-            private readonly IQrCodeParser _qrCodeParser;
-            private readonly IWeighingMachineService _weighingMachine;
+            _qrCodeParser = qrCodeParser;
+            _weighingMachine = weighingMachine;
+        }
+
+        public PokaYokaViewModel ScanQr(string qrCode)
+        {
+            var model = _qrCodeParser.Parse(qrCode);
+            string userName =
+           System.Web.HttpContext.Current != null &&
+           System.Web.HttpContext.Current.User != null &&
+           System.Web.HttpContext.Current.User.Identity != null
+               ? System.Web.HttpContext.Current.User.Identity.Name
+               : "SYSTEM";
 
 
-        // ============================================================
-        // HARDCODED - Replace with DB fetch from PartMaster
-        // when MaxQtyPerPallet and EachPartWeight columns are added.
-        //
-        // TODO: Fetch from PartMaster:
-        //   var part = db.PartMasters
-        //       .FirstOrDefault(p => p.FGCode == model.FGCode);
-        //   maxQtyPerPallet = part.MaxQtyPerPallet;
-        //   eachPartWeight  = part.EachPartWeight;
-        // ============================================================
-        private const int MaxQtyPerPallet = 100;         // hardcoded
-        private const decimal EachPartWeight = 1.25m;    // hardcoded (kg per part)
-        private const decimal WeightTolerance = 0.5m;    // kg tolerance
-
-
-
-        public PokaYokaService(
-                IQrCodeParser qrCodeParser,
-                IWeighingMachineService weighingMachine)
+            // Insert scan record
+            using (var db = new S1947Entities())
             {
-                _qrCodeParser = qrCodeParser;
-                _weighingMachine = weighingMachine;
-            }
+                // Find existing pallet using UniqueId
+                var pallet = db.PokaYokaPallets.FirstOrDefault(x => x.UniqueId == model.UniqueId);
+                int attemptNo;
 
-            public PokaYokaViewModel ScanQr(string qrCode)
-            {
-                var model = _qrCodeParser.Parse(qrCode);
 
-                // Insert scan record
-                using (var db = new S1947Entities())
+                if (pallet.AttemptNo >= 1 && pallet.QCStatus == "ACCEPTED")
+                    return new PokaYokaViewModel
+                    {
+                        Message = "Already scanned and accepted."
+                    };
+
+                if (pallet == null)
                 {
-                    var transaction = new PokaYokaQCTransaction
+                    attemptNo = 1;
+                    // FIRST ATTEMPT
+                    pallet = new PokaYokaPallet
                     {
                         QRCode = model.QRCode,
                         FGModel = model.Model,
@@ -54,254 +61,917 @@ namespace S1947.Services
                         ReceivedWeight = model.ReceivedWeight,
                         ReceivedQuantity = model.ReceivedQuantity,
                         UniqueId = model.UniqueId,
-                        ScannedAt = DateTime.Now,
-                        CreatedAt = DateTime.Now,
-                        CreatedBy = System.Web.HttpContext.Current != null &&
-                                    System.Web.HttpContext.Current.User != null &&
-                                    System.Web.HttpContext.Current.User.Identity != null
-                                        ? System.Web.HttpContext.Current.User.Identity.Name
-                                        : "SYSTEM"
+                        AttemptNo = attemptNo,
+                        QCStatus = "SCANNED",
+                        CreatedBy = userName,
+                        CreatedAt = DateTime.Now
                     };
-
-                    db.PokaYokaQCTransactions.Add(transaction);
+                    db.PokaYokaPallets.Add(pallet);
                     db.SaveChanges();
-
-                    model.TransactionId = transaction.Id;
                 }
+                else
+                {
+                    // RE-ATTEMPT
+                    // Previous attempt + 1
+                    attemptNo = (pallet.AttemptNo ?? 0) + 1;
+                    pallet.AttemptNo = attemptNo;
+                    // Update latest scanned information
+                    pallet.QRCode = model.QRCode;
+                    pallet.FGModel = model.Model;
+                    pallet.FGCode = model.FGCode;
+                    pallet.PalletNumber = model.PalletNumber;
+                    pallet.ReceivedWeight = model.ReceivedWeight;
+                    pallet.ReceivedQuantity = model.ReceivedQuantity;
+                    pallet.QCStatus = "SCANNED";
+                    pallet.ReworkStatus = "IN_PROGRESS";
+                    pallet.ReworkCompletedAt = DateTime.Now;
+                    //pallet.UpdatedBy = userName;
+                    pallet.RejectReason = userName;
+
+                    db.SaveChanges();
+                }
+
+
+                // ==========================================
+                // CREATE NEW QC HISTORY FOR THIS ATTEMPT
+                // ==========================================
+
+                var history = new PokaYokaQCHistory
+                {
+                    TransactionId = checked((int)pallet.Id),
+                    ReceivedWeight = model.ReceivedWeight,
+                    ReceivedQuantity = model.ReceivedQuantity,
+                    ScannedAt = DateTime.Now,
+                    AttemptNo = attemptNo,
+                    QCStatus = "IN_PROGRESS",
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = userName
+                };
+
+                db.PokaYokaQCHistories.Add(history);
+                db.SaveChanges();
+                // Return IDs to UI
+                model.TransactionId = history.AttemptId;
+                return model;
+            }
+        }
+
+
+
+        public PokaYokaViewModel FetchWeightMeth1(long transactionId)
+        {
+            using (var db = new S1947Entities())
+            {
+                // ==========================================
+                // 1. GET QC HISTORY
+                // ==========================================
+
+                var history = db.PokaYokaQCHistories
+                    .FirstOrDefault(x => x.AttemptId == transactionId);
+
+                if (history == null)
+                    throw new Exception("QC history record not found.");
+
+                // ==========================================
+                // 2. GET PALLET
+                // ==========================================
+
+                var pallet = db.PokaYokaPallets
+                    .FirstOrDefault(x => x.Id == history.TransactionId);
+
+                if (pallet == null)
+                    throw new Exception("Pallet record not found.");
+
+                // ==========================================
+                // 3. GET WEIGHT FROM WEIGHING MACHINE
+                // ==========================================
+
+                var result = _weighingMachine.GetWeight();
+
+                if (!result.Success)
+                    throw new Exception(result.ErrorMessage);
+
+                decimal actualWeight = result.Weight;
+
+                // ==========================================
+                // 4. GET EMPTY PALLET WEIGHT
+                // ==========================================
+
+                decimal emptyPalletWeight = 0m;
+
+                var otherMaster = db.Othermasters.FirstOrDefault();
+
+                if (otherMaster != null &&
+                    otherMaster.EmptyPalletwight.HasValue)
+                {
+                    emptyPalletWeight =
+                        otherMaster.EmptyPalletwight.Value;
+                }
+
+                // ==========================================
+                // 5. METHOD 1
+                //
+                // QR Received Weight does NOT include
+                // pallet weight.
+                //
+                // Expected Gross Weight =
+                // QR Received Weight + Empty Pallet Weight
+                // ==========================================
+
+                decimal receivedWeight =
+                    history.ReceivedWeight ?? 0m;
+
+                decimal expectedProductWeight =
+                    receivedWeight;
+
+                decimal expectedGrossWeight =
+                    expectedProductWeight +
+                    emptyPalletWeight;
+
+                // ==========================================
+                // 6. WEIGHT TOLERANCE
+                // ==========================================
+
+                decimal weightTolerance = 0.5m;
+
+                // ==========================================
+                // 7. CALCULATE WEIGHT DIFFERENCE
+                // ==========================================
+
+                decimal weightDifference =
+                    Math.Abs(
+                        expectedGrossWeight -
+                        actualWeight
+                    );
+
+                // ==========================================
+                // 8. UPDATE HISTORY
+                // ==========================================
+
+                history.ReceivedWeight =
+                    receivedWeight;
+
+                history.EmptyPalletWeight =
+                    emptyPalletWeight;
+
+                history.ExpectedProductWeight =
+                    expectedProductWeight;
+
+                history.ExpectedGrossWeight =
+                    expectedGrossWeight;
+
+                history.ActualWeight =
+                    actualWeight;
+
+                history.WeightDifference =
+                    weightDifference;
+
+                history.WeightTolerance =
+                    weightTolerance;
+
+                // ==========================================
+                // 9. METHOD 1 HAS NO:
+                //
+                // SinglePartWeight
+                // MaxQtyPerPallet
+                // QuantityDifference
+                // QuantityTolerance
+                //
+                // Therefore these remain NULL.
+                // ==========================================
+
+                history.SinglePartWeight = null;
+                history.MaxQtyPerPallet = null;
+                history.QuantityDifference = null;
+                history.QuantityTolerance = null;
+
+                // ==========================================
+                // 10. FINAL QC DECISION
+                //
+                // ONLY WEIGHT CHECK
+                // ==========================================
+
+                if (weightDifference <= weightTolerance)
+                {
+                    history.QCStatus = "ACCEPTED";
+
+                    history.QCReason =
+                        "Weight matched within tolerance.";
+                }
+                else
+                {
+                    history.QCStatus = "REJECTED";
+
+                    history.QCReason =
+                        "Expected weight mismatch.";
+                }
+
+                // ==========================================
+                // 11. MACHINE RESPONSE
+                // ==========================================
+
+                history.MachineResponse =
+                    result.RawResponse;
+
+                history.WeighedAt =
+                    DateTime.Now;
+
+                history.CompletedAt =
+                    DateTime.Now;
+
+                // ==========================================
+                // 12. UPDATE CURRENT PALLET STATUS
+                // ==========================================
+
+                pallet.QCStatus =
+                    history.QCStatus;
+
+                if (history.QCStatus == "REJECTED")
+                {
+                    pallet.RejectReason =
+                        history.QCReason;
+
+                    pallet.ReworkStatus =
+                        "PENDING";
+
+                    pallet.ReworkCompletedAt = null;
+                }
+                else
+                {
+                    pallet.RejectReason = null;
+
+                    pallet.ReworkStatus =
+                        "COMPLETED";
+
+                    pallet.ReworkCompletedAt =
+                        DateTime.Now;
+                }
+
+                // ==========================================
+                // 13. SAVE
+                // ==========================================
+
+                db.SaveChanges();
+
+                // ==========================================
+                // 14. BUILD VIEW MODEL
+                // ==========================================
+
+                var model = new PokaYokaViewModel
+                {
+                    TransactionId = history.AttemptId,
+
+                    QRCode =pallet.QRCode,
+
+                    Model = pallet.FGModel,
+
+                    FGCode =pallet.FGCode,
+
+                    UniqueId = pallet.UniqueId,
+
+                    PalletNumber =pallet.PalletNumber,
+
+                    ReceivedWeight =receivedWeight,
+
+                    ReceivedQuantity =history.ReceivedQuantity ?? 0,
+
+                    QRScanned =true,
+
+                    ActualWeight =actualWeight,
+
+                    WeightFetched =true,
+
+                    MachineStatus ="CONNECTED",
+
+                    ExpectedGrossWeight = expectedGrossWeight,
+
+                    WeightDifference = weightDifference,
+
+                    QCStatus = history.QCStatus,
+
+                    Message =history.QCReason
+                };
 
                 return model;
             }
+        }
+
 
 
         public PokaYokaViewModel FetchWeight(long transactionId)
         {
             using (var db = new S1947Entities())
             {
-                // Fetch the scanned record from DB
-                var transaction = db.PokaYokaQCTransactions
-                    .FirstOrDefault(t => t.Id == transactionId);
+                // 1. GET QC HISTORY
+                var history = db.PokaYokaQCHistories.FirstOrDefault(x => x.AttemptId == transactionId);
+                if (history == null)
+                    throw new Exception("QC history record not found.");
 
-                if (transaction == null)
-                    throw new Exception("Transaction not found.");
+                // 2. GET PALLET
+                var pallet = db.PokaYokaPallets.FirstOrDefault(x => x.Id == history.TransactionId);
+                if (pallet == null)
+                    throw new Exception("Pallet record not found.");
 
-                // Call weighing machine
-                var result = _weighingMachine.GetWeight();
+                // 3. GET WEIGHT FROM WEIGHING MACHINE
+                var result = _weighingMachine.GetWeight();//call weighing machine service to get weight
 
                 if (!result.Success)
                     throw new Exception(result.ErrorMessage);
 
-                // Get empty pallet weight from Othermaster
-                decimal emptyPalletWeight = 0;
-                var otherMaster = db.Othermasters.FirstOrDefault();
+                decimal actualWeight =result.Weight;
+
+                // 4. GET EMPTY PALLET WEIGHT 
+                decimal emptyPalletWeight = 0m;
+                var otherMaster =db.Othermasters.FirstOrDefault();
                 if (otherMaster != null && otherMaster.EmptyPalletwight.HasValue)
+                {
                     emptyPalletWeight = otherMaster.EmptyPalletwight.Value;
+                }
 
+                // 5. GET PART MASTER
+                // IMPORTANT:
+                // Replace the below query/column names with
+                // your actual PartMaster entity/columns.
 
+                var partMaster = db.PartMasters.FirstOrDefault(x =>x.FGCode == pallet.FGCode);
+                if (partMaster == null)
+                    throw new Exception(
+                        "Part Master not found for FG Code: "+ pallet.FGCode);
 
-                // Build model from DB record
-                // Build model from DB record
-                var model = new PokaYokaViewModel
+                // ==========================================
+                // 6. GET MASTER VALUES
+                // ==========================================
+                decimal singlePartWeight = 15;
+                int maxQtyPerPallet = 100;
+                //decimal singlePartWeight =
+                //    partMaster.SinglePartWeight;
+
+                //int maxQtyPerPallet =
+                //    partMaster.MaxQtyPerPallet;
+
+                // ==========================================
+                // 7. GET RECEIVED QUANTITY
+                // ==========================================
+
+                int receivedQuantity =history.ReceivedQuantity ?? 0;
+
+                // ==========================================
+                // 8. METHOD 2
+                //
+                // Product Weight =
+                // Quantity × Single Part Weight
+                // ==========================================
+
+                decimal expectedProductWeight =receivedQuantity *singlePartWeight;
+
+                // ==========================================
+                // 9. EXPECTED GROSS WEIGHT
+                //
+                // Product Weight + Empty Pallet Weight
+                // ==========================================
+
+                decimal expectedGrossWeight =expectedProductWeight + emptyPalletWeight;
+
+                // ==========================================
+                // 10. WEIGHT TOLERANCE
+                // ==========================================
+
+                decimal weightTolerance = 0.5m;
+
+                // ==========================================
+                // 11. QUANTITY TOLERANCE
+                // ==========================================
+
+                int quantityTolerance = 0;
+
+                // ==========================================
+                // 12. WEIGHT DIFFERENCE
+                // ==========================================
+
+                decimal weightDifference =
+                    Math.Abs(
+                        expectedGrossWeight -
+                        actualWeight
+                    );
+
+                // ==========================================
+                // 13. QUANTITY DIFFERENCE
+                // ==========================================
+
+                int quantityDifference = maxQtyPerPallet - receivedQuantity;
+
+                // ==========================================
+                // 14. VALIDATIONS
+                // ==========================================
+
+                bool weightPassed =weightDifference <=weightTolerance;
+
+                bool quantityPassed =receivedQuantity <=maxQtyPerPallet;
+
+                // ==========================================
+                // 15. UPDATE HISTORY
+                // ==========================================
+
+                history.ReceivedWeight =history.ReceivedWeight;
+
+                history.ReceivedQuantity =receivedQuantity;
+
+                history.SinglePartWeight =singlePartWeight;
+
+                history.EmptyPalletWeight =emptyPalletWeight;
+
+                history.MaxQtyPerPallet =maxQtyPerPallet;
+
+                history.ExpectedProductWeight =expectedProductWeight;
+
+                history.ExpectedGrossWeight =expectedGrossWeight;
+
+                history.ActualWeight =actualWeight;
+
+                history.ActualQuantity = receivedQuantity;
+
+                history.WeightDifference = weightDifference;
+
+                history.QuantityDifference =quantityDifference;
+
+                history.WeightTolerance =weightTolerance;
+
+                history.QuantityTolerance =quantityTolerance;
+
+                // ==========================================
+                // 16. FINAL QC DECISION
+                // ==========================================
+
+                var failures =
+                    new List<string>();
+
+                if (!weightPassed)
                 {
-                    TransactionId = transaction.Id,
-                    QRCode = transaction.QRCode,
-                    Model = transaction.FGModel,
-                    FGCode = transaction.FGCode,
-                    UniqueId = transaction.UniqueId,
-                    PalletNumber = transaction.PalletNumber,
-                    ReceivedWeight = transaction.ReceivedWeight ?? 0,
-                    ReceivedQuantity = (int)(transaction.ReceivedQuantity ?? 0),
-                    QRScanned = true,
-                    ActualWeight = result.Weight,
-                    WeightFetched = true,
-                    MachineStatus = "CONNECTED"
-                };
-                // ================================================
-                // Step 4 - Validation
-                // ================================================
+                    failures.Add(
+                        "Expected weight mismatch");
+                }
 
-                // Check 1 - Quantity
-                // Received Quantity <= Max Qty per Pallet
-                model.Check1_QtyPass =
-                    model.ReceivedQuantity <= MaxQtyPerPallet;
-
-                // Check 2 - QR Weight vs. Scale Weight
-                // Weight Difference = QR Weight - Actual Scale Weight
-                model.WeightDifference =
-                    model.ReceivedWeight - model.ActualWeight;
-
-                model.Check2_QrWeightPass =
-                    Math.Abs(model.WeightDifference) <= WeightTolerance;
-
-                // Check 3 - Expected Weight vs. Actual Weight
-                // Expected Gross Weight =
-                //   (Quantity x Each Part Weight) + Empty Pallet Weight
-                decimal expectedGrossWeight =
-                    (model.ReceivedQuantity * EachPartWeight)
-                    + emptyPalletWeight;
-
-                decimal expectedWeightDifference =
-                    expectedGrossWeight - model.ActualWeight;
-
-                model.Check3_ExpectedWeightPass =
-                    Math.Abs(expectedWeightDifference) <= WeightTolerance;
-
-                // Quantity difference (for display)
-                model.ActualQuantity = model.ReceivedQuantity;
-                model.QuantityDifference = 0;
-
-                // ================================================
-                // Step 5 - Final Decision
-                // ================================================
-                if (model.Check1_QtyPass &&
-                    model.Check2_QrWeightPass &&
-                    model.Check3_ExpectedWeightPass)
+                if (!quantityPassed)
                 {
-                    model.QCStatus = "OK";
-                    model.Message = "QC PASSED";
+                    failures.Add(
+                        "Quantity exceeds maximum quantity");
+                }
+
+                if (failures.Count == 0)
+                {
+                    history.QCStatus ="ACCEPTED";
+                    history.QCReason ="QC PASSED";
+                    pallet.LoadingStatus = "ALLOWED";
+
                 }
                 else
                 {
-                    model.QCStatus = "NOT OK";
-
-                    var failures = new List<string>();
-                    if (!model.Check1_QtyPass)
-                        failures.Add("Qty exceeds max per pallet");
-                    if (!model.Check2_QrWeightPass)
-                        failures.Add("QR weight mismatch");
-                    if (!model.Check3_ExpectedWeightPass)
-                        failures.Add("Expected weight mismatch");
-
-                    model.Message = "QC FAILED: "
-                        + string.Join(", ", failures);
+                    history.QCStatus ="REJECTED";
+                    pallet.LoadingStatus = "NOTALLOWED";
+                    history.QCReason =
+                        string.Join(", ", failures);
                 }
 
-                // Update the DB record
-                transaction.ActualWeight = model.ActualWeight;
-                transaction.ActualQuantity = model.ActualQuantity;
-                transaction.WeightDifference = model.WeightDifference;
-                transaction.QuantityDifference = model.QuantityDifference;
-                transaction.QCStatus = model.QCStatus;
-                transaction.MachineResponse = result.RawResponse;
-                transaction.WeighedAt = DateTime.Now;
-                transaction.CompletedAt = DateTime.Now;
+                // ==========================================
+                // 17. MACHINE INFORMATION
+                // ==========================================
+
+                history.MachineResponse =
+                    result.RawResponse;
+
+                history.WeighedAt =
+                    DateTime.Now;
+
+                history.CompletedAt =
+                    DateTime.Now;
+
+                // ==========================================
+                // 18. UPDATE PALLET
+                // ==========================================
+
+                pallet.QCStatus =
+                    history.QCStatus;
+
+                if (history.QCStatus == "REJECTED")
+                {
+                    pallet.RejectReason =
+                        history.QCReason;
+
+                    pallet.ReworkStatus =
+                        "PENDING";
+                    pallet.LoadingStatus = "NOTALLOWED";
+                    pallet.ReworkCompletedAt =
+                        null;
+                }
+                else
+                {
+                    pallet.RejectReason =
+                        null;
+
+                    pallet.ReworkStatus =
+                        "COMPLETED";
+                    pallet.ReworkCompletedAt =
+                        DateTime.Now;
+                }
+
+                // ==========================================
+                // 19. SAVE
+                // ==========================================
 
                 db.SaveChanges();
 
+                // ==========================================
+                // 20. BUILD VIEW MODEL
+                // ==========================================
+
+                var model = new PokaYokaViewModel
+                {
+                    TransactionId =
+                        history.AttemptId,
+
+                    QRCode =
+                        pallet.QRCode,
+
+                    Model =
+                        pallet.FGModel,
+
+                    FGCode =
+                        pallet.FGCode,
+
+                    UniqueId =
+                        pallet.UniqueId,
+
+                    PalletNumber =
+                        pallet.PalletNumber,
+
+                    ReceivedWeight =
+                        history.ReceivedWeight ?? 0,
+
+                    ReceivedQuantity =
+                        receivedQuantity,
+
+                    QRScanned =
+                        true,
+
+                    ActualWeight =
+                        actualWeight,
+
+                    ActualQuantity =
+                        receivedQuantity,
+
+                    WeightFetched =
+                        true,
+
+                    MachineStatus =
+                        "CONNECTED",
+
+                    ExpectedGrossWeight =
+                        expectedGrossWeight,
+
+                    WeightDifference =
+                        weightDifference,
+
+                    QuantityDifference =
+                        quantityDifference,
+
+                    QCStatus =
+                        history.QCStatus,
+
+                    Message =
+                        history.QCReason
+                };
+
                 return model;
             }
-
-            // Check 1 - Quantity
-            // Received Quantity <= Max Qty per Pallet
-            //    model.Check1_QtyPass =
-            //      model.ReceivedQuantity <= MaxQtyPerPallet;
-
-            //  //  model.ActualQuantity = CalculateQuantity(model);
-
-            //    model.WeightDifference = Math.Abs(
-            //        model.ReceivedWeight - model.ActualWeight);
-
-            //    model.QuantityDifference = Math.Abs(
-            //        model.ReceivedQuantity - model.ActualQuantity);
-
-            //    model.QCStatus = CalculateQCStatus(model);
-
-            //    // Update the DB record
-            //    transaction.ActualWeight = model.ActualWeight;
-            //    transaction.ActualQuantity = model.ActualQuantity;
-            //    transaction.WeightDifference = model.WeightDifference;
-            //    transaction.QuantityDifference = model.QuantityDifference;
-            //    transaction.QCStatus = model.QCStatus;
-            //    transaction.MachineResponse = result.RawResponse;
-            //    transaction.WeighedAt = DateTime.Now;
-            //    transaction.CompletedAt = DateTime.Now;
-
-            //    db.SaveChanges();
-
-            //    return model;
-            //}
         }
 
 
-        //public PokaYokaViewModel FetchWeight(
-        //    PokaYokaViewModel model)
+
+
+
+
+
+
+
+
+
+
+
+
+        //public PokaYokaViewModel FetchWeightMeth1(long transactionId)
         //{
-        //    if (model == null)
-        //        throw new Exception("Invalid request.");
-
-        //    if (!model.QRScanned)
-        //        throw new Exception(
-        //            "Please scan QR code first.");
-
-        //    var result = _weighingMachine.GetWeight();
-
-        //    if (!result.Success)
-        //        throw new Exception(
-        //            result.ErrorMessage);
-
-        //    model.ActualWeight = result.Weight;
-
-        //    // Temporary.
-        //    // Actual calculation will be implemented
-        //    // after we know your quantity rule.
-        //    model.ActualQuantity =
-        //        CalculateQuantity(model);
-
-        //    model.WeightDifference =
-        //        Math.Abs(
-        //            model.ReceivedWeight -
-        //            model.ActualWeight);
-
-        //    model.QuantityDifference =
-        //        Math.Abs(
-        //            model.ReceivedQuantity -
-        //            model.ActualQuantity);
-
-        //    model.QCStatus =
-        //        CalculateQCStatus(model);
-
-        //    model.WeightFetched = true;
-
-        //    model.MachineStatus = "CONNECTED";
-
-        //    // Update the scan record with weight results
         //    using (var db = new S1947Entities())
         //    {
-        //        var transaction = db.PokaYokaQCTransactions
-        //            .FirstOrDefault(t => t.Id == model.TransactionId);
+        //        var vmodel = new PokaYokaViewModel();
+        //        // Fetch the scanned record from DB
+        //        var transaction = db.PokaYokaQCTransactions.FirstOrDefault(t => t.Id == transactionId);
 
-        //        if (transaction != null)
+        //        if (transaction == null)
+        //            throw new Exception("Transaction not found.");
+
+        //        // Call weighing machine
+        //        var result = _weighingMachine.GetWeight();
+
+        //        if (!result.Success)
+        //            throw new Exception(result.ErrorMessage);
+        //        decimal actualWeight = result.Weight;
+
+        //        // Step 3 - Get empty pallet weight
+        //        decimal emptyPalletWeight = 0m;
+        //        var otherMaster = db.Othermasters.FirstOrDefault();
+        //        if (otherMaster != null &&
+        //            otherMaster.EmptyPalletwight.HasValue)
         //        {
-        //            transaction.ActualWeight = model.ActualWeight;
-        //            transaction.ActualQuantity = model.ActualQuantity;
-        //            transaction.WeightDifference = model.WeightDifference;
-        //            transaction.QuantityDifference = model.QuantityDifference;
-        //            transaction.QCStatus = model.QCStatus;
-        //            transaction.MachineResponse = result.RawResponse;
-        //            transaction.WeighedAt = DateTime.Now;
-        //            transaction.CompletedAt = DateTime.Now;
-
-        //            db.SaveChanges();
+        //            emptyPalletWeight = otherMaster.EmptyPalletwight.Value;
         //        }
+
+        //        // Step 4 - Get PartMaster information
+        //        // TODO:
+        //        // Replace these hardcoded values with PartMaster values
+        //        // once the columns are available.
+        //        //
+        //        // Example:
+        //        //
+        //        // var partMaster = db.PartMasters
+        //        //     .FirstOrDefault(x => x.FGCode == transaction.FGCode);
+        //        //
+        //        // if (partMaster == null)
+        //        //     throw new Exception("Part Master not found.");
+        //        //
+        //        // decimal singlePartWeight = partMaster.SinglePartWeight;
+        //        // int maxQtyPerPallet = partMaster.MaxQtyPerPallet;
+
+        //        decimal EachPartWeight = 200m; // TODO: Fetch from PartMaster
+        //        int maxQtyPerPallet = 150;       // TODO: Fetch from PartMaster
+        //        decimal weightTolerance = 0.5m;
+
+
+        //        // Build model from DB record
+        //        var model = new PokaYokaViewModel
+        //        {
+        //            TransactionId = transaction.Id,
+        //            QRCode = transaction.QRCode,
+        //            Model = transaction.FGModel,
+        //            FGCode = transaction.FGCode,
+        //            UniqueId = transaction.UniqueId,
+        //            PalletNumber = transaction.PalletNumber,
+        //            ReceivedWeight = transaction.ReceivedWeight ?? 0,//from scanner received weight
+        //            ReceivedQuantity = (int)(transaction.ReceivedQuantity ?? 0),
+        //            QRScanned = true,
+        //            ActualWeight = result.Weight,
+        //            WeightFetched = true,
+        //            MachineStatus = "CONNECTED"
+        //        };
+
+        //        //Step 6 - Calculate expected gross weight
+
+        //        //also check receivedweight with actual weight 
+        //        //model.Check1_QtyPass = transaction.ReceivedWeight == actualWeight;
+        //        //Expected Gross Weight = Quantity * Weight of One Part + Empty Pallet Weight
+        //        decimal expectedGrossWeight = (model.ReceivedQuantity * EachPartWeight) + emptyPalletWeight;
+
+        //        // Step 7 - Calculate Weight differences
+        //        decimal expectedWeightDifference = expectedGrossWeight - model.ActualWeight;
+        //        model.WeightDifference = Math.Abs(expectedWeightDifference);//set to model
+
+        //        // step 8 Quantity need to compare with the master maxperpallet qty & received qty
+        //        model.QuantityDifference = maxQtyPerPallet - model.ReceivedQuantity;
+        //        // Quantity difference (for display)
+        //        model.ActualQuantity = model.ReceivedQuantity;
+
+        //        //model.Check3_ExpectedWeightPass =Math.Abs(expectedWeightDifference) <= WeightTolerance;
+
+        //        // Quantity should not exceed maximum quantity
+        //        // model.Check1_QtyPass =model.ReceivedQuantity <= maxQtyPerPallet;
+
+        //        // ================================================
+        //        // Step 5 - Final Decision
+        //        // ================================================
+        //        if (expectedGrossWeight == model.ActualWeight)
+        //        {
+        //            model.QCStatus = "OK";
+        //            model.Message = "QC PASSED";
+        //        }
+        //        else
+        //        {
+        //            model.QCStatus = "NOT OK";
+
+        //            var failures = "Expected weight mismatch";
+        //            model.Message = "QC FAILED: " + string.Join(", ", failures);
+        //        }
+
+        //        // Update the DB record
+        //        transaction.ActualWeight = model.ActualWeight;
+        //        transaction.ActualQuantity = model.ActualQuantity;
+        //        transaction.WeightDifference = model.WeightDifference;
+        //        transaction.QuantityDifference = model.QuantityDifference;
+        //        transaction.QCStatus = model.QCStatus;
+        //        transaction.MachineResponse = result.RawResponse;
+        //        transaction.WeighedAt = DateTime.Now;
+        //        transaction.CompletedAt = DateTime.Now;
+
+        //        db.SaveChanges();
+
+        //        return model;
         //    }
-        //    return model;
+
         //}
 
-        private decimal CalculateQuantity(
-                PokaYokaViewModel model)
-            {
-                // TODO:
-                // Implement your actual quantity formula.
 
-                return model.ReceivedQuantity;
-            }
 
-            private string CalculateQCStatus(
-                PokaYokaViewModel model)
-            {
-                const decimal WeightTolerance = 0.01m; // example tolerance
-                if (model.WeightDifference <= WeightTolerance && model.QuantityDifference == 0)
-                    return "OK";
-                return "NOT OK";
-            }
-        }
+        //public PokaYokaViewModel FetchWeightmeth1(long transactionId)
+        //{
+        //    using (var db = new S1947Entities())
+        //    {
+        //        // 1. GET QC HISTORY
+        //        var history = db.PokaYokaQCHistories.FirstOrDefault(x => x.AttemptId == transactionId);
+        //        if (history == null)
+        //            throw new Exception("QC history record not found.");
+
+        //        // 2. GET PALLET
+        //        var pallet = db.PokaYokaPallets.FirstOrDefault(x => x.Id == history.TransactionId);
+        //        if (pallet == null)
+        //            throw new Exception("Pallet record not found.");
+
+        //        // 3. GET MACHINE WEIGHT
+        //        var result = _weighingMachine.GetWeight();
+        //        if (!result.Success)
+        //            throw new Exception(result.ErrorMessage);
+
+        //        decimal actualWeight = result.Weight;
+
+        //        // 4. GET EMPTY PALLET WEIGHT
+        //        decimal emptyPalletWeight = 0m;
+
+        //        var otherMaster = db.Othermasters.FirstOrDefault();
+        //        if (otherMaster != null && otherMaster.EmptyPalletwight.HasValue)
+        //        {
+        //            emptyPalletWeight =otherMaster.EmptyPalletwight.Value;
+        //        }
+
+        //        // 5. METHOD 1
+        //        // QR WEIGHT + EMPTY PALLET WEIGHT
+        //        decimal receivedWeight =history.ReceivedWeight ?? 0m;
+        //        decimal expectedProductWeight = receivedWeight;
+        //        decimal expectedGrossWeight = expectedProductWeight + emptyPalletWeight;
+
+        //        // 6. WEIGHT TOLERANCE         
+        //        decimal weightTolerance = 0.5m;
+
+        //        // 7. WEIGHT DIFFERENCE
+        //        decimal weightDifference =Math.Abs(expectedGrossWeight -actualWeight);
+
+        //        // 8. QUANTITY
+        //        int receivedQuantity =history.ReceivedQuantity ?? 0;
+
+        //        // TODO: Replace with PartMaster value
+        //        int maxQtyPerPallet = 150;
+
+        //        int quantityDifference = maxQtyPerPallet -receivedQuantity;
+
+        //        bool quantityPassed =receivedQuantity <= maxQtyPerPallet;
+
+        //        bool weightPassed = weightDifference <= weightTolerance;
+
+        //        // 9. UPDATE HISTORY VALUES
+
+        //        history.EmptyPalletWeight =emptyPalletWeight;
+
+        //        history.ExpectedProductWeight =expectedProductWeight;
+
+        //        history.ExpectedGrossWeight = expectedGrossWeight;
+
+        //        history.ActualWeight =actualWeight;
+
+        //        history.ActualQuantity = receivedQuantity;
+
+        //        history.WeightDifference =weightDifference;
+
+        //        history.MaxQtyPerPallet =maxQtyPerPallet;
+
+        //        history.QuantityDifference =quantityDifference;
+
+        //        history.WeightTolerance =weightTolerance;
+
+        //        // ==========================================
+        //        // 10. QC DECISION
+        //        // ==========================================
+
+        //        if (weightPassed && quantityPassed)
+        //        {
+        //            history.QCStatus = "ACCEPTED";
+
+        //            history.QCReason =
+        //                "QC PASSED";
+        //        }
+        //        else
+        //        {
+        //            history.QCStatus = "REJECTED";
+
+        //            var reasons = new List<string>();
+
+        //            if (!weightPassed)
+        //                reasons.Add("Expected weight mismatch");
+
+        //            if (!quantityPassed)
+        //                reasons.Add("Quantity exceeds maximum quantity");
+
+        //            history.QCReason =
+        //                string.Join(", ", reasons);
+        //        }
+
+        //        // ==========================================
+        //        // 11. MACHINE DETAILS
+        //        // ==========================================
+
+        //        history.MachineResponse =
+        //            result.RawResponse;
+
+        //        history.WeighedAt =
+        //            DateTime.Now;
+
+        //        history.CompletedAt =
+        //            DateTime.Now;
+
+        //        // ==========================================
+        //        // 12. UPDATE PALLET CURRENT STATUS
+        //        // ==========================================
+
+        //        pallet.QCStatus =
+        //            history.QCStatus;
+
+        //        if (history.QCStatus == "REJECTED")
+        //        {
+        //            pallet.RejectReason =
+        //                history.QCReason;
+
+        //            pallet.ReworkStatus =
+        //                "PENDING";
+        //        }
+        //        else
+        //        {
+        //            pallet.RejectReason = null;
+
+        //            pallet.ReworkStatus =
+        //                "COMPLETED";
+
+        //            pallet.ReworkCompletedAt =
+        //                DateTime.Now;
+        //        }
+
+        //        // ==========================================
+        //        // 13. SAVE
+        //        // ==========================================
+
+        //        db.SaveChanges();
+
+        //        // ==========================================
+        //        // 14. BUILD VIEW MODEL
+        //        // ==========================================
+
+        //        var model = new PokaYokaViewModel
+        //        {
+        //            TransactionId = history.AttemptId,
+
+        //            QRCode = pallet.QRCode,
+        //            Model = pallet.FGModel,
+        //            FGCode = pallet.FGCode,
+        //            UniqueId = pallet.UniqueId,
+        //            PalletNumber = pallet.PalletNumber,
+
+        //            ReceivedWeight =
+        //                history.ReceivedWeight ?? 0,
+
+        //            ReceivedQuantity =
+        //                history.ReceivedQuantity ?? 0,
+
+        //            QRScanned = true,
+
+        //            ActualWeight =
+        //                actualWeight,
+
+        //            ActualQuantity =
+        //                receivedQuantity,
+
+        //            WeightDifference =
+        //                weightDifference,
+
+        //            QuantityDifference =
+        //                quantityDifference,
+
+        //            WeightFetched = true,
+
+        //            MachineStatus = "CONNECTED",
+
+        //            QCStatus =
+        //                history.QCStatus,
+
+        //            Message =
+        //                history.QCReason
+        //        };
+
+        //        return model;
+        //    }
+        //}
     }
+}

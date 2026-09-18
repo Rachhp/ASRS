@@ -45,7 +45,8 @@ namespace S1947.Models
         public virtual DbSet<Menulist> Menulists { get; set; }
         public virtual DbSet<Othermaster> Othermasters { get; set; }
         public virtual DbSet<PartMaster> PartMasters { get; set; }
-        public virtual DbSet<PokaYokaQCTransaction> PokaYokaQCTransactions { get; set; }
+        public virtual DbSet<PokaYokaPallet> PokaYokaPallets { get; set; }
+        public virtual DbSet<PokaYokaQCHistory> PokaYokaQCHistories { get; set; }
         public virtual DbSet<shift_master> shift_master { get; set; }
         public virtual DbSet<ShuttleDtl> ShuttleDtls { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
@@ -231,6 +232,39 @@ namespace S1947.Models
         public virtual int sp_upgraddiagrams()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_upgraddiagrams");
+        }
+    
+        public virtual ObjectResult<GetFastMediumLocation_Result> GetFastMediumLocation(string fGCode, Nullable<int> locFrom, Nullable<int> locTo, Nullable<int> locFromRow, Nullable<int> locToRow, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var locFromParameter = locFrom.HasValue ?
+                new ObjectParameter("LocFrom", locFrom) :
+                new ObjectParameter("LocFrom", typeof(int));
+    
+            var locToParameter = locTo.HasValue ?
+                new ObjectParameter("LocTo", locTo) :
+                new ObjectParameter("LocTo", typeof(int));
+    
+            var locFromRowParameter = locFromRow.HasValue ?
+                new ObjectParameter("LocFromRow", locFromRow) :
+                new ObjectParameter("LocFromRow", typeof(int));
+    
+            var locToRowParameter = locToRow.HasValue ?
+                new ObjectParameter("LocToRow", locToRow) :
+                new ObjectParameter("LocToRow", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetFastMediumLocation_Result>("GetFastMediumLocation", fGCodeParameter, locFromParameter, locToParameter, locFromRowParameter, locToRowParameter, levelFromParameter, levelToParameter);
         }
     }
 }
