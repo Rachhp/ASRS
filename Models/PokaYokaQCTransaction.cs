@@ -21,11 +21,11 @@ namespace S1947.Models
         public string UniqueId { get; set; }
         public string PalletNumber { get; set; }
         public Nullable<decimal> ReceivedWeight { get; set; }
-        public Nullable<decimal> ReceivedQuantity { get; set; }
+        public Nullable<int> ReceivedQuantity { get; set; }
         public Nullable<decimal> ActualWeight { get; set; }
-        public Nullable<decimal> ActualQuantity { get; set; }
+        public Nullable<int> ActualQuantity { get; set; }
         public Nullable<decimal> WeightDifference { get; set; }
-        public Nullable<decimal> QuantityDifference { get; set; }
+        public Nullable<int> QuantityDifference { get; set; }
         public Nullable<decimal> WeightTolerance { get; set; }
         public Nullable<decimal> QuantityTolerance { get; set; }
         public string QCStatus { get; set; }

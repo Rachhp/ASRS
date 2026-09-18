@@ -23,7 +23,6 @@
         <EntityTypeShape EntityType="S1947Model.Menulist" Width="1.5" PointX="10.75" PointY="10.75" />
         <EntityTypeShape EntityType="S1947Model.Othermaster" Width="1.5" PointX="0.75" PointY="11.75" />
         <EntityTypeShape EntityType="S1947Model.PartMaster" Width="1.5" PointX="12.75" PointY="0.75" />
-        <EntityTypeShape EntityType="S1947Model.PokaYokaQCTransaction" Width="1.5" PointX="12.75" PointY="4.75" />
         <EntityTypeShape EntityType="S1947Model.shift_master" Width="1.5" PointX="12.75" PointY="10.75" />
         <EntityTypeShape EntityType="S1947Model.ShuttleDtl" Width="1.5" PointX="10.75" PointY="13.75" />
         <EntityTypeShape EntityType="S1947Model.sysdiagram" Width="1.5" PointX="12.75" PointY="13.75" />
@@ -42,6 +41,7 @@
         <EntityTypeShape EntityType="S1947Model.vw_AgeingReport" Width="1.5" PointX="8.75" PointY="17.75" />
         <EntityTypeShape EntityType="S1947Model.vw_TransactionHistory" Width="1.5" PointX="10.75" PointY="17.75" />
         <EntityTypeShape EntityType="S1947Model.vw_TransactionReport" Width="1.5" PointX="18.75" PointY="0.75" />
+        <EntityTypeShape EntityType="S1947Model.PokaYokaQCTransaction" Width="1.5" PointX="17.375" PointY="18.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -30,8 +30,8 @@ namespace S1947.Models.PokaYoka
         public decimal WeightDifference { get; set; }
         public int QuantityDifference { get; set; }
 
-        // Validation checks
-        public bool Check1_QtyPass { get; set; }
+        // Validation checkss
+        public int Check1_QtyPass { get; set; }
         public bool Check2_QrWeightPass { get; set; }
         public bool Check3_ExpectedWeightPass { get; set; }
         public string QCStatus { get; set; }

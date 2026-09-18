@@ -367,11 +367,11 @@ warning 6002: The table/view 'S1947.dbo.GoodsExistings' does not have a primary 
           <Property Name="UniqueId" Type="nvarchar" MaxLength="100" />
           <Property Name="PalletNumber" Type="nvarchar" MaxLength="100" />
           <Property Name="ReceivedWeight" Type="decimal" Precision="18" Scale="3" />
-          <Property Name="ReceivedQuantity" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="ReceivedQuantity" Type="int" />
           <Property Name="ActualWeight" Type="decimal" Precision="18" Scale="3" />
-          <Property Name="ActualQuantity" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="ActualQuantity" Type="int" />
           <Property Name="WeightDifference" Type="decimal" Precision="18" Scale="3" />
-          <Property Name="QuantityDifference" Type="decimal" Precision="18" Scale="3" />
+          <Property Name="QuantityDifference" Type="int" />
           <Property Name="WeightTolerance" Type="decimal" Precision="18" Scale="3" />
           <Property Name="QuantityTolerance" Type="decimal" Precision="18" Scale="3" />
           <Property Name="QCStatus" Type="nvarchar" MaxLength="20" />
@@ -1078,7 +1078,6 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <EntitySet Name="Menulists" EntityType="S1947Model.Menulist" />
           <EntitySet Name="Othermasters" EntityType="S1947Model.Othermaster" />
           <EntitySet Name="PartMasters" EntityType="S1947Model.PartMaster" />
-          <EntitySet Name="PokaYokaQCTransactions" EntityType="S1947Model.PokaYokaQCTransaction" />
           <EntitySet Name="shift_master" EntityType="S1947Model.shift_master" />
           <EntitySet Name="ShuttleDtls" EntityType="S1947Model.ShuttleDtl" />
           <EntitySet Name="sysdiagrams" EntityType="S1947Model.sysdiagram" />
@@ -1097,6 +1096,7 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <EntitySet Name="vw_AgeingReport" EntityType="S1947Model.vw_AgeingReport" />
           <EntitySet Name="vw_TransactionHistory" EntityType="S1947Model.vw_TransactionHistory" />
           <EntitySet Name="vw_TransactionReport" EntityType="S1947Model.vw_TransactionReport" />
+          <EntitySet Name="PokaYokaQCTransactions" EntityType="S1947Model.PokaYokaQCTransaction" />
         </EntityContainer>
         <ComplexType Name="sp_helpdiagramdefinition_Result">
           <Property Type="Int32" Name="version" Nullable="true" />
@@ -1471,33 +1471,6 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="ModifiedBy" Type="Int16" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
           <Property Name="DeleteStatus" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
-        </EntityType>
-        <EntityType Name="PokaYokaQCTransaction">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="QRCode" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="FGModel" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="FGCode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="UniqueId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PalletNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="ReceivedWeight" Type="Decimal" Precision="18" Scale="3" />
-          <Property Name="ReceivedQuantity" Type="Decimal" Precision="18" Scale="3" />
-          <Property Name="ActualWeight" Type="Decimal" Precision="18" Scale="3" />
-          <Property Name="ActualQuantity" Type="Decimal" Precision="18" Scale="3" />
-          <Property Name="WeightDifference" Type="Decimal" Precision="18" Scale="3" />
-          <Property Name="QuantityDifference" Type="Decimal" Precision="18" Scale="3" />
-          <Property Name="WeightTolerance" Type="Decimal" Precision="18" Scale="3" />
-          <Property Name="QuantityTolerance" Type="Decimal" Precision="18" Scale="3" />
-          <Property Name="QCStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="MachineIP" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="MachineResponse" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="ScannedAt" Type="DateTime" Precision="3" />
-          <Property Name="WeighedAt" Type="DateTime" Precision="3" />
-          <Property Name="CompletedAt" Type="DateTime" Precision="3" />
-          <Property Name="CreatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         <EntityType Name="shift_master">
           <Key>
@@ -1927,6 +1900,33 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="CreatedBy" Type="Int16" Nullable="false" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
         </EntityType>
+        <EntityType Name="PokaYokaQCTransaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="QRCode" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FGModel" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FGCode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="UniqueId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PalletNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ReceivedWeight" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="ReceivedQuantity" Type="Int32" />
+          <Property Name="ActualWeight" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="ActualQuantity" Type="Int32" />
+          <Property Name="WeightDifference" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="QuantityDifference" Type="Int32" />
+          <Property Name="WeightTolerance" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="QuantityTolerance" Type="Decimal" Precision="18" Scale="3" />
+          <Property Name="QCStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="MachineIP" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MachineResponse" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="ScannedAt" Type="DateTime" Precision="3" />
+          <Property Name="WeighedAt" Type="DateTime" Precision="3" />
+          <Property Name="CompletedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2292,34 +2292,6 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
                 <ScalarProperty Name="FGModel" ColumnName="FGModel" />
                 <ScalarProperty Name="FGCode" ColumnName="FGCode" />
                 <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PokaYokaQCTransactions">
-            <EntityTypeMapping TypeName="S1947Model.PokaYokaQCTransaction">
-              <MappingFragment StoreEntitySet="PokaYokaQCTransaction">
-                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CompletedAt" ColumnName="CompletedAt" />
-                <ScalarProperty Name="WeighedAt" ColumnName="WeighedAt" />
-                <ScalarProperty Name="ScannedAt" ColumnName="ScannedAt" />
-                <ScalarProperty Name="MachineResponse" ColumnName="MachineResponse" />
-                <ScalarProperty Name="MachineIP" ColumnName="MachineIP" />
-                <ScalarProperty Name="QCStatus" ColumnName="QCStatus" />
-                <ScalarProperty Name="QuantityTolerance" ColumnName="QuantityTolerance" />
-                <ScalarProperty Name="WeightTolerance" ColumnName="WeightTolerance" />
-                <ScalarProperty Name="QuantityDifference" ColumnName="QuantityDifference" />
-                <ScalarProperty Name="WeightDifference" ColumnName="WeightDifference" />
-                <ScalarProperty Name="ActualQuantity" ColumnName="ActualQuantity" />
-                <ScalarProperty Name="ActualWeight" ColumnName="ActualWeight" />
-                <ScalarProperty Name="ReceivedQuantity" ColumnName="ReceivedQuantity" />
-                <ScalarProperty Name="ReceivedWeight" ColumnName="ReceivedWeight" />
-                <ScalarProperty Name="PalletNumber" ColumnName="PalletNumber" />
-                <ScalarProperty Name="UniqueId" ColumnName="UniqueId" />
-                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
-                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
-                <ScalarProperty Name="QRCode" ColumnName="QRCode" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2750,6 +2722,34 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
                 <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
                 <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
                 <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PokaYokaQCTransactions">
+            <EntityTypeMapping TypeName="S1947Model.PokaYokaQCTransaction">
+              <MappingFragment StoreEntitySet="PokaYokaQCTransaction">
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CompletedAt" ColumnName="CompletedAt" />
+                <ScalarProperty Name="WeighedAt" ColumnName="WeighedAt" />
+                <ScalarProperty Name="ScannedAt" ColumnName="ScannedAt" />
+                <ScalarProperty Name="MachineResponse" ColumnName="MachineResponse" />
+                <ScalarProperty Name="MachineIP" ColumnName="MachineIP" />
+                <ScalarProperty Name="QCStatus" ColumnName="QCStatus" />
+                <ScalarProperty Name="QuantityTolerance" ColumnName="QuantityTolerance" />
+                <ScalarProperty Name="WeightTolerance" ColumnName="WeightTolerance" />
+                <ScalarProperty Name="QuantityDifference" ColumnName="QuantityDifference" />
+                <ScalarProperty Name="WeightDifference" ColumnName="WeightDifference" />
+                <ScalarProperty Name="ActualQuantity" ColumnName="ActualQuantity" />
+                <ScalarProperty Name="ActualWeight" ColumnName="ActualWeight" />
+                <ScalarProperty Name="ReceivedQuantity" ColumnName="ReceivedQuantity" />
+                <ScalarProperty Name="ReceivedWeight" ColumnName="ReceivedWeight" />
+                <ScalarProperty Name="PalletNumber" ColumnName="PalletNumber" />
+                <ScalarProperty Name="UniqueId" ColumnName="UniqueId" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="QRCode" ColumnName="QRCode" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
