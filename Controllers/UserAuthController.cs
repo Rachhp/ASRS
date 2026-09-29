@@ -44,7 +44,6 @@ namespace S1834.Controllers
             ViewBag.ModuleType = new SelectList(ModuleType, "ModuleType", "ModuleType");
             ViewBag.AuthType = new List<SelectListItem>(){
                 new SelectListItem {Text="No Authorization", Value="N", Selected=false},
-                //new SelectListItem {Text="Read Only", Value="R", Selected=false},
                 new SelectListItem {Text="Full Authorization", Value="F", Selected=false}
                 };
             if (MTransNo > 0)

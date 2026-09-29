@@ -180,7 +180,7 @@ namespace S1947.Controllers
                     Cell = (int)x.Col,
                     Depth = (int)x.Row,
                     LocationName = x.LocationName,
-                    LoadedDate = x.ModifiedOn,
+                    LoadedDate = x.CreatedOn,
                     //Status = x.LocaStatus
                 }).OrderByDescending(x => x.Level)
             .ToList();
@@ -204,6 +204,55 @@ namespace S1947.Controllers
 
             return View(data);
         }
+
+
+
+
+        public ActionResult LiveStockReportPdf(string MaterialCode)
+        {
+            S1947Entities db = new S1947Entities();
+
+            var data = db.GoodsExisitings
+                .Where(x => x.LocaStatus == "LOADED")
+                .Select(x => new LiveStockReportVM
+                {
+                    MaterialCode = x.FGCode,
+                    FGModel = x.FGModel,
+                    Quantity = (int)x.Quantity,
+                    Level = (int)x.Layer,
+                    Cell = (int)x.Col,
+                    Depth = (int)x.Row,
+                    LocationName = x.LocationName,
+                    LoadedDate = x.CreatedOn
+                })
+                .ToList();
+
+            // Material Code filter
+            if (!string.IsNullOrEmpty(MaterialCode))
+            {
+                data = data
+                    .Where(x => x.MaterialCode.Contains(MaterialCode))
+                    .ToList();
+            }
+
+            // Same sorting as LiveStockReport
+            data = data
+                .OrderBy(x => x.Level)
+                .ThenBy(x => x.Cell)
+                .ThenBy(x => x.Depth)
+                .ToList();
+
+            return new Rotativa.ViewAsPdf(
+                "LiveStockReportPDF",
+                data)
+            {
+                FileName = "LiveStockReport.pdf",
+                PageOrientation = Rotativa.Options.Orientation.Landscape,
+                PageSize = Rotativa.Options.Size.A4,
+                PageMargins = new Rotativa.Options.Margins(10, 10, 10, 10)
+            };
+        }
+
 
         public ActionResult MaterialMasterReport()
         {

@@ -18,7 +18,7 @@ namespace S1947.Controllers
         {
             //it requires 2 objects  1 . QrCodeParser 2. TcpWeighingMachineService
             _pokaYokaService = new PokaYokaService(new QrCodeParser(),new TcpWeighingMachineService("192.168.1.100",5000));
-            //aslso this is  called manual dependency injection because we are creating the object of the service class in the controller class.
+            //also this is  called manual dependency injection because we are creating the object of the service class in the controller class.
         }
 
         [HttpGet]
@@ -58,7 +58,7 @@ namespace S1947.Controllers
         {
             try
             {
-                var result = _pokaYokaService.FetchWeight(transactionId);
+                var result = _pokaYokaService.FetchWeightMeth1(transactionId);
 
                 return Json(new
                 {
