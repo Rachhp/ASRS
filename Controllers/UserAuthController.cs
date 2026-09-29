@@ -8,241 +8,283 @@ namespace S1834.Controllers
 {
     public class UserAuthController : Controller
     {
-        // GET: UserAuthorization        
+        // ============================================================
+        // INDEX
+        // ============================================================
+
         public ActionResult Index()
-        {
-            if (Session["Userid"] != null)
-            {
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Login", "Home");
-            }
-        }
-        public ActionResult AddEdit(int? MTransNo)
         {
             if (Session["Userid"] == null)
             {
                 return RedirectToAction("Login", "Home");
             }
-            //DateTime TodayDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById(Convert.ToString(Session["TimeZone"])));
-            DateTime TodayDate = DateTime.Now;
 
-            S1947Entities conn = new S1947Entities();
-            //ViewBag.BranchNo = new SelectList(conn.BranchMasters.Where(x => x.DeleteStatus == "N" && x.LockStatus == "Y").OrderBy(x => x.BranchName), "MTransNo", "BranchName");
-            var existingUserNos = conn.UserAuthorizations.Select(ua => ua.UserNo).ToList();
-
-            ViewBag.UserNo = new SelectList(conn.UserMasters.Where(x => x.DeleteStatus == "N" && x.LockStatus == "Y" && x.UserType != "ADMIN" && !existingUserNos.Contains(x.MTransNo))
-                    .OrderBy(x => x.UserId), "MTransNo", "UserName");
-
-            var ModuleType = (from CM in conn.Menulists
-                              select new
-                              {
-                                  ModuleType = CM.ModuleType,
-                              }).Distinct().OrderBy(x => x.ModuleType).ToList();
-            ViewBag.ModuleType = new SelectList(ModuleType, "ModuleType", "ModuleType");
-            ViewBag.AuthType = new List<SelectListItem>(){
-                new SelectListItem {Text="No Authorization", Value="N", Selected=false},
-                new SelectListItem {Text="Full Authorization", Value="F", Selected=false}
-                };
-            if (MTransNo > 0)
+            using (S1947Entities db = new S1947Entities())
             {
-                var UserAuthModule = conn.UserAuthorizations.Where(x => x.MTransNo == MTransNo).FirstOrDefault();
-                UserAuthorizationValidation obj = new UserAuthorizationValidation();
-                obj.UserNo = UserAuthModule.UserNo;
-                obj.ModuleType = UserAuthModule.ModuleType.Trim();
-                obj.MTransNo = UserAuthModule.MTransNo;
+                var userList = (
+                    from U in db.UserMasters
+                    where U.DeleteStatus == "N"
+                       && U.LockStatus == "Y"
+                       && U.UserType != "ADMIN"
+                       && db.UserAuthorizations.Any(A => A.UserNo == U.MTransNo)
+                    orderby U.UserName
+                    select new UserAuthorizationValidation
+                    {
+                        UserNo = U.MTransNo,
+                        UserName = U.UserName,
+                        UserId = U.UserId
+                    }
+                ).ToList();
 
-                if (obj.AuthType != null)
-                {
-                    obj.AuthType = "F";
-                }
-                return View(obj);
-            }
-            else
-            {
-                UserAuthorizationValidation UserAuthModule = new UserAuthorizationValidation();
-                return View(UserAuthModule);
+                return View(userList);
             }
         }
 
 
+        // ============================================================
+        // ADD / EDIT
+        // ============================================================
+        [HttpGet]
+        public ActionResult AddEdit(int? UserNo)
+        {
+            if (Session["Userid"] == null)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            using (S1947Entities db = new S1947Entities())
+            {
+                // =========================================================
+                // USER DROPDOWN
+                // =========================================================
+
+                var users = db.UserMasters
+                    .Where(x => x.DeleteStatus == "N"
+                             && x.LockStatus == "Y"
+                             && x.UserType != "ADMIN")
+                    .OrderBy(x => x.UserName)
+                    .ToList();
+
+                ViewBag.UserNo = new SelectList(
+                    users,
+                    "MTransNo",
+                    "UserName",
+                    UserNo
+                );
+
+
+                // =========================================================
+                // MODEL
+                // =========================================================
+
+                UserAuthorizationValidation model =
+                    new UserAuthorizationValidation();
+
+                if (UserNo.HasValue && UserNo.Value > 0)
+                {
+                    model.UserNo = UserNo.Value;
+                }
+
+
+                // =========================================================
+                // ALL MODULES
+                // =========================================================
+
+                var modules = db.Menulists
+                    .OrderBy(x => x.ModuleType)
+                    .ThenBy(x => x.MSLNo)
+                    .ToList();
+
+                ViewBag.Modules = modules;
+
+
+                // =========================================================
+                // EXISTING AUTHORIZATION
+                // =========================================================
+
+                var existingAuth = db.UserAuthorizations
+                    .Where(x => x.UserNo == UserNo)
+                    .ToList();
+
+                ViewBag.ExistingAuth = existingAuth;
+
+
+                return View(model);
+            }
+        }
+
+
+        // ============================================================
+        // SAVE AUTHORIZATION
+        // ============================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ValidateInput(true)]
-        public ActionResult AddEdit(UserAuthorizationValidation UserAuthModule, string MainSubmit, string Add)
+        public JsonResult SaveAuthorization(
+    int UserNo,
+    string AuthorizationData)
         {
-
             if (Session["Userid"] == null)
             {
-                return RedirectToAction("Login", "Home");
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
             }
-            else
+
+            try
             {
-                if (!string.IsNullOrEmpty(Add))
+                using (S1947Entities db = new S1947Entities())
                 {
-                    S1947Entities db = new S1947Entities();
-                    UserAuthorization obj = db.UserAuthorizations.Where(x => x.UserNo == UserAuthModule.UserNo && x.ModuleType == UserAuthModule.ModuleType).FirstOrDefault();
-                    if (obj != null)
-                    {
-                        Session["MTransNo"] = obj.MTransNo;
-                        return RedirectToAction("AddEdit", new { MTransNo = obj.MTransNo });
-                    }
-                    else
-                    {
-                        UserAuthorization objD = new UserAuthorization();
-                        objD.UserNo = UserAuthModule.UserNo;
-                        objD.ModuleType = UserAuthModule.ModuleType;
-                        //objD.BranchNo = UserAuthModule.BranchNo;
-                        objD.ModuleNo = 0;
-                        objD.AuthType = "";
-                        db.UserAuthorizations.Add(objD);
-                        db.SaveChanges();
-                        Session["MTransNo"] = objD.MTransNo;
-                        // Suppose objD.MTransNo contains the value you want to send
-                        return RedirectToAction("AddEdit", new { MTransNo = objD.MTransNo });
+                    // Check user
+                    var user = db.UserMasters.FirstOrDefault(x =>
+                        x.MTransNo == UserNo &&
+                        x.DeleteStatus == "N" &&
+                        x.LockStatus == "Y");
 
-                    }
-                }
-                else
-                {
-                    return RedirectToAction("Index");
-                }
-            }
-        }
-        //public String SaveDtl(int UserNo,string ModuleType, String DtlString,String Status)
-        //{
-        //    int MTransNo = 0;
-        //    S1834Entities db = new S1834Entities();
-        //    string strText = DtlString;
-        //    string[] arrayStock = strText.Split('~');
-        //    foreach (string str in arrayStock)
-        //    {
-        //        string[] arrayValues = str.Split('^');
-        //        try
-        //        {
-        //            if (arrayValues[3] == "1")
-        //            {
-        //                if (Convert.ToInt32(arrayValues[2]) == 0)
-        //                {
-        //                    UserAuthorization objD = new UserAuthorization();
-        //                    objD.UserNo = UserNo;
-        //                    objD.ModuleType = ModuleType;
-        //                    //objD.BranchNo = BranchNo;
-        //                    objD.ModuleNo = Convert.ToInt32(arrayValues[0]);
-        //                    objD.AuthType = arrayValues[1];
-        //                    db.UserAuthorizations.Add(objD);
-        //                    db.SaveChanges();
-        //                    MTransNo = objD.MTransNo;
-        //                }
-        //                else
-        //                {
-        //                    MTransNo = Convert.ToInt32(arrayValues[2]);
-        //                    UserAuthorization objD = db.UserAuthorizations.Where(x => x.MTransNo == MTransNo).FirstOrDefault();
-        //                    objD.AuthType = arrayValues[1];
-        //                    db.Entry(objD).State = System.Data.Entity.EntityState.Modified;
-        //                    db.SaveChanges();
-        //                }
-        //            }
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            System.Diagnostics.Debug.WriteLine(e.StackTrace);
-        //        }
-        //    }
-        //    return AddEdit(MTransNo);
-
-        //}
-        [HttpPost]
-        public string SaveDtl(int UserNo, string ModuleType, string DtlString, string Status)
-        {
-            int MTransNo = 0;
-            using (S1947Entities db = new S1947Entities())
-            {
-                string[] arrayStock = DtlString.Split('~');
-
-                foreach (string str in arrayStock)
-                {
-                    string[] arrayValues = str.Split('^');
-                    try
+                    if (user == null)
                     {
-                        if (arrayValues[3] == "1")
+                        return Json(new
                         {
-                            if (Convert.ToInt32(arrayValues[2]) == 0)
+                            success = false,
+                            message = "Invalid user selected."
+                        });
+                    }
+
+                    // -----------------------------------------------------
+                    // Remove existing authorization for this user
+                    // -----------------------------------------------------
+
+                    var oldAuth = db.UserAuthorizations
+                        .Where(x => x.UserNo == UserNo)
+                        .ToList();
+
+                    if (oldAuth.Any())
+                    {
+                        db.UserAuthorizations.RemoveRange(oldAuth);
+                    }
+
+                    // -----------------------------------------------------
+                    // AuthorizationData format:
+                    //
+                    // ModuleNo^ModuleType^AuthType
+                    //
+                    // Example:
+                    //
+                    // 1^MASTER^F~2^MASTER^N~3^SALES^F
+                    // -----------------------------------------------------
+
+                    if (!string.IsNullOrEmpty(AuthorizationData))
+                    {
+                        string[] rows = AuthorizationData.Split('~');
+
+                        foreach (string row in rows)
+                        {
+                            if (string.IsNullOrWhiteSpace(row))
+                                continue;
+
+                            string[] values = row.Split('^');
+
+                            if (values.Length < 3)
+                                continue;
+
+                            int moduleNo;
+
+                            if (!int.TryParse(values[0], out moduleNo))
+                                continue;
+
+                            string moduleType = values[1];
+                            string authType = values[2];
+
+                            // Only save Full Authorization
+                            if (authType == "F")
                             {
-                                UserAuthorization objD = new UserAuthorization
-                                {
-                                    UserNo = UserNo,
-                                    ModuleType = ModuleType,
-                                    ModuleNo = Convert.ToInt32(arrayValues[0]),
-                                    AuthType = arrayValues[1]
-                                };
-                                db.UserAuthorizations.Add(objD);
-                                db.SaveChanges();
-                                MTransNo = objD.MTransNo;
-                            }
-                            else
-                            {
-                                MTransNo = Convert.ToInt32(arrayValues[2]);
-                                UserAuthorization objD = db.UserAuthorizations.FirstOrDefault(x => x.MTransNo == MTransNo);
-                                if (objD != null)
-                                {
-                                    objD.AuthType = arrayValues[1];
-                                    db.Entry(objD).State = System.Data.Entity.EntityState.Modified;
-                                    db.SaveChanges();
-                                }
+                                UserAuthorization obj =
+                                    new UserAuthorization();
+
+                                obj.UserNo = UserNo;
+                                obj.ModuleNo = moduleNo;
+                                obj.ModuleType = moduleType;
+                                obj.AuthType = "F";
+
+                                db.UserAuthorizations.Add(obj);
                             }
                         }
                     }
-                    catch (Exception e)
+
+                    db.SaveChanges();
+
+                    return Json(new
                     {
-                        System.Diagnostics.Debug.WriteLine(e.StackTrace);
+                        success = true,
+                        message = "Authorization saved successfully."
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                string message = ex.Message;
+
+                if (ex.InnerException != null)
+                {
+                    message += " | " + ex.InnerException.Message;
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    message = message
+                });
+            }
+        }
+
+        // ============================================================
+        // DELETE ALL AUTHORIZATION FOR USER
+        // ============================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult Delete(int UserNo)
+        {
+            if (Session["Userid"] == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            try
+            {
+                using (S1947Entities db = new S1947Entities())
+                {
+                    var authList = db.UserAuthorizations
+                        .Where(x => x.UserNo == UserNo)
+                        .ToList();
+
+                    if (authList.Any())
+                    {
+                        db.UserAuthorizations.RemoveRange(authList);
+                        db.SaveChanges();
                     }
+
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Authorization deleted successfully."
+                    });
                 }
             }
-
-            return MTransNo.ToString(); // <-- return as string for JavaScript
-        }
-
-        public ActionResult DtlDelete(int MTransNo = 0)
-        {
-            if (MTransNo == 0)
-                return RedirectToAction("Index");
-
-            using (S1947Entities db = new S1947Entities())
+            catch (Exception ex)
             {
-                var authList = db.UserAuthorizations
-                                 .Where(x => x.UserNo == MTransNo)
-                                 .ToList();
-
-                if (authList.Any())
+                return Json(new
                 {
-                    db.UserAuthorizations.RemoveRange(authList);
-                    db.SaveChanges();
-                }
-
-                Session["MTransNo"] = MTransNo;
+                    success = false,
+                    message = ex.Message
+                });
             }
-
-            return RedirectToAction("Index");
-        }
-        public ActionResult AuthDelete(int MTransNo = 0)
-        {
-            if (MTransNo == 0)
-                return RedirectToAction("Index");
-            using (S1947Entities db = new S1947Entities())
-            {
-                var authList = db.UserAuthorizations.Where(x => x.MTransNo == MTransNo).ToList();
-                if (authList.Any())
-                {
-                    db.UserAuthorizations.RemoveRange(authList);
-                    db.SaveChanges();
-                }
-                Session["MTransNo"] = MTransNo;
-            }
-            return RedirectToAction("Index");
         }
     }
 }

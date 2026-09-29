@@ -297,6 +297,7 @@
     <Compile Include="Models\sp_helpdiagrams_Result4.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\UserAuthorizationModuleViewModel.cs" />
     <Compile Include="Models\WeightResultModel.cs" />
     <Compile Include="Models\QRDataModel.cs" />
     <Compile Include="Models\ReportsValidation.cs" />
