@@ -54,10 +54,7 @@ namespace S1834.Controllers
 
             using (S1947Entities db = new S1947Entities())
             {
-                // =========================================================
-                // USER DROPDOWN
-                // =========================================================
-
+               
                 var users = db.UserMasters
                     .Where(x => x.DeleteStatus == "N"
                              && x.LockStatus == "Y"
@@ -72,11 +69,6 @@ namespace S1834.Controllers
                     UserNo
                 );
 
-
-                // =========================================================
-                // MODEL
-                // =========================================================
-
                 UserAuthorizationValidation model =
                     new UserAuthorizationValidation();
 
@@ -85,11 +77,6 @@ namespace S1834.Controllers
                     model.UserNo = UserNo.Value;
                 }
 
-
-                // =========================================================
-                // ALL MODULES
-                // =========================================================
-
                 var modules = db.Menulists
                     .OrderBy(x => x.ModuleType)
                     .ThenBy(x => x.MSLNo)
@@ -97,10 +84,6 @@ namespace S1834.Controllers
 
                 ViewBag.Modules = modules;
 
-
-                // =========================================================
-                // EXISTING AUTHORIZATION
-                // =========================================================
 
                 var existingAuth = db.UserAuthorizations
                     .Where(x => x.UserNo == UserNo)
@@ -113,10 +96,6 @@ namespace S1834.Controllers
             }
         }
 
-
-        // ============================================================
-        // SAVE AUTHORIZATION
-        // ============================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -152,10 +131,6 @@ namespace S1834.Controllers
                         });
                     }
 
-                    // -----------------------------------------------------
-                    // Remove existing authorization for this user
-                    // -----------------------------------------------------
-
                     var oldAuth = db.UserAuthorizations
                         .Where(x => x.UserNo == UserNo)
                         .ToList();
@@ -164,16 +139,6 @@ namespace S1834.Controllers
                     {
                         db.UserAuthorizations.RemoveRange(oldAuth);
                     }
-
-                    // -----------------------------------------------------
-                    // AuthorizationData format:
-                    //
-                    // ModuleNo^ModuleType^AuthType
-                    //
-                    // Example:
-                    //
-                    // 1^MASTER^F~2^MASTER^N~3^SALES^F
-                    // -----------------------------------------------------
 
                     if (!string.IsNullOrEmpty(AuthorizationData))
                     {
@@ -239,10 +204,7 @@ namespace S1834.Controllers
             }
         }
 
-        // ============================================================
-        // DELETE ALL AUTHORIZATION FOR USER
-        // ============================================================
-
+    
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Delete(int UserNo)

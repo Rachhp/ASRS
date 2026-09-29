@@ -19,17 +19,32 @@
 
     List<int> authorizedMasters = new List<int>();
 
-    if (UserData.UserType != "ADMIN")
+    if (UserData != null)
     {
-        authorizedMasters = (from UA in conn.UserAuthorizations
-                             join MO in conn.Menulists
-                                 on UA.ModuleNo equals MO.MTransNo
-                             where UA.UserNo == UserData.MTransNo
-                                   && MO.ModuleType == "MASTERS"
-                                   && UA.AuthType != null
-                                   && UA.AuthType != ""
-                             select MO.MTransNo).ToList();
+        if (UserData.UserType == "ADMIN")
+        {
+            // ADMIN gets access to all master modules.
+            authorizedMasters = conn.Menulists
+                .Where(x => x.ModuleType == "MASTERS")
+                .Select(x => x.MTransNo)
+                .ToList();
+        }
+        else
+        {
+            // Get only the master modules authorized for this user.
+            authorizedMasters = (from UA in conn.UserAuthorizations
+                                 join MO in conn.Menulists
+                                     on UA.ModuleNo equals MO.MTransNo
+                                 where UA.UserNo == UserData.MTransNo
+                                       && MO.ModuleType == "MASTERS"
+                                       && UA.AuthType != null
+                                       && UA.AuthType != ""
+                                 select MO.MTransNo)
+                                .Distinct()
+                                .ToList();
+        }
     }
+
 }
 
 <style>
@@ -366,7 +381,7 @@
         </div>
     </header>
     <div class="row justify-content-center">
-        @if (UserData.UserType == "ADMIN" || authorizedMasters.Contains(1))
+        @if (authorizedMasters.Contains(1))
         {
             <a href="/MaterialMaster/Index" class="main-boxx" style="text-decoration:none; color:inherit;">
 
@@ -380,7 +395,7 @@
             </a>
         }
 
-        @if (UserData.UserType == "ADMIN" || authorizedMasters.Contains(2))
+        @if (authorizedMasters.Contains(2))
         {
             <a href="/User/Index" class="main-boxx" style="text-decoration:none; color:inherit;">
                 <div class="e-card playing">
@@ -396,7 +411,7 @@
                 </div>
             </a>
         }
-        @if (UserData.UserType == "ADMIN" || authorizedMasters.Contains(3))
+        @if (authorizedMasters.Contains(3))
         {
             <a href="/LiftStatusMaster/AddEdit" class="main-boxx" style="text-decoration:none; color:inherit;">
                 <div class="e-card playing">
@@ -408,7 +423,7 @@
                 </div>
             </a>
         }
-        @if (UserData.UserType == "ADMIN")
+        @if (authorizedMasters.Contains(4))
         {
             <a href="/UserAuth/Index" class="main-boxx" style="text-decoration:none; color:inherit;">
                 <div class="e-card playing" id="unload_grn">

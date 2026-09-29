@@ -91,7 +91,7 @@ namespace S1947.Controllers
                 }
                 else
                 {
-                    TempData["wrongLogin"] = "Login Id / Password Does Not Match";
+                    TempData["wrongLogin"] = "User Is Not Active Contact Admin";
                     return RedirectToAction("Login");
                 }
             }

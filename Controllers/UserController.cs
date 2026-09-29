@@ -75,18 +75,30 @@ namespace S1947.Controllers
             }
             //return View();
         }
+
         [HttpPost]
         public ActionResult AddEdit(UserMasterValidation data)
         {
             UserMasterValidation b = new UserMasterValidation();
+
             try
             {
+                // ==========================================
+                // EDIT EXISTING USER
+                // ==========================================
                 if (data.MTransNo > 0)
                 {
-                    // Edit existing User Master
-                    UserMaster user = db.UserMasters.Where(s => s.MTransNo == data.MTransNo).FirstOrDefault();
-                    string encVa = HomeController.Encrypt(data.PW, "mskl-1sv4-xklq23");
+                    UserMaster user = db.UserMasters
+                        .Where(s => s.MTransNo == data.MTransNo)
+                        .FirstOrDefault();
+
+                    string encVa = HomeController.Encrypt(
+                        data.PW,
+                        "mskl-1sv4-xklq23"
+                    );
+
                     var ModifiedBy = Session["MTransNo"];
+
                     if (user != null)
                     {
                         user.UserName = data.UserName;
@@ -94,43 +106,45 @@ namespace S1947.Controllers
                         user.ContactNo = data.ContactNo;
                         user.UserType = data.UserType;
                         user.LockStatus = data.LockStatus;
-                        user.EmailId = data.EmailId;
+                        user.EmailId = data.EmailId;   
                         user.PW = encVa;
                         user.ModifiedBy = Convert.ToInt16(ModifiedBy);
                         user.ModifiedOn = DateTime.UtcNow.AddHours(5).AddMinutes(30);
-                        db.Entry(user).State = System.Data.Entity.EntityState.Modified;
+
+                        db.Entry(user).State =System.Data.Entity.EntityState.Modified;
                         db.SaveChanges();
 
-                        //AdminLog ad = new AdminLog();
-                        //ad.MaterialCode = data.UserId;
-                        //ad.MaterialName = data.UserName;
-                        //ad.PackageType = data.UserType;
-                        //ad.CreatedBy = Convert.ToInt16(ModifiedBy);
-                        //ad.CreatedOn = DateTime.Now;
-                        //ad.ReturnType= data.LockStatus;
-                        //ad.Action = "User Updated";
-                        //db.AdminLogs.Add(ad);
-                        //db.SaveChanges();
-
-
-
-
-                        return Json(new { success = true, message = "✅ User Updated Successfully!" });
-                        //db.InsertAdminLog(user.UserName, user.UserId, user.UserType, 0, Convert.ToString(Session["UserId"]), 0, 0, 0, "USER_UPDATED", DateTime.UtcNow.AddHours(5).AddMinutes(30), 0, 0,0);
-
+                        return Json(new
+                        {
+                            success = true,
+                            message = "✅ User Updated Successfully!"
+                        });
                     }
                     else
                     {
-                        ModelState.AddModelError("", "The Specified MTransNo Does Not Exist.");
+                        ModelState.AddModelError(
+                            "",
+                            "The Specified MTransNo Does Not Exist."
+                        );
+
                         return View(b);
                     }
                 }
+
+                // ==========================================
+                // ADD NEW USER
+                // ==========================================
                 else
                 {
                     var createdBy = Session["MTransNo"];
-                    string encVa = HomeController.Encrypt(data.PW, "mskl-1sv4-xklq23");
+
+                    string encVa = HomeController.Encrypt(
+                        data.PW,
+                        "mskl-1sv4-xklq23"
+                    );
 
                     UserMaster UserMaster = new UserMaster();
+
                     UserMaster.UserType = data.UserType;
                     UserMaster.UserName = data.UserName;
                     UserMaster.ContactNo = data.ContactNo;
@@ -140,50 +154,109 @@ namespace S1947.Controllers
                     UserMaster.PW = encVa;
                     UserMaster.EmailId = data.EmailId;
                     UserMaster.CreatedBy = Convert.ToInt16(createdBy);
-                    UserMaster.CreatedOn = DateTime.UtcNow.AddHours(5).AddMinutes(30);
+                    UserMaster.CreatedOn = DateTime.UtcNow
+                        .AddHours(5)
+                        .AddMinutes(30);
 
                     db.UserMasters.Add(UserMaster);
+
+                    // First save UserMaster so MTransNo is generated
                     db.SaveChanges();
 
 
-                    //AdminLog ad = new AdminLog();
-                    //ad.MaterialCode = data.UserId;
-                    //ad.MaterialName = data.UserName;
-                    //ad.PackageType = data.UserType;
-                    //ad.CreatedBy = Convert.ToInt16(createdBy);
-                    //ad.CreatedOn = DateTime.Now;
-                    //ad.ReturnType = data.LockStatus;
-                    //ad.Action = "User Added";
-                    //db.AdminLogs.Add(ad);
-                    //db.SaveChanges();
+                    // ==========================================
+                    // CREATE DEFAULT USER AUTHORIZATIONS
+                    // ==========================================
 
-                    //Added user auth table to get by default issue and return opertion
                     int userNo = UserMaster.MTransNo;
-                    int[] moduleNos = { 6, 7 };
-                    foreach (int moduleNo in moduleNos)
-                    {
-                        UserAuthorization objD = new UserAuthorization
-                        {
-                            UserNo = userNo,
-                            ModuleType = "OPERATIONS",
-                            ModuleNo = moduleNo,
-                            AuthType = "F"
-                        };
 
-                        db.UserAuthorizations.Add(objD);
+                    // ------------------------------------------
+                    // ADMIN
+                    // Give ADMIN access to ALL modules
+                    // ------------------------------------------
+                    if (data.UserType.Equals(
+                        "ADMIN",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        var allModules = db.Menulists
+                            .Select(x => new
+                            {
+                                x.MTransNo,
+                                x.ModuleType
+                            })
+                            .ToList();
+
+                        foreach (var module in allModules)
+                        {
+                            UserAuthorization objD =
+                                new UserAuthorization
+                                {
+                                    UserNo = userNo,
+                                    ModuleType = module.ModuleType,
+                                    ModuleNo = module.MTransNo,
+                                    AuthType = "F"
+                                };
+
+                            db.UserAuthorizations.Add(objD);
+                        }
                     }
+
+                    // ------------------------------------------
+                    // OPERATOR
+                    // Give OPERATOR:
+                    // OPERATIONS + REPORTS
+                    // ------------------------------------------
+                    else if (data.UserType.Equals(
+                        "OPERATOR",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        var operatorModules = db.Menulists
+                            .Where(x =>
+                                x.ModuleType == "OPERATIONS" ||
+                                x.ModuleType == "REPORTS")
+                            .Select(x => new
+                            {
+                                x.MTransNo,
+                                x.ModuleType
+                            })
+                            .ToList();
+
+                        foreach (var module in operatorModules)
+                        {
+                            UserAuthorization objD =
+                                new UserAuthorization
+                                {
+                                    UserNo = userNo,
+                                    ModuleType = module.ModuleType,
+                                    ModuleNo = module.MTransNo,
+                                    AuthType = "F"
+                                };
+
+                            db.UserAuthorizations.Add(objD);
+                        }
+                    }
+
+                    // Save authorizations
                     db.SaveChanges();
 
-                    return Json(new { success = true, message = "✅ User Added Successfully!" });
+
+                    return Json(new
+                    {
+                        success = true,
+                        message = "✅ User Added Successfully!"
+                    });
                 }
-                //return RedirectToAction("Index", "User");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "An Error Occurred While Saving The Data: " + ex.Message);
+                ModelState.AddModelError(
+                    "",
+                    "An Error Occurred While Saving The Data: " +
+                    ex.Message
+                );
+
                 return View(b);
             }
-
         }
 
         public ActionResult Delete(int MTransNo)

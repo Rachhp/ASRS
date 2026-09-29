@@ -394,15 +394,13 @@
 
 <script>
 
-
     $(document).ready(function () {
-        if ($("#MTransNo").val() > 0) {
+        if (parseInt($("#MTransNo").val()) > 0) {
             $("#UserName").prop("readonly", true);
             $("#UserId").prop("readonly", true);
-            $("#UserName").prop("disabled", false);
-            $("#UserId").prop("disabled", true);
         }
     });
+
 
     $('#UserForm').on('keydown', function (e) {
         if (e.key === 'Enter') {
