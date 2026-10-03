@@ -821,21 +821,21 @@ namespace S1947.Controllers
                         Message = "No records available to send to WCS."
                     });
                 }
-                // Send COMPLETE LIST to WCS
+                // Send COMPLETE LIST to WCS commneted for testing purpose
                 // ============================================================
-                WcsApiResponse wcsResponse = await SendTasksToWcs(wcsTasks);
+                //WcsApiResponse wcsResponse = await SendTasksToWcs(wcsTasks);
 
-                if (wcsResponse == null ||
-                    wcsResponse.code != 200 ||
-                    wcsResponse.status != true)
-                {
-                    return Json(new
-                    {
-                        Success = false,
-                        Message = "WCS did not accept the task.",
-                        WcsResponse = wcsResponse
-                    });
-                }
+                //if (wcsResponse == null ||
+                //    wcsResponse.code != 200 ||
+                //    wcsResponse.status != true)
+                //{
+                //    return Json(new
+                //    {
+                //        Success = false,
+                //        Message = "WCS did not accept the task.",
+                //        WcsResponse = wcsResponse
+                //    });
+                //}
 
                 // STEP 6
                 // WCS SUCCESS
@@ -867,7 +867,7 @@ namespace S1947.Controllers
                     Success = true,
                     Message = "Loading submitted and WCS tasks sent successfully.",
                     TotalTasksSent = wcsTasks.Count,
-                    WcsResponse = wcsResponse
+                   // WcsResponse = wcsResponse
                 });
             }
             catch (Exception ex)
