@@ -179,6 +179,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AndonControllerbckup.cs" />
     <Compile Include="Controllers\ASRSController.cs" />
     <Compile Include="Controllers\PokaYokaController.cs" />
     <Compile Include="Controllers\UnloadingOperationController.cs" />
@@ -5209,7 +5210,7 @@
     <Content Include="Views\Home\OperationManagement.cshtml" />
     <Content Include="Views\UnloadingOperation\Index.cshtml" />
     <Content Include="Views\UnloadingOperation\_LoadingTable.cshtml" />
-    <Content Include="Views\Andon\AndonScreen_Backup.cshtml" />
+    <Content Include="Views\Andon\AndonScreenBckup.cshtml" />
     <Content Include="Views\ASRS\Index.cshtml" />
     <Content Include="Views\Reports\AgeingReportPdf.cshtml" />
     <Content Include="Views\Reports\AgeingReport.cshtml" />
