@@ -10,6 +10,8 @@ namespace S1947.Models
         public string Shift { get; set; }
 
         // Header Details
+        public List<AndonViewModel> Docks { get; set; }
+
         public int? DockNo { get; set; }
         public int? VehicleSize { get; set; }
         public string VehicleNumber { get; set; }

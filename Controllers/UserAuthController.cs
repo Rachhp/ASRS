@@ -8,10 +8,6 @@ namespace S1834.Controllers
 {
     public class UserAuthController : Controller
     {
-        // ============================================================
-        // INDEX
-        // ============================================================
-
         public ActionResult Index()
         {
             if (Session["Userid"] == null)
@@ -41,9 +37,7 @@ namespace S1834.Controllers
         }
 
 
-        // ============================================================
         // ADD / EDIT
-        // ============================================================
         [HttpGet]
         public ActionResult AddEdit(int? UserNo)
         {
@@ -62,15 +56,11 @@ namespace S1834.Controllers
                     .OrderBy(x => x.UserName)
                     .ToList();
 
-                ViewBag.UserNo = new SelectList(
-                    users,
-                    "MTransNo",
-                    "UserName",
-                    UserNo
+                ViewBag.UserNo = new SelectList
+                    (users, "MTransNo","UserName", UserNo
                 );
 
-                UserAuthorizationValidation model =
-                    new UserAuthorizationValidation();
+                UserAuthorizationValidation model =new UserAuthorizationValidation();
 
                 if (UserNo.HasValue && UserNo.Value > 0)
                 {
@@ -83,8 +73,6 @@ namespace S1834.Controllers
                     .ToList();
 
                 ViewBag.Modules = modules;
-
-
                 var existingAuth = db.UserAuthorizations
                     .Where(x => x.UserNo == UserNo)
                     .ToList();
@@ -99,9 +87,7 @@ namespace S1834.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult SaveAuthorization(
-    int UserNo,
-    string AuthorizationData)
+        public JsonResult SaveAuthorization(int UserNo,string AuthorizationData)
         {
             if (Session["Userid"] == null)
             {
@@ -131,10 +117,7 @@ namespace S1834.Controllers
                         });
                     }
 
-                    var oldAuth = db.UserAuthorizations
-                        .Where(x => x.UserNo == UserNo)
-                        .ToList();
-
+                    var oldAuth = db.UserAuthorizations.Where(x => x.UserNo == UserNo).ToList();
                     if (oldAuth.Any())
                     {
                         db.UserAuthorizations.RemoveRange(oldAuth);
@@ -143,14 +126,12 @@ namespace S1834.Controllers
                     if (!string.IsNullOrEmpty(AuthorizationData))
                     {
                         string[] rows = AuthorizationData.Split('~');
-
                         foreach (string row in rows)
                         {
                             if (string.IsNullOrWhiteSpace(row))
                                 continue;
 
                             string[] values = row.Split('^');
-
                             if (values.Length < 3)
                                 continue;
 
@@ -165,21 +146,17 @@ namespace S1834.Controllers
                             // Only save Full Authorization
                             if (authType == "F")
                             {
-                                UserAuthorization obj =
-                                    new UserAuthorization();
-
+                                UserAuthorization obj =new UserAuthorization();
                                 obj.UserNo = UserNo;
                                 obj.ModuleNo = moduleNo;
                                 obj.ModuleType = moduleType;
                                 obj.AuthType = "F";
-
                                 db.UserAuthorizations.Add(obj);
                             }
                         }
                     }
 
                     db.SaveChanges();
-
                     return Json(new
                     {
                         success = true,
@@ -190,12 +167,10 @@ namespace S1834.Controllers
             catch (Exception ex)
             {
                 string message = ex.Message;
-
                 if (ex.InnerException != null)
                 {
                     message += " | " + ex.InnerException.Message;
                 }
-
                 return Json(new
                 {
                     success = false,
@@ -217,7 +192,6 @@ namespace S1834.Controllers
                     message = "Session expired. Please login again."
                 });
             }
-
             try
             {
                 using (S1947Entities db = new S1947Entities())
@@ -231,7 +205,6 @@ namespace S1834.Controllers
                         db.UserAuthorizations.RemoveRange(authList);
                         db.SaveChanges();
                     }
-
                     return Json(new
                     {
                         success = true,

@@ -30,9 +30,9 @@ namespace S1947.Models
         public string PalletNo { get; set; }
         public Nullable<int> Quantity { get; set; }
         public string LocaStatus { get; set; }
-        public int CreatedBy { get; set; }
+        public Nullable<short> CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
-        public Nullable<int> ModifiedBy { get; set; }
+        public Nullable<short> ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
         public string DeleteStatus { get; set; }
         public string Cat { get; set; }

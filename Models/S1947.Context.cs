@@ -32,19 +32,24 @@ namespace S1947.Models
         public virtual DbSet<ApiErrorLog> ApiErrorLogs { get; set; }
         public virtual DbSet<ApiErrorMaster> ApiErrorMasters { get; set; }
         public virtual DbSet<App_Location> App_Location { get; set; }
+        public virtual DbSet<ASRSColumnCategoryTurn> ASRSColumnCategoryTurns { get; set; }
         public virtual DbSet<ASRSLocationZoneMaster> ASRSLocationZoneMasters { get; set; }
+        public virtual DbSet<ASRSPairReservation> ASRSPairReservations { get; set; }
         public virtual DbSet<AsrsZone> AsrsZones { get; set; }
         public virtual DbSet<CustomerMaster> CustomerMasters { get; set; }
         public virtual DbSet<Errorlog> Errorlogs { get; set; }
-        public virtual DbSet<GE> GEs { get; set; }
         public virtual DbSet<GoodsExisiting> GoodsExisitings { get; set; }
         public virtual DbSet<GoodsExisiting_old> GoodsExisiting_old { get; set; }
+        public virtual DbSet<GoodsExisiting2> GoodsExisiting2 { get; set; }
         public virtual DbSet<LiftStatusMaster> LiftStatusMasters { get; set; }
         public virtual DbSet<LoadingLog> LoadingLogs { get; set; }
         public virtual DbSet<LoadingTemp> LoadingTemps { get; set; }
         public virtual DbSet<Menulist> Menulists { get; set; }
+        public virtual DbSet<MoveLog> MoveLogs { get; set; }
+        public virtual DbSet<MoveTemp> MoveTemps { get; set; }
         public virtual DbSet<Othermaster> Othermasters { get; set; }
         public virtual DbSet<PartMaster> PartMasters { get; set; }
+        public virtual DbSet<PartMaster_old> PartMaster_old { get; set; }
         public virtual DbSet<PokaYokaPallet> PokaYokaPallets { get; set; }
         public virtual DbSet<PokaYokaQCHistory> PokaYokaQCHistories { get; set; }
         public virtual DbSet<shift_master> shift_master { get; set; }
@@ -62,9 +67,77 @@ namespace S1947.Models
         public virtual DbSet<WcsApiLog> WcsApiLogs { get; set; }
         public virtual DbSet<GoodsExisting> GoodsExistings { get; set; }
         public virtual DbSet<GELoadingView> GELoadingViews { get; set; }
+        public virtual DbSet<GELoadingView_WAking_> GELoadingView_WAking_ { get; set; }
+        public virtual DbSet<GELoadingView2> GELoadingView2 { get; set; }
         public virtual DbSet<vw_AgeingReport> vw_AgeingReport { get; set; }
         public virtual DbSet<vw_TransactionHistory> vw_TransactionHistory { get; set; }
         public virtual DbSet<vw_TransactionReport> vw_TransactionReport { get; set; }
+    
+        public virtual int GetFastMediumLocation(string fGCode, Nullable<int> locFrom, Nullable<int> locTo, Nullable<int> locFromRow, Nullable<int> locToRow, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var locFromParameter = locFrom.HasValue ?
+                new ObjectParameter("LocFrom", locFrom) :
+                new ObjectParameter("LocFrom", typeof(int));
+    
+            var locToParameter = locTo.HasValue ?
+                new ObjectParameter("LocTo", locTo) :
+                new ObjectParameter("LocTo", typeof(int));
+    
+            var locFromRowParameter = locFromRow.HasValue ?
+                new ObjectParameter("LocFromRow", locFromRow) :
+                new ObjectParameter("LocFromRow", typeof(int));
+    
+            var locToRowParameter = locToRow.HasValue ?
+                new ObjectParameter("LocToRow", locToRow) :
+                new ObjectParameter("LocToRow", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetFastMediumLocation", fGCodeParameter, locFromParameter, locToParameter, locFromRowParameter, locToRowParameter, levelFromParameter, levelToParameter);
+        }
+    
+        public virtual int GetSlowLocation(string fGCode, Nullable<int> columnFrom, Nullable<int> columnTo, Nullable<int> rowFrom, Nullable<int> rowTo, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var columnFromParameter = columnFrom.HasValue ?
+                new ObjectParameter("ColumnFrom", columnFrom) :
+                new ObjectParameter("ColumnFrom", typeof(int));
+    
+            var columnToParameter = columnTo.HasValue ?
+                new ObjectParameter("ColumnTo", columnTo) :
+                new ObjectParameter("ColumnTo", typeof(int));
+    
+            var rowFromParameter = rowFrom.HasValue ?
+                new ObjectParameter("RowFrom", rowFrom) :
+                new ObjectParameter("RowFrom", typeof(int));
+    
+            var rowToParameter = rowTo.HasValue ?
+                new ObjectParameter("RowTo", rowTo) :
+                new ObjectParameter("RowTo", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetSlowLocation", fGCodeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
+        }
     
         public virtual int InsertTaskDtl(Nullable<int> taskNo, string taskType, Nullable<int> priority, string palletNo, string sourceLocation, string destinationLocation, string taskStatus, Nullable<int> liftNo, string locatioNo, Nullable<int> taskSent, Nullable<System.DateTime> createdAt, Nullable<System.DateTime> startedAt, Nullable<System.DateTime> completedAt, string uUID, string serialCode)
         {
@@ -186,7 +259,7 @@ namespace S1947.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_dropdiagram", diagramnameParameter, owner_idParameter);
         }
     
-        public virtual ObjectResult<sp_helpdiagramdefinition_Result4> sp_helpdiagramdefinition(string diagramname, Nullable<int> owner_id)
+        public virtual ObjectResult<sp_helpdiagramdefinition_Result5> sp_helpdiagramdefinition(string diagramname, Nullable<int> owner_id)
         {
             var diagramnameParameter = diagramname != null ?
                 new ObjectParameter("diagramname", diagramname) :
@@ -196,10 +269,10 @@ namespace S1947.Models
                 new ObjectParameter("owner_id", owner_id) :
                 new ObjectParameter("owner_id", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_helpdiagramdefinition_Result4>("sp_helpdiagramdefinition", diagramnameParameter, owner_idParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_helpdiagramdefinition_Result5>("sp_helpdiagramdefinition", diagramnameParameter, owner_idParameter);
         }
     
-        public virtual ObjectResult<sp_helpdiagrams_Result4> sp_helpdiagrams(string diagramname, Nullable<int> owner_id)
+        public virtual ObjectResult<sp_helpdiagrams_Result5> sp_helpdiagrams(string diagramname, Nullable<int> owner_id)
         {
             var diagramnameParameter = diagramname != null ?
                 new ObjectParameter("diagramname", diagramname) :
@@ -209,7 +282,7 @@ namespace S1947.Models
                 new ObjectParameter("owner_id", owner_id) :
                 new ObjectParameter("owner_id", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_helpdiagrams_Result4>("sp_helpdiagrams", diagramnameParameter, owner_idParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_helpdiagrams_Result5>("sp_helpdiagrams", diagramnameParameter, owner_idParameter);
         }
     
         public virtual int sp_renamediagram(string diagramname, Nullable<int> owner_id, string new_diagramname)
@@ -234,27 +307,31 @@ namespace S1947.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_upgraddiagrams");
         }
     
-        public virtual ObjectResult<GetFastMediumLocation_Result> GetFastMediumLocation(string fGCode, Nullable<int> locFrom, Nullable<int> locTo, Nullable<int> locFromRow, Nullable<int> locToRow, Nullable<int> levelFrom, Nullable<int> levelTo)
+        public virtual int usp_ASRS_GetLocation(string fGCode, string movementType, Nullable<int> columnFrom, Nullable<int> columnTo, Nullable<int> rowFrom, Nullable<int> rowTo, Nullable<int> levelFrom, Nullable<int> levelTo)
         {
             var fGCodeParameter = fGCode != null ?
                 new ObjectParameter("FGCode", fGCode) :
                 new ObjectParameter("FGCode", typeof(string));
     
-            var locFromParameter = locFrom.HasValue ?
-                new ObjectParameter("LocFrom", locFrom) :
-                new ObjectParameter("LocFrom", typeof(int));
+            var movementTypeParameter = movementType != null ?
+                new ObjectParameter("MovementType", movementType) :
+                new ObjectParameter("MovementType", typeof(string));
     
-            var locToParameter = locTo.HasValue ?
-                new ObjectParameter("LocTo", locTo) :
-                new ObjectParameter("LocTo", typeof(int));
+            var columnFromParameter = columnFrom.HasValue ?
+                new ObjectParameter("ColumnFrom", columnFrom) :
+                new ObjectParameter("ColumnFrom", typeof(int));
     
-            var locFromRowParameter = locFromRow.HasValue ?
-                new ObjectParameter("LocFromRow", locFromRow) :
-                new ObjectParameter("LocFromRow", typeof(int));
+            var columnToParameter = columnTo.HasValue ?
+                new ObjectParameter("ColumnTo", columnTo) :
+                new ObjectParameter("ColumnTo", typeof(int));
     
-            var locToRowParameter = locToRow.HasValue ?
-                new ObjectParameter("LocToRow", locToRow) :
-                new ObjectParameter("LocToRow", typeof(int));
+            var rowFromParameter = rowFrom.HasValue ?
+                new ObjectParameter("RowFrom", rowFrom) :
+                new ObjectParameter("RowFrom", typeof(int));
+    
+            var rowToParameter = rowTo.HasValue ?
+                new ObjectParameter("RowTo", rowTo) :
+                new ObjectParameter("RowTo", typeof(int));
     
             var levelFromParameter = levelFrom.HasValue ?
                 new ObjectParameter("LevelFrom", levelFrom) :
@@ -264,7 +341,192 @@ namespace S1947.Models
                 new ObjectParameter("LevelTo", levelTo) :
                 new ObjectParameter("LevelTo", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetFastMediumLocation_Result>("GetFastMediumLocation", fGCodeParameter, locFromParameter, locToParameter, locFromRowParameter, locToRowParameter, levelFromParameter, levelToParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_ASRS_GetLocation", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
+        }
+    
+        public virtual int usp_ASRS_GetLocation_Bestbutissue_(string fGCode, string movementType, Nullable<int> columnFrom, Nullable<int> columnTo, Nullable<int> rowFrom, Nullable<int> rowTo, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var movementTypeParameter = movementType != null ?
+                new ObjectParameter("MovementType", movementType) :
+                new ObjectParameter("MovementType", typeof(string));
+    
+            var columnFromParameter = columnFrom.HasValue ?
+                new ObjectParameter("ColumnFrom", columnFrom) :
+                new ObjectParameter("ColumnFrom", typeof(int));
+    
+            var columnToParameter = columnTo.HasValue ?
+                new ObjectParameter("ColumnTo", columnTo) :
+                new ObjectParameter("ColumnTo", typeof(int));
+    
+            var rowFromParameter = rowFrom.HasValue ?
+                new ObjectParameter("RowFrom", rowFrom) :
+                new ObjectParameter("RowFrom", typeof(int));
+    
+            var rowToParameter = rowTo.HasValue ?
+                new ObjectParameter("RowTo", rowTo) :
+                new ObjectParameter("RowTo", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_ASRS_GetLocation_Bestbutissue_", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
+        }
+    
+        public virtual int usp_ASRS_GetLocation_W_(string fGCode, string movementType, Nullable<int> columnFrom, Nullable<int> columnTo, Nullable<int> rowFrom, Nullable<int> rowTo, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var movementTypeParameter = movementType != null ?
+                new ObjectParameter("MovementType", movementType) :
+                new ObjectParameter("MovementType", typeof(string));
+    
+            var columnFromParameter = columnFrom.HasValue ?
+                new ObjectParameter("ColumnFrom", columnFrom) :
+                new ObjectParameter("ColumnFrom", typeof(int));
+    
+            var columnToParameter = columnTo.HasValue ?
+                new ObjectParameter("ColumnTo", columnTo) :
+                new ObjectParameter("ColumnTo", typeof(int));
+    
+            var rowFromParameter = rowFrom.HasValue ?
+                new ObjectParameter("RowFrom", rowFrom) :
+                new ObjectParameter("RowFrom", typeof(int));
+    
+            var rowToParameter = rowTo.HasValue ?
+                new ObjectParameter("RowTo", rowTo) :
+                new ObjectParameter("RowTo", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_ASRS_GetLocation_W_", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
+        }
+    
+        public virtual int usp_ASRS_GetLocation_W2_(string fGCode, string movementType, Nullable<int> columnFrom, Nullable<int> columnTo, Nullable<int> rowFrom, Nullable<int> rowTo, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var movementTypeParameter = movementType != null ?
+                new ObjectParameter("MovementType", movementType) :
+                new ObjectParameter("MovementType", typeof(string));
+    
+            var columnFromParameter = columnFrom.HasValue ?
+                new ObjectParameter("ColumnFrom", columnFrom) :
+                new ObjectParameter("ColumnFrom", typeof(int));
+    
+            var columnToParameter = columnTo.HasValue ?
+                new ObjectParameter("ColumnTo", columnTo) :
+                new ObjectParameter("ColumnTo", typeof(int));
+    
+            var rowFromParameter = rowFrom.HasValue ?
+                new ObjectParameter("RowFrom", rowFrom) :
+                new ObjectParameter("RowFrom", typeof(int));
+    
+            var rowToParameter = rowTo.HasValue ?
+                new ObjectParameter("RowTo", rowTo) :
+                new ObjectParameter("RowTo", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_ASRS_GetLocation_W2_", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
+        }
+    
+        public virtual int usp_ASRS_GetLocation_Worst_(string fGCode, string movementType, Nullable<int> columnFrom, Nullable<int> columnTo, Nullable<int> rowFrom, Nullable<int> rowTo, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var movementTypeParameter = movementType != null ?
+                new ObjectParameter("MovementType", movementType) :
+                new ObjectParameter("MovementType", typeof(string));
+    
+            var columnFromParameter = columnFrom.HasValue ?
+                new ObjectParameter("ColumnFrom", columnFrom) :
+                new ObjectParameter("ColumnFrom", typeof(int));
+    
+            var columnToParameter = columnTo.HasValue ?
+                new ObjectParameter("ColumnTo", columnTo) :
+                new ObjectParameter("ColumnTo", typeof(int));
+    
+            var rowFromParameter = rowFrom.HasValue ?
+                new ObjectParameter("RowFrom", rowFrom) :
+                new ObjectParameter("RowFrom", typeof(int));
+    
+            var rowToParameter = rowTo.HasValue ?
+                new ObjectParameter("RowTo", rowTo) :
+                new ObjectParameter("RowTo", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_ASRS_GetLocation_Worst_", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
+        }
+    
+        public virtual int usp_ASRS_GetLocation3(string fGCode, string movementType, Nullable<int> columnFrom, Nullable<int> columnTo, Nullable<int> rowFrom, Nullable<int> rowTo, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var movementTypeParameter = movementType != null ?
+                new ObjectParameter("MovementType", movementType) :
+                new ObjectParameter("MovementType", typeof(string));
+    
+            var columnFromParameter = columnFrom.HasValue ?
+                new ObjectParameter("ColumnFrom", columnFrom) :
+                new ObjectParameter("ColumnFrom", typeof(int));
+    
+            var columnToParameter = columnTo.HasValue ?
+                new ObjectParameter("ColumnTo", columnTo) :
+                new ObjectParameter("ColumnTo", typeof(int));
+    
+            var rowFromParameter = rowFrom.HasValue ?
+                new ObjectParameter("RowFrom", rowFrom) :
+                new ObjectParameter("RowFrom", typeof(int));
+    
+            var rowToParameter = rowTo.HasValue ?
+                new ObjectParameter("RowTo", rowTo) :
+                new ObjectParameter("RowTo", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_ASRS_GetLocation3", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
         }
     }
 }

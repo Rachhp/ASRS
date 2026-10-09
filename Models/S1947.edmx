@@ -86,6 +86,16 @@
           <Property Name="IsVirtual" Type="int" />
           <Property Name="StemGroupNo" Type="nvarchar" MaxLength="32" />
         </EntityType>
+        <EntityType Name="ASRSColumnCategoryTurn">
+          <Key>
+            <PropertyRef Name="MovementType" />
+            <PropertyRef Name="ColumnNo" />
+          </Key>
+          <Property Name="MovementType" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="ColumnNo" Type="int" Nullable="false" />
+          <Property Name="LastCategory" Type="char" MaxLength="1" />
+          <Property Name="UpdatedOn" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
         <EntityType Name="ASRSLocationZoneMaster">
           <Key>
             <PropertyRef Name="Id" />
@@ -104,6 +114,22 @@
           <Property Name="Status" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="ASRSPairReservation">
+          <Key>
+            <PropertyRef Name="PairId" />
+          </Key>
+          <Property Name="PairId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FGCode" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Category" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Track1Column" Type="int" Nullable="false" />
+          <Property Name="Track1Layer" Type="int" Nullable="false" />
+          <Property Name="Track2Column" Type="int" Nullable="false" />
+          <Property Name="Track2Layer" Type="int" Nullable="false" />
+          <Property Name="PairSequence" Type="bigint" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ClosedOn" Type="datetime2" Precision="7" />
         </EntityType>
         <EntityType Name="AsrsZone">
           <Key>
@@ -144,30 +170,6 @@
           <Property Name="CreatedBy" Type="varchar" MaxLength="20" />
           <Property Name="CreatedOn" Type="datetime" />
         </EntityType>
-        <EntityType Name="GE">
-          <Key>
-            <PropertyRef Name="MTransNo" />
-          </Key>
-          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="LocationName" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="Layer" Type="int" Nullable="false" />
-          <Property Name="Row" Type="int" Nullable="false" />
-          <Property Name="Col" Type="int" Nullable="false" />
-          <Property Name="FGModel" Type="varchar" MaxLength="250" />
-          <Property Name="FGDesc" Type="varchar" MaxLength="250" />
-          <Property Name="FGCode" Type="varchar" MaxLength="250" />
-          <Property Name="PalletQr" Type="varchar" MaxLength="250" />
-          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
-          <Property Name="Quantity" Type="int" />
-          <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
-          <Property Name="CreatedBy" Type="int" Nullable="false" />
-          <Property Name="CreatedOn" Type="datetime" />
-          <Property Name="ModifiedBy" Type="int" />
-          <Property Name="ModifiedOn" Type="datetime" />
-          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
-          <Property Name="Cat" Type="varchar" MaxLength="25" />
-          <Property Name="sequence" Type="int" />
-        </EntityType>
         <EntityType Name="GoodsExisiting">
           <Key>
             <PropertyRef Name="MTransNo" />
@@ -184,11 +186,13 @@
           <Property Name="PalletNo" Type="varchar" MaxLength="250" />
           <Property Name="Quantity" Type="int" />
           <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
-          <Property Name="CreatedBy" Type="smallint" Nullable="false" />
+          <Property Name="CreatedBy" Type="smallint" />
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="ModifiedBy" Type="smallint" />
           <Property Name="ModifiedOn" Type="datetime" />
           <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+          <Property Name="Cat" Type="varchar" MaxLength="25" />
+          <Property Name="sequence" Type="int" />
         </EntityType>
         <EntityType Name="GoodsExisiting_old">
           <Key>
@@ -214,6 +218,28 @@
           <Property Name="DeleteStatus" Type="char" MaxLength="1" />
           <Property Name="Verify" Type="char" MaxLength="1" />
           <Property Name="SerialCode" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="GoodsExisiting2">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LocationName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Layer" Type="int" Nullable="false" />
+          <Property Name="Row" Type="int" Nullable="false" />
+          <Property Name="Col" Type="int" Nullable="false" />
+          <Property Name="FGModel" Type="varchar" MaxLength="250" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="250" />
+          <Property Name="FGCode" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQr" Type="varchar" MaxLength="250" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
+          <Property Name="CreatedBy" Type="smallint" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'S1947.dbo.GoodsExistings' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -331,6 +357,61 @@ warning 6002: The table/view 'S1947.dbo.GoodsExistings' does not have a primary 
           <Property Name="ModulePage" Type="varchar" MaxLength="50" />
           <Property Name="ModuleLink" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="MoveLogs">
+          <Key>
+            <PropertyRef Name="MoveLogId" />
+          </Key>
+          <Property Name="MoveLogId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SerialCode" Type="nvarchar" MaxLength="100" />
+          <Property Name="TrayCode" Type="nvarchar" MaxLength="100" />
+          <Property Name="Method" Type="nvarchar" MaxLength="50" />
+          <Property Name="From_Layer" Type="int" />
+          <Property Name="From_Column" Type="int" />
+          <Property Name="From_Row" Type="int" />
+          <Property Name="From_OrderRow" Type="int" />
+          <Property Name="To_Layer" Type="int" />
+          <Property Name="To_Column" Type="int" />
+          <Property Name="To_Row" Type="int" />
+          <Property Name="To_OrderRow" Type="int" />
+          <Property Name="SortCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="SerialNum" Type="nvarchar" MaxLength="100" />
+          <Property Name="From_Warehouse" Type="nvarchar" MaxLength="50" />
+          <Property Name="To_Warehouse" Type="nvarchar" MaxLength="50" />
+          <Property Name="FgCode" Type="nvarchar" MaxLength="100" />
+          <Property Name="Status" Type="nvarchar" MaxLength="50" />
+          <Property Name="StatusMessage" Type="nvarchar" MaxLength="500" />
+          <Property Name="CreatedBy" Type="smallint" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+        </EntityType>
+        <EntityType Name="MoveTemp">
+          <Key>
+            <PropertyRef Name="MoveTempId" />
+          </Key>
+          <Property Name="MoveTempId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MoveLogId" Type="int" />
+          <Property Name="SerialCode" Type="nvarchar" MaxLength="100" />
+          <Property Name="TrayCode" Type="nvarchar" MaxLength="100" />
+          <Property Name="FgCode" Type="nvarchar" MaxLength="100" />
+          <Property Name="From_Layer" Type="int" />
+          <Property Name="From_Column" Type="int" />
+          <Property Name="From_Row" Type="int" />
+          <Property Name="From_OrderRow" Type="int" />
+          <Property Name="To_Layer" Type="int" />
+          <Property Name="To_Column" Type="int" />
+          <Property Name="To_Row" Type="int" />
+          <Property Name="To_OrderRow" Type="int" />
+          <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="WcsTaskId" Type="nvarchar" MaxLength="100" />
+          <Property Name="WcsResponse" Type="nvarchar(max)" />
+          <Property Name="StatusMessage" Type="nvarchar" MaxLength="500" />
+          <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+          <Property Name="StartedOn" Type="datetime" />
+          <Property Name="CompletedOn" Type="datetime" />
+          <Property Name="RetryCount" Type="int" Nullable="false" />
+          <Property Name="ModifiedOn" Type="datetime" />
+        </EntityType>
         <EntityType Name="Othermaster">
           <Key>
             <PropertyRef Name="id" />
@@ -341,6 +422,24 @@ warning 6002: The table/view 'S1947.dbo.GoodsExistings' does not have a primary 
           <Property Name="MaxDockRange" Type="int" />
         </EntityType>
         <EntityType Name="PartMaster">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FGCode" Type="varchar" MaxLength="100" />
+          <Property Name="FGModel" Type="varchar" MaxLength="1000" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="100" />
+          <Property Name="Segment" Type="varchar" MaxLength="100" />
+          <Property Name="FGWeight" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Type" Type="char" MaxLength="10" />
+          <Property Name="LockStatus" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="CreatedBy" Type="smallint" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PartMaster_old">
           <Key>
             <PropertyRef Name="MTransNo" />
           </Key>
@@ -686,6 +785,77 @@ warning 6002: The table/view 'S1947.dbo.GELoadingView' does not have a primary k
             <PropertyRef Name="Layer" />
             <PropertyRef Name="Row" />
             <PropertyRef Name="Col" />
+          </Key>
+          <Property Name="MTransNo" Type="int" Nullable="false" />
+          <Property Name="LocationName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Layer" Type="int" Nullable="false" />
+          <Property Name="Row" Type="int" Nullable="false" />
+          <Property Name="Col" Type="int" Nullable="false" />
+          <Property Name="ZoneCode" Type="varchar" MaxLength="50" />
+          <Property Name="ZoneName" Type="varchar" MaxLength="100" />
+          <Property Name="MovementType" Type="varchar" MaxLength="20" />
+          <Property Name="ZonePriority" Type="int" />
+          <Property Name="FGModel" Type="varchar" MaxLength="250" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="250" />
+          <Property Name="FGCode" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQr" Type="varchar" MaxLength="250" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
+          <Property Name="CreatedBy" Type="smallint" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="smallint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+          <Property Name="Cat" Type="varchar" MaxLength="25" />
+          <Property Name="status" Type="varchar" MaxLength="20" />
+          <Property Name="sequence" Type="bigint" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'S1947.dbo.GELoadingView(WAking)' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="GELoadingView(WAking)">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="Layer" />
+            <PropertyRef Name="Row" />
+            <PropertyRef Name="Col" />
+            <PropertyRef Name="CreatedBy" />
+          </Key>
+          <Property Name="MTransNo" Type="int" Nullable="false" />
+          <Property Name="LocationName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Layer" Type="int" Nullable="false" />
+          <Property Name="Row" Type="int" Nullable="false" />
+          <Property Name="Col" Type="int" Nullable="false" />
+          <Property Name="ZoneCode" Type="varchar" MaxLength="50" />
+          <Property Name="ZoneName" Type="varchar" MaxLength="100" />
+          <Property Name="MovementType" Type="varchar" MaxLength="20" />
+          <Property Name="ZonePriority" Type="int" />
+          <Property Name="FGModel" Type="varchar" MaxLength="250" />
+          <Property Name="FGDesc" Type="varchar" MaxLength="250" />
+          <Property Name="FGCode" Type="varchar" MaxLength="250" />
+          <Property Name="PalletQr" Type="varchar" MaxLength="250" />
+          <Property Name="PalletNo" Type="varchar" MaxLength="250" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="LocaStatus" Type="varchar" MaxLength="250" />
+          <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="int" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="DeleteStatus" Type="char" MaxLength="1" />
+          <Property Name="Cat" Type="varchar" MaxLength="25" />
+          <Property Name="status" Type="varchar" MaxLength="20" />
+          <Property Name="sequence" Type="bigint" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'S1947.dbo.GELoadingView2' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="GELoadingView2">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="Layer" />
+            <PropertyRef Name="Row" />
+            <PropertyRef Name="Col" />
             <PropertyRef Name="CreatedBy" />
           </Key>
           <Property Name="MTransNo" Type="int" Nullable="false" />
@@ -823,6 +993,15 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Parameter Name="LevelFrom" Type="int" Mode="In" />
           <Parameter Name="LevelTo" Type="int" Mode="In" />
         </Function>
+        <Function Name="GetSlowLocation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="FGCode" Type="nvarchar" Mode="In" />
+          <Parameter Name="ColumnFrom" Type="int" Mode="In" />
+          <Parameter Name="ColumnTo" Type="int" Mode="In" />
+          <Parameter Name="RowFrom" Type="int" Mode="In" />
+          <Parameter Name="RowTo" Type="int" Mode="In" />
+          <Parameter Name="LevelFrom" Type="int" Mode="In" />
+          <Parameter Name="LevelTo" Type="int" Mode="In" />
+        </Function>
         <Function Name="InsertTaskDtl" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="TaskNo" Type="int" Mode="In" />
           <Parameter Name="TaskType" Type="varchar" Mode="In" />
@@ -870,25 +1049,90 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Parameter Name="new_diagramname" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="sp_upgraddiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_ASRS_GetLocation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="FGCode" Type="nvarchar" Mode="In" />
+          <Parameter Name="MovementType" Type="varchar" Mode="In" />
+          <Parameter Name="ColumnFrom" Type="int" Mode="In" />
+          <Parameter Name="ColumnTo" Type="int" Mode="In" />
+          <Parameter Name="RowFrom" Type="int" Mode="In" />
+          <Parameter Name="RowTo" Type="int" Mode="In" />
+          <Parameter Name="LevelFrom" Type="int" Mode="In" />
+          <Parameter Name="LevelTo" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_ASRS_GetLocation_Bestbutissue_" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" StoreFunctionName="usp_ASRS_GetLocation(Bestbutissue)">
+          <Parameter Name="FGCode" Type="nvarchar" Mode="In" />
+          <Parameter Name="MovementType" Type="varchar" Mode="In" />
+          <Parameter Name="ColumnFrom" Type="int" Mode="In" />
+          <Parameter Name="ColumnTo" Type="int" Mode="In" />
+          <Parameter Name="RowFrom" Type="int" Mode="In" />
+          <Parameter Name="RowTo" Type="int" Mode="In" />
+          <Parameter Name="LevelFrom" Type="int" Mode="In" />
+          <Parameter Name="LevelTo" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_ASRS_GetLocation_W_" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" StoreFunctionName="usp_ASRS_GetLocation(W)">
+          <Parameter Name="FGCode" Type="nvarchar" Mode="In" />
+          <Parameter Name="MovementType" Type="varchar" Mode="In" />
+          <Parameter Name="ColumnFrom" Type="int" Mode="In" />
+          <Parameter Name="ColumnTo" Type="int" Mode="In" />
+          <Parameter Name="RowFrom" Type="int" Mode="In" />
+          <Parameter Name="RowTo" Type="int" Mode="In" />
+          <Parameter Name="LevelFrom" Type="int" Mode="In" />
+          <Parameter Name="LevelTo" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_ASRS_GetLocation_W2_" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" StoreFunctionName="usp_ASRS_GetLocation(W2)">
+          <Parameter Name="FGCode" Type="nvarchar" Mode="In" />
+          <Parameter Name="MovementType" Type="varchar" Mode="In" />
+          <Parameter Name="ColumnFrom" Type="int" Mode="In" />
+          <Parameter Name="ColumnTo" Type="int" Mode="In" />
+          <Parameter Name="RowFrom" Type="int" Mode="In" />
+          <Parameter Name="RowTo" Type="int" Mode="In" />
+          <Parameter Name="LevelFrom" Type="int" Mode="In" />
+          <Parameter Name="LevelTo" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_ASRS_GetLocation_Worst_" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" StoreFunctionName="usp_ASRS_GetLocation(Worst)">
+          <Parameter Name="FGCode" Type="nvarchar" Mode="In" />
+          <Parameter Name="MovementType" Type="varchar" Mode="In" />
+          <Parameter Name="ColumnFrom" Type="int" Mode="In" />
+          <Parameter Name="ColumnTo" Type="int" Mode="In" />
+          <Parameter Name="RowFrom" Type="int" Mode="In" />
+          <Parameter Name="RowTo" Type="int" Mode="In" />
+          <Parameter Name="LevelFrom" Type="int" Mode="In" />
+          <Parameter Name="LevelTo" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_ASRS_GetLocation3" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="FGCode" Type="nvarchar" Mode="In" />
+          <Parameter Name="MovementType" Type="varchar" Mode="In" />
+          <Parameter Name="ColumnFrom" Type="int" Mode="In" />
+          <Parameter Name="ColumnTo" Type="int" Mode="In" />
+          <Parameter Name="RowFrom" Type="int" Mode="In" />
+          <Parameter Name="RowTo" Type="int" Mode="In" />
+          <Parameter Name="LevelFrom" Type="int" Mode="In" />
+          <Parameter Name="LevelTo" Type="int" Mode="In" />
+        </Function>
         <EntityContainer Name="S1947ModelStoreContainer">
           <EntitySet Name="AndonTVDockMapping" EntityType="Self.AndonTVDockMapping" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AndonTVMaster" EntityType="Self.AndonTVMaster" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApiErrorLog" EntityType="Self.ApiErrorLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApiErrorMaster" EntityType="Self.ApiErrorMaster" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="App_Location" EntityType="Self.App_Location" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ASRSColumnCategoryTurn" EntityType="Self.ASRSColumnCategoryTurn" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ASRSLocationZoneMaster" EntityType="Self.ASRSLocationZoneMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ASRSPairReservation" EntityType="Self.ASRSPairReservation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AsrsZone" EntityType="Self.AsrsZone" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomerMaster" EntityType="Self.CustomerMaster" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Errorlog" EntityType="Self.Errorlog" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="GE" EntityType="Self.GE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GoodsExisiting" EntityType="Self.GoodsExisiting" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GoodsExisiting_old" EntityType="Self.GoodsExisiting_old" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GoodsExisiting2" EntityType="Self.GoodsExisiting2" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LiftStatusMaster" EntityType="Self.LiftStatusMaster" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LoadingLog" EntityType="Self.LoadingLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LoadingTemp" EntityType="Self.LoadingTemp" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Menulist" EntityType="Self.Menulist" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MoveLogs" EntityType="Self.MoveLogs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MoveTemp" EntityType="Self.MoveTemp" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Othermaster" EntityType="Self.Othermaster" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PartMaster" EntityType="Self.PartMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PartMaster_old" EntityType="Self.PartMaster_old" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PokaYokaPallet" EntityType="Self.PokaYokaPallet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PokaYokaQCHistory" EntityType="Self.PokaYokaQCHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="shift_master" EntityType="Self.shift_master" Schema="dbo" store:Type="Tables" />
@@ -954,6 +1198,62 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
     [GELoadingView].[status] AS [status], 
     [GELoadingView].[sequence] AS [sequence]
     FROM [dbo].[GELoadingView] AS [GELoadingView]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="GELoadingView(WAking)" EntityType="Self.GELoadingView(WAking)" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [GELoadingView(WAking)].[MTransNo] AS [MTransNo], 
+    [GELoadingView(WAking)].[LocationName] AS [LocationName], 
+    [GELoadingView(WAking)].[Layer] AS [Layer], 
+    [GELoadingView(WAking)].[Row] AS [Row], 
+    [GELoadingView(WAking)].[Col] AS [Col], 
+    [GELoadingView(WAking)].[ZoneCode] AS [ZoneCode], 
+    [GELoadingView(WAking)].[ZoneName] AS [ZoneName], 
+    [GELoadingView(WAking)].[MovementType] AS [MovementType], 
+    [GELoadingView(WAking)].[ZonePriority] AS [ZonePriority], 
+    [GELoadingView(WAking)].[FGModel] AS [FGModel], 
+    [GELoadingView(WAking)].[FGDesc] AS [FGDesc], 
+    [GELoadingView(WAking)].[FGCode] AS [FGCode], 
+    [GELoadingView(WAking)].[PalletQr] AS [PalletQr], 
+    [GELoadingView(WAking)].[PalletNo] AS [PalletNo], 
+    [GELoadingView(WAking)].[Quantity] AS [Quantity], 
+    [GELoadingView(WAking)].[LocaStatus] AS [LocaStatus], 
+    [GELoadingView(WAking)].[CreatedBy] AS [CreatedBy], 
+    [GELoadingView(WAking)].[CreatedOn] AS [CreatedOn], 
+    [GELoadingView(WAking)].[ModifiedBy] AS [ModifiedBy], 
+    [GELoadingView(WAking)].[ModifiedOn] AS [ModifiedOn], 
+    [GELoadingView(WAking)].[DeleteStatus] AS [DeleteStatus], 
+    [GELoadingView(WAking)].[Cat] AS [Cat], 
+    [GELoadingView(WAking)].[status] AS [status], 
+    [GELoadingView(WAking)].[sequence] AS [sequence]
+    FROM [dbo].[GELoadingView(WAking)] AS [GELoadingView(WAking)]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="GELoadingView2" EntityType="Self.GELoadingView2" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [GELoadingView2].[MTransNo] AS [MTransNo], 
+    [GELoadingView2].[LocationName] AS [LocationName], 
+    [GELoadingView2].[Layer] AS [Layer], 
+    [GELoadingView2].[Row] AS [Row], 
+    [GELoadingView2].[Col] AS [Col], 
+    [GELoadingView2].[ZoneCode] AS [ZoneCode], 
+    [GELoadingView2].[ZoneName] AS [ZoneName], 
+    [GELoadingView2].[MovementType] AS [MovementType], 
+    [GELoadingView2].[ZonePriority] AS [ZonePriority], 
+    [GELoadingView2].[FGModel] AS [FGModel], 
+    [GELoadingView2].[FGDesc] AS [FGDesc], 
+    [GELoadingView2].[FGCode] AS [FGCode], 
+    [GELoadingView2].[PalletQr] AS [PalletQr], 
+    [GELoadingView2].[PalletNo] AS [PalletNo], 
+    [GELoadingView2].[Quantity] AS [Quantity], 
+    [GELoadingView2].[LocaStatus] AS [LocaStatus], 
+    [GELoadingView2].[CreatedBy] AS [CreatedBy], 
+    [GELoadingView2].[CreatedOn] AS [CreatedOn], 
+    [GELoadingView2].[ModifiedBy] AS [ModifiedBy], 
+    [GELoadingView2].[ModifiedOn] AS [ModifiedOn], 
+    [GELoadingView2].[DeleteStatus] AS [DeleteStatus], 
+    [GELoadingView2].[Cat] AS [Cat], 
+    [GELoadingView2].[status] AS [status], 
+    [GELoadingView2].[sequence] AS [sequence]
+    FROM [dbo].[GELoadingView2] AS [GELoadingView2]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vw_AgeingReport" EntityType="Self.vw_AgeingReport" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -1047,6 +1347,69 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
     <edmx:ConceptualModels>
       <Schema Namespace="S1947Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="S1947Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AndonTVDockMappings" EntityType="S1947Model.AndonTVDockMapping" />
+          <EntitySet Name="AndonTVMasters" EntityType="S1947Model.AndonTVMaster" />
+          <EntitySet Name="ApiErrorLogs" EntityType="S1947Model.ApiErrorLog" />
+          <EntitySet Name="ApiErrorMasters" EntityType="S1947Model.ApiErrorMaster" />
+          <EntitySet Name="App_Location" EntityType="S1947Model.App_Location" />
+          <EntitySet Name="ASRSColumnCategoryTurns" EntityType="S1947Model.ASRSColumnCategoryTurn" />
+          <EntitySet Name="ASRSLocationZoneMasters" EntityType="S1947Model.ASRSLocationZoneMaster" />
+          <EntitySet Name="ASRSPairReservations" EntityType="S1947Model.ASRSPairReservation" />
+          <EntitySet Name="AsrsZones" EntityType="S1947Model.AsrsZone" />
+          <EntitySet Name="CustomerMasters" EntityType="S1947Model.CustomerMaster" />
+          <EntitySet Name="Errorlogs" EntityType="S1947Model.Errorlog" />
+          <EntitySet Name="GoodsExisitings" EntityType="S1947Model.GoodsExisiting" />
+          <EntitySet Name="GoodsExisiting_old" EntityType="S1947Model.GoodsExisiting_old" />
+          <EntitySet Name="GoodsExisiting2" EntityType="S1947Model.GoodsExisiting2" />
+          <EntitySet Name="LiftStatusMasters" EntityType="S1947Model.LiftStatusMaster" />
+          <EntitySet Name="LoadingLogs" EntityType="S1947Model.LoadingLog" />
+          <EntitySet Name="LoadingTemps" EntityType="S1947Model.LoadingTemp" />
+          <EntitySet Name="Menulists" EntityType="S1947Model.Menulist" />
+          <EntitySet Name="MoveLogs" EntityType="S1947Model.MoveLog" />
+          <EntitySet Name="MoveTemps" EntityType="S1947Model.MoveTemp" />
+          <EntitySet Name="Othermasters" EntityType="S1947Model.Othermaster" />
+          <EntitySet Name="PartMasters" EntityType="S1947Model.PartMaster" />
+          <EntitySet Name="PartMaster_old" EntityType="S1947Model.PartMaster_old" />
+          <EntitySet Name="PokaYokaPallets" EntityType="S1947Model.PokaYokaPallet" />
+          <EntitySet Name="PokaYokaQCHistories" EntityType="S1947Model.PokaYokaQCHistory" />
+          <EntitySet Name="shift_master" EntityType="S1947Model.shift_master" />
+          <EntitySet Name="ShuttleDtls" EntityType="S1947Model.ShuttleDtl" />
+          <EntitySet Name="sysdiagrams" EntityType="S1947Model.sysdiagram" />
+          <EntitySet Name="TaskDtls" EntityType="S1947Model.TaskDtl" />
+          <EntitySet Name="TaskReports" EntityType="S1947Model.TaskReport" />
+          <EntitySet Name="TaskStatusCodes" EntityType="S1947Model.TaskStatusCode" />
+          <EntitySet Name="UnloadedDatas" EntityType="S1947Model.UnloadedData" />
+          <EntitySet Name="UnloadingLogs" EntityType="S1947Model.UnloadingLog" />
+          <EntitySet Name="UnloadMaterialTemps" EntityType="S1947Model.UnloadMaterialTemp" />
+          <EntitySet Name="UnloadTemps" EntityType="S1947Model.UnloadTemp" />
+          <EntitySet Name="UserAuthorizations" EntityType="S1947Model.UserAuthorization" />
+          <EntitySet Name="UserMasters" EntityType="S1947Model.UserMaster" />
+          <EntitySet Name="WcsApiLogs" EntityType="S1947Model.WcsApiLog" />
+          <EntitySet Name="GoodsExistings" EntityType="S1947Model.GoodsExisting" />
+          <EntitySet Name="GELoadingViews" EntityType="S1947Model.GELoadingView" />
+          <EntitySet Name="GELoadingView_WAking_" EntityType="S1947Model.GELoadingView_WAking_" />
+          <EntitySet Name="GELoadingView2" EntityType="S1947Model.GELoadingView2" />
+          <EntitySet Name="vw_AgeingReport" EntityType="S1947Model.vw_AgeingReport" />
+          <EntitySet Name="vw_TransactionHistory" EntityType="S1947Model.vw_TransactionHistory" />
+          <EntitySet Name="vw_TransactionReport" EntityType="S1947Model.vw_TransactionReport" />
+          <FunctionImport Name="GetFastMediumLocation">
+            <Parameter Name="FGCode" Mode="In" Type="String" />
+            <Parameter Name="LocFrom" Mode="In" Type="Int32" />
+            <Parameter Name="LocTo" Mode="In" Type="Int32" />
+            <Parameter Name="LocFromRow" Mode="In" Type="Int32" />
+            <Parameter Name="LocToRow" Mode="In" Type="Int32" />
+            <Parameter Name="LevelFrom" Mode="In" Type="Int32" />
+            <Parameter Name="LevelTo" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetSlowLocation">
+            <Parameter Name="FGCode" Mode="In" Type="String" />
+            <Parameter Name="ColumnFrom" Mode="In" Type="Int32" />
+            <Parameter Name="ColumnTo" Mode="In" Type="Int32" />
+            <Parameter Name="RowFrom" Mode="In" Type="Int32" />
+            <Parameter Name="RowTo" Mode="In" Type="Int32" />
+            <Parameter Name="LevelFrom" Mode="In" Type="Int32" />
+            <Parameter Name="LevelTo" Mode="In" Type="Int32" />
+          </FunctionImport>
           <FunctionImport Name="InsertTaskDtl">
             <Parameter Name="TaskNo" Mode="In" Type="Int32" />
             <Parameter Name="TaskType" Mode="In" Type="String" />
@@ -1080,11 +1443,11 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
             <Parameter Name="diagramname" Mode="In" Type="String" />
             <Parameter Name="owner_id" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(S1947Model.sp_helpdiagramdefinition_Result4)">
+          <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(S1947Model.sp_helpdiagramdefinition_Result5)">
             <Parameter Name="diagramname" Mode="In" Type="String" />
             <Parameter Name="owner_id" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(S1947Model.sp_helpdiagrams_Result4)">
+          <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(S1947Model.sp_helpdiagrams_Result5)">
             <Parameter Name="diagramname" Mode="In" Type="String" />
             <Parameter Name="owner_id" Mode="In" Type="Int32" />
           </FunctionImport>
@@ -1094,54 +1457,67 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
             <Parameter Name="new_diagramname" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_upgraddiagrams" />
-          <FunctionImport Name="GetFastMediumLocation" ReturnType="Collection(S1947Model.GetFastMediumLocation_Result)">
+          <FunctionImport Name="usp_ASRS_GetLocation">
             <Parameter Name="FGCode" Mode="In" Type="String" />
-            <Parameter Name="LocFrom" Mode="In" Type="Int32" />
-            <Parameter Name="LocTo" Mode="In" Type="Int32" />
-            <Parameter Name="LocFromRow" Mode="In" Type="Int32" />
-            <Parameter Name="LocToRow" Mode="In" Type="Int32" />
+            <Parameter Name="MovementType" Mode="In" Type="String" />
+            <Parameter Name="ColumnFrom" Mode="In" Type="Int32" />
+            <Parameter Name="ColumnTo" Mode="In" Type="Int32" />
+            <Parameter Name="RowFrom" Mode="In" Type="Int32" />
+            <Parameter Name="RowTo" Mode="In" Type="Int32" />
             <Parameter Name="LevelFrom" Mode="In" Type="Int32" />
             <Parameter Name="LevelTo" Mode="In" Type="Int32" />
           </FunctionImport>
-          <EntitySet Name="AndonTVDockMappings" EntityType="S1947Model.AndonTVDockMapping" />
-          <EntitySet Name="AndonTVMasters" EntityType="S1947Model.AndonTVMaster" />
-          <EntitySet Name="ApiErrorLogs" EntityType="S1947Model.ApiErrorLog" />
-          <EntitySet Name="ApiErrorMasters" EntityType="S1947Model.ApiErrorMaster" />
-          <EntitySet Name="App_Location" EntityType="S1947Model.App_Location" />
-          <EntitySet Name="ASRSLocationZoneMasters" EntityType="S1947Model.ASRSLocationZoneMaster" />
-          <EntitySet Name="AsrsZones" EntityType="S1947Model.AsrsZone" />
-          <EntitySet Name="CustomerMasters" EntityType="S1947Model.CustomerMaster" />
-          <EntitySet Name="Errorlogs" EntityType="S1947Model.Errorlog" />
-          <EntitySet Name="GEs" EntityType="S1947Model.GE" />
-          <EntitySet Name="GoodsExisitings" EntityType="S1947Model.GoodsExisiting" />
-          <EntitySet Name="GoodsExisiting_old" EntityType="S1947Model.GoodsExisiting_old" />
-          <EntitySet Name="LiftStatusMasters" EntityType="S1947Model.LiftStatusMaster" />
-          <EntitySet Name="LoadingLogs" EntityType="S1947Model.LoadingLog" />
-          <EntitySet Name="LoadingTemps" EntityType="S1947Model.LoadingTemp" />
-          <EntitySet Name="Menulists" EntityType="S1947Model.Menulist" />
-          <EntitySet Name="Othermasters" EntityType="S1947Model.Othermaster" />
-          <EntitySet Name="PartMasters" EntityType="S1947Model.PartMaster" />
-          <EntitySet Name="PokaYokaPallets" EntityType="S1947Model.PokaYokaPallet" />
-          <EntitySet Name="PokaYokaQCHistories" EntityType="S1947Model.PokaYokaQCHistory" />
-          <EntitySet Name="shift_master" EntityType="S1947Model.shift_master" />
-          <EntitySet Name="ShuttleDtls" EntityType="S1947Model.ShuttleDtl" />
-          <EntitySet Name="sysdiagrams" EntityType="S1947Model.sysdiagram" />
-          <EntitySet Name="TaskDtls" EntityType="S1947Model.TaskDtl" />
-          <EntitySet Name="TaskReports" EntityType="S1947Model.TaskReport" />
-          <EntitySet Name="TaskStatusCodes" EntityType="S1947Model.TaskStatusCode" />
-          <EntitySet Name="UnloadedDatas" EntityType="S1947Model.UnloadedData" />
-          <EntitySet Name="UnloadingLogs" EntityType="S1947Model.UnloadingLog" />
-          <EntitySet Name="UnloadMaterialTemps" EntityType="S1947Model.UnloadMaterialTemp" />
-          <EntitySet Name="UnloadTemps" EntityType="S1947Model.UnloadTemp" />
-          <EntitySet Name="UserAuthorizations" EntityType="S1947Model.UserAuthorization" />
-          <EntitySet Name="UserMasters" EntityType="S1947Model.UserMaster" />
-          <EntitySet Name="WcsApiLogs" EntityType="S1947Model.WcsApiLog" />
-          <EntitySet Name="GoodsExistings" EntityType="S1947Model.GoodsExisting" />
-          <EntitySet Name="GELoadingViews" EntityType="S1947Model.GELoadingView" />
-          <EntitySet Name="vw_AgeingReport" EntityType="S1947Model.vw_AgeingReport" />
-          <EntitySet Name="vw_TransactionHistory" EntityType="S1947Model.vw_TransactionHistory" />
-          <EntitySet Name="vw_TransactionReport" EntityType="S1947Model.vw_TransactionReport" />
-          </EntityContainer>
+          <FunctionImport Name="usp_ASRS_GetLocation_Bestbutissue_">
+            <Parameter Name="FGCode" Mode="In" Type="String" />
+            <Parameter Name="MovementType" Mode="In" Type="String" />
+            <Parameter Name="ColumnFrom" Mode="In" Type="Int32" />
+            <Parameter Name="ColumnTo" Mode="In" Type="Int32" />
+            <Parameter Name="RowFrom" Mode="In" Type="Int32" />
+            <Parameter Name="RowTo" Mode="In" Type="Int32" />
+            <Parameter Name="LevelFrom" Mode="In" Type="Int32" />
+            <Parameter Name="LevelTo" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_ASRS_GetLocation_W_">
+            <Parameter Name="FGCode" Mode="In" Type="String" />
+            <Parameter Name="MovementType" Mode="In" Type="String" />
+            <Parameter Name="ColumnFrom" Mode="In" Type="Int32" />
+            <Parameter Name="ColumnTo" Mode="In" Type="Int32" />
+            <Parameter Name="RowFrom" Mode="In" Type="Int32" />
+            <Parameter Name="RowTo" Mode="In" Type="Int32" />
+            <Parameter Name="LevelFrom" Mode="In" Type="Int32" />
+            <Parameter Name="LevelTo" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_ASRS_GetLocation_W2_">
+            <Parameter Name="FGCode" Mode="In" Type="String" />
+            <Parameter Name="MovementType" Mode="In" Type="String" />
+            <Parameter Name="ColumnFrom" Mode="In" Type="Int32" />
+            <Parameter Name="ColumnTo" Mode="In" Type="Int32" />
+            <Parameter Name="RowFrom" Mode="In" Type="Int32" />
+            <Parameter Name="RowTo" Mode="In" Type="Int32" />
+            <Parameter Name="LevelFrom" Mode="In" Type="Int32" />
+            <Parameter Name="LevelTo" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_ASRS_GetLocation_Worst_">
+            <Parameter Name="FGCode" Mode="In" Type="String" />
+            <Parameter Name="MovementType" Mode="In" Type="String" />
+            <Parameter Name="ColumnFrom" Mode="In" Type="Int32" />
+            <Parameter Name="ColumnTo" Mode="In" Type="Int32" />
+            <Parameter Name="RowFrom" Mode="In" Type="Int32" />
+            <Parameter Name="RowTo" Mode="In" Type="Int32" />
+            <Parameter Name="LevelFrom" Mode="In" Type="Int32" />
+            <Parameter Name="LevelTo" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_ASRS_GetLocation3">
+            <Parameter Name="FGCode" Mode="In" Type="String" />
+            <Parameter Name="MovementType" Mode="In" Type="String" />
+            <Parameter Name="ColumnFrom" Mode="In" Type="Int32" />
+            <Parameter Name="ColumnTo" Mode="In" Type="Int32" />
+            <Parameter Name="RowFrom" Mode="In" Type="Int32" />
+            <Parameter Name="RowTo" Mode="In" Type="Int32" />
+            <Parameter Name="LevelFrom" Mode="In" Type="Int32" />
+            <Parameter Name="LevelTo" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
         <ComplexType Name="sp_helpdiagramdefinition_Result">
           <Property Type="Int32" Name="version" Nullable="true" />
           <Property Type="Binary" Name="definition" Nullable="true" />
@@ -1299,6 +1675,16 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="IsVirtual" Type="Int32" />
           <Property Name="StemGroupNo" Type="String" MaxLength="32" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="ASRSColumnCategoryTurn">
+          <Key>
+            <PropertyRef Name="MovementType" />
+            <PropertyRef Name="ColumnNo" />
+          </Key>
+          <Property Name="MovementType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ColumnNo" Type="Int32" Nullable="false" />
+          <Property Name="LastCategory" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="UpdatedOn" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
         <EntityType Name="ASRSLocationZoneMaster">
           <Key>
             <PropertyRef Name="Id" />
@@ -1317,6 +1703,22 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="Status" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="ASRSPairReservation">
+          <Key>
+            <PropertyRef Name="PairId" />
+          </Key>
+          <Property Name="PairId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FGCode" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Category" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Track1Column" Type="Int32" Nullable="false" />
+          <Property Name="Track1Layer" Type="Int32" Nullable="false" />
+          <Property Name="Track2Column" Type="Int32" Nullable="false" />
+          <Property Name="Track2Layer" Type="Int32" Nullable="false" />
+          <Property Name="PairSequence" Type="Int64" Nullable="false" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ClosedOn" Type="DateTime" Precision="7" />
         </EntityType>
         <EntityType Name="AsrsZone">
           <Key>
@@ -1357,30 +1759,6 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="CreatedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="GE">
-          <Key>
-            <PropertyRef Name="MTransNo" />
-          </Key>
-          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="LocationName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="Layer" Type="Int32" Nullable="false" />
-          <Property Name="Row" Type="Int32" Nullable="false" />
-          <Property Name="Col" Type="Int32" Nullable="false" />
-          <Property Name="FGModel" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="FGDesc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="FGCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="PalletQr" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="Quantity" Type="Int32" />
-          <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="CreatedBy" Type="Int32" Nullable="false" />
-          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
-          <Property Name="ModifiedBy" Type="Int32" />
-          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
-          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-          <Property Name="Cat" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
-          <Property Name="sequence" Type="Int32" />
-        </EntityType>
         <EntityType Name="GoodsExisiting">
           <Key>
             <PropertyRef Name="MTransNo" />
@@ -1397,11 +1775,13 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
           <Property Name="Quantity" Type="Int32" />
           <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="CreatedBy" Type="Int16" Nullable="false" />
+          <Property Name="CreatedBy" Type="Int16" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="ModifiedBy" Type="Int16" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
           <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Cat" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="sequence" Type="Int32" />
         </EntityType>
         <EntityType Name="GoodsExisiting_old">
           <Key>
@@ -1427,6 +1807,28 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="Verify" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="SerialCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="GoodsExisiting2">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LocationName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Layer" Type="Int32" Nullable="false" />
+          <Property Name="Row" Type="Int32" Nullable="false" />
+          <Property Name="Col" Type="Int32" Nullable="false" />
+          <Property Name="FGModel" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQr" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
         </EntityType>
         <EntityType Name="LiftStatusMaster">
           <Key>
@@ -1512,6 +1914,61 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="ModulePage" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="ModuleLink" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="MoveLog">
+          <Key>
+            <PropertyRef Name="MoveLogId" />
+          </Key>
+          <Property Name="MoveLogId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SerialCode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TrayCode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Method" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="From_Layer" Type="Int32" />
+          <Property Name="From_Column" Type="Int32" />
+          <Property Name="From_Row" Type="Int32" />
+          <Property Name="From_OrderRow" Type="Int32" />
+          <Property Name="To_Layer" Type="Int32" />
+          <Property Name="To_Column" Type="Int32" />
+          <Property Name="To_Row" Type="Int32" />
+          <Property Name="To_OrderRow" Type="Int32" />
+          <Property Name="SortCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SerialNum" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="From_Warehouse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="To_Warehouse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FgCode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="StatusMessage" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="Int16" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="MoveTemp">
+          <Key>
+            <PropertyRef Name="MoveTempId" />
+          </Key>
+          <Property Name="MoveTempId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MoveLogId" Type="Int32" />
+          <Property Name="SerialCode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TrayCode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FgCode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="From_Layer" Type="Int32" />
+          <Property Name="From_Column" Type="Int32" />
+          <Property Name="From_Row" Type="Int32" />
+          <Property Name="From_OrderRow" Type="Int32" />
+          <Property Name="To_Layer" Type="Int32" />
+          <Property Name="To_Column" Type="Int32" />
+          <Property Name="To_Row" Type="Int32" />
+          <Property Name="To_OrderRow" Type="Int32" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="WcsTaskId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="WcsResponse" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="StatusMessage" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="StartedOn" Type="DateTime" Precision="3" />
+          <Property Name="CompletedOn" Type="DateTime" Precision="3" />
+          <Property Name="RetryCount" Type="Int32" Nullable="false" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+        </EntityType>
         <EntityType Name="Othermaster">
           <Key>
             <PropertyRef Name="id" />
@@ -1522,6 +1979,24 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="MaxDockRange" Type="Int32" />
         </EntityType>
         <EntityType Name="PartMaster">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FGCode" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FGModel" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Segment" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FGWeight" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Type" Type="String" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="LockStatus" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+        </EntityType>
+        <EntityType Name="PartMaster_old">
           <Key>
             <PropertyRef Name="MTransNo" />
           </Key>
@@ -1895,6 +2370,73 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
             <PropertyRef Name="Layer" />
             <PropertyRef Name="Row" />
             <PropertyRef Name="Col" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" />
+          <Property Name="LocationName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Layer" Type="Int32" Nullable="false" />
+          <Property Name="Row" Type="Int32" Nullable="false" />
+          <Property Name="Col" Type="Int32" Nullable="false" />
+          <Property Name="ZoneCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ZoneName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MovementType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ZonePriority" Type="Int32" />
+          <Property Name="FGModel" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQr" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int16" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int16" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Cat" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="sequence" Type="Int64" />
+        </EntityType>
+        <EntityType Name="GELoadingView_WAking_">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="Layer" />
+            <PropertyRef Name="Row" />
+            <PropertyRef Name="Col" />
+            <PropertyRef Name="CreatedBy" />
+          </Key>
+          <Property Name="MTransNo" Type="Int32" Nullable="false" />
+          <Property Name="LocationName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Layer" Type="Int32" Nullable="false" />
+          <Property Name="Row" Type="Int32" Nullable="false" />
+          <Property Name="Col" Type="Int32" Nullable="false" />
+          <Property Name="ZoneCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ZoneName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MovementType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ZonePriority" Type="Int32" />
+          <Property Name="FGModel" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGDesc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FGCode" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletQr" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="PalletNo" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="LocaStatus" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Int32" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int32" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="DeleteStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Cat" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="sequence" Type="Int64" />
+        </EntityType>
+        <EntityType Name="GELoadingView2">
+          <Key>
+            <PropertyRef Name="MTransNo" />
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="Layer" />
+            <PropertyRef Name="Row" />
+            <PropertyRef Name="Col" />
             <PropertyRef Name="CreatedBy" />
           </Key>
           <Property Name="MTransNo" Type="Int32" Nullable="false" />
@@ -2016,62 +2558,23 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <Property Name="CreatedBy" Type="Int16" Nullable="false" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
         </EntityType>
+        <ComplexType Name="sp_helpdiagramdefinition_Result5">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result5">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="S1947ModelStoreContainer" CdmEntityContainer="S1947Entities">
-          <FunctionImportMapping FunctionImportName="InsertTaskDtl" FunctionName="S1947Model.Store.InsertTaskDtl" />
-          <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="S1947Model.Store.sp_alterdiagram" />
-          <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="S1947Model.Store.sp_creatediagram" />
-          <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="S1947Model.Store.sp_dropdiagram" />
-          <FunctionImportMapping FunctionImportName="sp_helpdiagramdefinition" FunctionName="S1947Model.Store.sp_helpdiagramdefinition">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="S1947Model.sp_helpdiagramdefinition_Result4">
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="definition" ColumnName="definition" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="sp_helpdiagrams" FunctionName="S1947Model.Store.sp_helpdiagrams">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="S1947Model.sp_helpdiagrams_Result4">
-                <ScalarProperty Name="Database" ColumnName="Database" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Owner" ColumnName="Owner" />
-                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="S1947Model.Store.sp_renamediagram" />
-          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="S1947Model.Store.sp_upgraddiagrams" />
-          <FunctionImportMapping FunctionImportName="GetFastMediumLocation" FunctionName="S1947Model.Store.GetFastMediumLocation">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="S1947Model.GetFastMediumLocation_Result">
-                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
-                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
-                <ScalarProperty Name="Layer" ColumnName="Layer" />
-                <ScalarProperty Name="Row" ColumnName="Row" />
-                <ScalarProperty Name="Col" ColumnName="Col" />
-                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
-                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
-                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
-                <ScalarProperty Name="PalletQr" ColumnName="PalletQr" />
-                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
-                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
-                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
-                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
-                <ScalarProperty Name="Cat" ColumnName="Cat" />
-                <ScalarProperty Name="sequence" ColumnName="sequence" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <EntitySetMapping Name="AndonTVDockMappings">
             <EntityTypeMapping TypeName="S1947Model.AndonTVDockMapping">
               <MappingFragment StoreEntitySet="AndonTVDockMapping">
@@ -2158,6 +2661,16 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="ASRSColumnCategoryTurns">
+            <EntityTypeMapping TypeName="S1947Model.ASRSColumnCategoryTurn">
+              <MappingFragment StoreEntitySet="ASRSColumnCategoryTurn">
+                <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+                <ScalarProperty Name="LastCategory" ColumnName="LastCategory" />
+                <ScalarProperty Name="ColumnNo" ColumnName="ColumnNo" />
+                <ScalarProperty Name="MovementType" ColumnName="MovementType" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="ASRSLocationZoneMasters">
             <EntityTypeMapping TypeName="S1947Model.ASRSLocationZoneMaster">
               <MappingFragment StoreEntitySet="ASRSLocationZoneMaster">
@@ -2175,6 +2688,23 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
                 <ScalarProperty Name="ZoneName" ColumnName="ZoneName" />
                 <ScalarProperty Name="ZoneCode" ColumnName="ZoneCode" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ASRSPairReservations">
+            <EntityTypeMapping TypeName="S1947Model.ASRSPairReservation">
+              <MappingFragment StoreEntitySet="ASRSPairReservation">
+                <ScalarProperty Name="ClosedOn" ColumnName="ClosedOn" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="PairSequence" ColumnName="PairSequence" />
+                <ScalarProperty Name="Track2Layer" ColumnName="Track2Layer" />
+                <ScalarProperty Name="Track2Column" ColumnName="Track2Column" />
+                <ScalarProperty Name="Track1Layer" ColumnName="Track1Layer" />
+                <ScalarProperty Name="Track1Column" ColumnName="Track1Column" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="PairId" ColumnName="PairId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2220,34 +2750,11 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="GEs">
-            <EntityTypeMapping TypeName="S1947Model.GE">
-              <MappingFragment StoreEntitySet="GE">
-                <ScalarProperty Name="sequence" ColumnName="sequence" />
-                <ScalarProperty Name="Cat" ColumnName="Cat" />
-                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
-                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
-                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
-                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
-                <ScalarProperty Name="PalletQr" ColumnName="PalletQr" />
-                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
-                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
-                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
-                <ScalarProperty Name="Col" ColumnName="Col" />
-                <ScalarProperty Name="Row" ColumnName="Row" />
-                <ScalarProperty Name="Layer" ColumnName="Layer" />
-                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
-                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="GoodsExisitings">
             <EntityTypeMapping TypeName="S1947Model.GoodsExisiting">
               <MappingFragment StoreEntitySet="GoodsExisiting">
+                <ScalarProperty Name="sequence" ColumnName="sequence" />
+                <ScalarProperty Name="Cat" ColumnName="Cat" />
                 <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
@@ -2289,6 +2796,29 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
                 <ScalarProperty Name="ZPos" ColumnName="ZPos" />
                 <ScalarProperty Name="YPos" ColumnName="YPos" />
                 <ScalarProperty Name="XPos" ColumnName="XPos" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GoodsExisiting2">
+            <EntityTypeMapping TypeName="S1947Model.GoodsExisiting2">
+              <MappingFragment StoreEntitySet="GoodsExisiting2">
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="PalletQr" ColumnName="PalletQr" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="Col" ColumnName="Col" />
+                <ScalarProperty Name="Row" ColumnName="Row" />
+                <ScalarProperty Name="Layer" ColumnName="Layer" />
                 <ScalarProperty Name="LocationName" ColumnName="LocationName" />
                 <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
               </MappingFragment>
@@ -2382,6 +2912,63 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="MoveLogs">
+            <EntityTypeMapping TypeName="S1947Model.MoveLog">
+              <MappingFragment StoreEntitySet="MoveLogs">
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="StatusMessage" ColumnName="StatusMessage" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="FgCode" ColumnName="FgCode" />
+                <ScalarProperty Name="To_Warehouse" ColumnName="To_Warehouse" />
+                <ScalarProperty Name="From_Warehouse" ColumnName="From_Warehouse" />
+                <ScalarProperty Name="SerialNum" ColumnName="SerialNum" />
+                <ScalarProperty Name="SortCode" ColumnName="SortCode" />
+                <ScalarProperty Name="To_OrderRow" ColumnName="To_OrderRow" />
+                <ScalarProperty Name="To_Row" ColumnName="To_Row" />
+                <ScalarProperty Name="To_Column" ColumnName="To_Column" />
+                <ScalarProperty Name="To_Layer" ColumnName="To_Layer" />
+                <ScalarProperty Name="From_OrderRow" ColumnName="From_OrderRow" />
+                <ScalarProperty Name="From_Row" ColumnName="From_Row" />
+                <ScalarProperty Name="From_Column" ColumnName="From_Column" />
+                <ScalarProperty Name="From_Layer" ColumnName="From_Layer" />
+                <ScalarProperty Name="Method" ColumnName="Method" />
+                <ScalarProperty Name="TrayCode" ColumnName="TrayCode" />
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="MoveLogId" ColumnName="MoveLogId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MoveTemps">
+            <EntityTypeMapping TypeName="S1947Model.MoveTemp">
+              <MappingFragment StoreEntitySet="MoveTemp">
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="RetryCount" ColumnName="RetryCount" />
+                <ScalarProperty Name="CompletedOn" ColumnName="CompletedOn" />
+                <ScalarProperty Name="StartedOn" ColumnName="StartedOn" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="StatusMessage" ColumnName="StatusMessage" />
+                <ScalarProperty Name="WcsResponse" ColumnName="WcsResponse" />
+                <ScalarProperty Name="WcsTaskId" ColumnName="WcsTaskId" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="To_OrderRow" ColumnName="To_OrderRow" />
+                <ScalarProperty Name="To_Row" ColumnName="To_Row" />
+                <ScalarProperty Name="To_Column" ColumnName="To_Column" />
+                <ScalarProperty Name="To_Layer" ColumnName="To_Layer" />
+                <ScalarProperty Name="From_OrderRow" ColumnName="From_OrderRow" />
+                <ScalarProperty Name="From_Row" ColumnName="From_Row" />
+                <ScalarProperty Name="From_Column" ColumnName="From_Column" />
+                <ScalarProperty Name="From_Layer" ColumnName="From_Layer" />
+                <ScalarProperty Name="FgCode" ColumnName="FgCode" />
+                <ScalarProperty Name="TrayCode" ColumnName="TrayCode" />
+                <ScalarProperty Name="SerialCode" ColumnName="SerialCode" />
+                <ScalarProperty Name="MoveLogId" ColumnName="MoveLogId" />
+                <ScalarProperty Name="MoveTempId" ColumnName="MoveTempId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Othermasters">
             <EntityTypeMapping TypeName="S1947Model.Othermaster">
               <MappingFragment StoreEntitySet="Othermaster">
@@ -2395,6 +2982,25 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
           <EntitySetMapping Name="PartMasters">
             <EntityTypeMapping TypeName="S1947Model.PartMaster">
               <MappingFragment StoreEntitySet="PartMaster">
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LockStatus" ColumnName="LockStatus" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="FGWeight" ColumnName="FGWeight" />
+                <ScalarProperty Name="Segment" ColumnName="Segment" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PartMaster_old">
+            <EntityTypeMapping TypeName="S1947Model.PartMaster_old">
+              <MappingFragment StoreEntitySet="PartMaster_old">
                 <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
@@ -2800,6 +3406,66 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="GELoadingView_WAking_">
+            <EntityTypeMapping TypeName="S1947Model.GELoadingView_WAking_">
+              <MappingFragment StoreEntitySet="GELoadingView(WAking)">
+                <ScalarProperty Name="sequence" ColumnName="sequence" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="Cat" ColumnName="Cat" />
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="PalletQr" ColumnName="PalletQr" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="ZonePriority" ColumnName="ZonePriority" />
+                <ScalarProperty Name="MovementType" ColumnName="MovementType" />
+                <ScalarProperty Name="ZoneName" ColumnName="ZoneName" />
+                <ScalarProperty Name="ZoneCode" ColumnName="ZoneCode" />
+                <ScalarProperty Name="Col" ColumnName="Col" />
+                <ScalarProperty Name="Row" ColumnName="Row" />
+                <ScalarProperty Name="Layer" ColumnName="Layer" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GELoadingView2">
+            <EntityTypeMapping TypeName="S1947Model.GELoadingView2">
+              <MappingFragment StoreEntitySet="GELoadingView2">
+                <ScalarProperty Name="sequence" ColumnName="sequence" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="Cat" ColumnName="Cat" />
+                <ScalarProperty Name="DeleteStatus" ColumnName="DeleteStatus" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LocaStatus" ColumnName="LocaStatus" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="PalletNo" ColumnName="PalletNo" />
+                <ScalarProperty Name="PalletQr" ColumnName="PalletQr" />
+                <ScalarProperty Name="FGCode" ColumnName="FGCode" />
+                <ScalarProperty Name="FGDesc" ColumnName="FGDesc" />
+                <ScalarProperty Name="FGModel" ColumnName="FGModel" />
+                <ScalarProperty Name="ZonePriority" ColumnName="ZonePriority" />
+                <ScalarProperty Name="MovementType" ColumnName="MovementType" />
+                <ScalarProperty Name="ZoneName" ColumnName="ZoneName" />
+                <ScalarProperty Name="ZoneCode" ColumnName="ZoneCode" />
+                <ScalarProperty Name="Col" ColumnName="Col" />
+                <ScalarProperty Name="Row" ColumnName="Row" />
+                <ScalarProperty Name="Layer" ColumnName="Layer" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="MTransNo" ColumnName="MTransNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="vw_AgeingReport">
             <EntityTypeMapping TypeName="S1947Model.vw_AgeingReport">
               <MappingFragment StoreEntitySet="vw_AgeingReport">
@@ -2892,7 +3558,40 @@ warning 6002: The table/view 'S1947.dbo.vw_TransactionReport' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          </EntityContainerMapping>
+          <FunctionImportMapping FunctionImportName="GetFastMediumLocation" FunctionName="S1947Model.Store.GetFastMediumLocation" />
+          <FunctionImportMapping FunctionImportName="GetSlowLocation" FunctionName="S1947Model.Store.GetSlowLocation" />
+          <FunctionImportMapping FunctionImportName="InsertTaskDtl" FunctionName="S1947Model.Store.InsertTaskDtl" />
+          <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="S1947Model.Store.sp_alterdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="S1947Model.Store.sp_creatediagram" />
+          <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="S1947Model.Store.sp_dropdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_helpdiagramdefinition" FunctionName="S1947Model.Store.sp_helpdiagramdefinition">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="S1947Model.sp_helpdiagramdefinition_Result5">
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_helpdiagrams" FunctionName="S1947Model.Store.sp_helpdiagrams">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="S1947Model.sp_helpdiagrams_Result5">
+                <ScalarProperty Name="Database" ColumnName="Database" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="S1947Model.Store.sp_renamediagram" />
+          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="S1947Model.Store.sp_upgraddiagrams" />
+          <FunctionImportMapping FunctionImportName="usp_ASRS_GetLocation" FunctionName="S1947Model.Store.usp_ASRS_GetLocation" />
+          <FunctionImportMapping FunctionImportName="usp_ASRS_GetLocation_Bestbutissue_" FunctionName="S1947Model.Store.usp_ASRS_GetLocation_Bestbutissue_" />
+          <FunctionImportMapping FunctionImportName="usp_ASRS_GetLocation_W_" FunctionName="S1947Model.Store.usp_ASRS_GetLocation_W_" />
+          <FunctionImportMapping FunctionImportName="usp_ASRS_GetLocation_W2_" FunctionName="S1947Model.Store.usp_ASRS_GetLocation_W2_" />
+          <FunctionImportMapping FunctionImportName="usp_ASRS_GetLocation_Worst_" FunctionName="S1947Model.Store.usp_ASRS_GetLocation_Worst_" />
+          <FunctionImportMapping FunctionImportName="usp_ASRS_GetLocation3" FunctionName="S1947Model.Store.usp_ASRS_GetLocation3" />
+        </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

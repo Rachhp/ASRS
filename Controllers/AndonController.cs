@@ -2,67 +2,184 @@
 using S1947.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using System.Data.Entity;
 
 namespace S1947.Controllers
 {
     public class AndonController : Controller
     {
+        // Change the field name from 'utility' to '_utility' to avoid ambiguity
+        private readonly UtilityController _utility = new UtilityController();
+
         UtilityController utility = new UtilityController();
+
+        [HttpGet]
+        public ContentResult TestTVIP()
+        {
+            return Content(
+                "Remote IP: " + Request.UserHostAddress
+            );
+        }
+
+
+        private int GetAndonScreenId()
+        {
+            string clientIp = Request.UserHostAddress;
+
+            string tv1Ip = ConfigurationManager.AppSettings["AndonTV1IP"];
+            string tv2Ip = ConfigurationManager.AppSettings["AndonTV2IP"];
+
+            if (clientIp == tv1Ip)
+                return 1;
+
+            if (clientIp == tv2Ip)
+                return 2;
+
+            return 0;
+        }
 
         public ActionResult AndonScreen()
         {
             AndonViewModel model = new AndonViewModel();
 
+            int screenId = GetAndonScreenId();
+
             using (S1947Entities db = new S1947Entities())
             {
-                //ned to pass model list  and the qty and customer list from controller to view 
-                model.CustomerList = db.CustomerMasters.Where(x => x.DeleteStatus == "N" && x.LockStatus == "Y")
-                .Select(x => x.CustomerName)
-                .ToList();
-
+                model.CustomerList = db.CustomerMasters
+                    .Where(x => x.DeleteStatus == "N" && x.LockStatus == "Y")
+                    .Select(x => x.CustomerName)
+                    .ToList();
 
                 model.ModelList = db.GoodsExisitings
-                 .Where(x => x.LocaStatus == "LOADED")
-                 .Select(x => x.FGModel)
-                 .Distinct()
-                 .ToList();
+                    .Where(x => x.LocaStatus == "LOADED")
+                    .Select(x => x.FGModel)
+                    .Distinct()
+                    .ToList();
 
                 model.LoadingHistory = db.UnloadMaterialTemps
-                          .OrderBy(x => x.id)
-                          .ToList();
-
-                var latestLoading = db.UnloadMaterialTemps
-                                      .OrderByDescending(x => x.id)
-                                      .FirstOrDefault();
-
-                if (latestLoading != null)
-                {
-                    model.DockNo = latestLoading.DockNo;
-                    model.VehicleSize =latestLoading.VehicleSize;
-                    model.VehicleNumber = latestLoading.VehicleRegNo;
-                    model.VehicleSealNo = latestLoading.VehicleSealNo;
-                    model.TransporterName = latestLoading.TransporterName;
-                    model.DriverName = latestLoading.DriverName;
-                    model.MobileNoDriver = latestLoading.MobileNoDriver;
-                    model.SecurityName = latestLoading.SecurityName;
-                    model.MobileNoSecurity = latestLoading.MobileNoSecurity;
-                    model.SupervisiorName = latestLoading.SupervisiorName;
-                    model.MobileNoSupervisor = latestLoading.MobileNoSupervisor;
-                    //add her eloading star and end time 
-                }
+                    .OrderBy(x => x.id)
+                    .ToList();
 
                 model.ASRSLoadingStatus = db.UnloadTemps
-                            .OrderByDescending(x => x.MTransNo)
-                            .ToList();
+                    .OrderByDescending(x => x.MTransNo)
+                    .ToList();
+
+                ViewBag.ScreenId = screenId;
 
                 return View(model);
             }
         }
 
-       
+        [HttpGet]
+        public JsonResult GetAndonDock(int screenId)
+        {
+            using (S1947Entities db = new S1947Entities())
+            {
+                // Get all docks currently available in UnloadedDatas
+                var dockList = db.UnloadedDatas
+                    .Select(x => x.DockNo)
+                    .Distinct()
+                    .OrderBy(x => x)
+                    .ToList();
+
+                // If no dock records exist yet,
+                // use default Dock 1 and Dock 2.
+                if (!dockList.Any())
+                {
+                    dockList = new List<int?> { 1, 2 };
+                }
+
+                var activeDocks = new List<int>();
+                var notStartedDocks = new List<int>();
+
+                foreach (var dockNo in dockList)
+                {
+                    var records = db.UnloadedDatas
+                        .Where(x => x.DockNo == dockNo)
+                        .ToList();
+
+                    if (!records.Any())
+                    {
+                        notStartedDocks.Add((int)dockNo);
+                        continue;
+                    }
+
+                    bool completed = records.All(x => x.Status == "COMPLETED");
+                    bool inProcess = records.Any(x => x.Status == "MATERIALSCAN");
+
+                    if (!completed && inProcess)
+                    {
+                        activeDocks.Add((int)dockNo);
+                    }
+                    else if (!completed)
+                    {
+                        notStartedDocks.Add((int)dockNo);
+                    }
+                }
+
+                // Active docks get first priority
+                var selectedDocks = activeDocks
+                    .OrderBy(x => x)
+                    .Take(2)
+                    .ToList();
+
+                // Fill remaining screen slots with not-started docks
+                foreach (var dock in notStartedDocks.OrderBy(x => x))
+                {
+                    if (selectedDocks.Count >= 2)
+                        break;
+
+                    if (!selectedDocks.Contains(dock))
+                        selectedDocks.Add(dock);
+                }
+
+                // If still no docks, default to 1 and 2
+                if (!selectedDocks.Any())
+                {
+                    selectedDocks.Add(1);
+                    selectedDocks.Add(2);
+                }
+
+                // Make sure we have two positions
+                if (selectedDocks.Count == 1)
+                {
+                    foreach (var dock in dockList.OrderBy(x => x))
+                    {
+                        if (dock != selectedDocks[0])
+                        {
+                            selectedDocks.Add((int)dock);
+                            break;
+                        }
+                    }
+                }
+
+                int selectedDock;
+
+                if (screenId == 1)
+                {
+                    selectedDock = selectedDocks[0];
+                }
+                else
+                {
+                    selectedDock = selectedDocks.Count > 1
+                        ? selectedDocks[1]
+                        : selectedDocks[0];
+                }
+
+                return Json(new
+                {
+                    ScreenId = screenId,
+                    DockNo = selectedDock
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+
         [HttpGet]
         public JsonResult GetVehicleLoadingStatus(int dockNo)
         {
@@ -192,179 +309,7 @@ namespace S1947.Controllers
         }
 
 
-        [HttpPost]
-    public JsonResult SaveLoading(int DockNo,
-                                    int VehicleSize,
-                                    string VehicleNumber,
-                                    string TransporterName,
-                                    string VehicleSealNo,
 
-                                    string InvoiceNo,
-                                    string CustomerName,
-                                    string Location,
-                                    string Model,
-                                    string FGCode,
-                                    string Description,
-                                    int Quantity,
-                                    int AvailableQty,
-                                    string DriverName,
-                                    string DriverMobile,
-                                    string SecurityName,
-                                    string SecurityMobile,
-                                    string SupervisorName,
-                                    string SupervisorMobile)
-        {
-            string shift = utility.GetCurrentShiftName();
-            using (var db = new S1947Entities())
-            {
-                using (var transaction = db.Database.BeginTransaction())
-                {
-                    try
-                    {
-
-                        var pallets = db.GoodsExisitings
-                            .Where(x =>
-                                x.LocaStatus == "LOADED" &&
-                                x.FGModel == Model &&
-                                x.FGCode == FGCode &&
-                                x.FGDesc == Description &&
-                                x.Quantity > 0 
-                            )
-                            .OrderBy(x => x.Row)
-                            .ToList();
-
-                        int allocatedQty = 0;
-
-                        List<GoodsExisiting> selectedPallets = new List<GoodsExisiting>();
-                        foreach (var pallet in pallets)
-                        {
-                            selectedPallets.Add(pallet);
-
-                            allocatedQty += Convert.ToInt32(pallet.Quantity);
-
-                            if (allocatedQty >= Quantity)
-                                break;
-                        }
-
-                        if (allocatedQty < Quantity)
-                        {
-                            transaction.Rollback();
-
-                            return Json(new
-                            {
-                                Success = false,
-                                Message = "Insufficient stock available."
-                            });
-                        }
-
-                        foreach (var pallet in selectedPallets)
-                        {
-
-                            UnloadTemp temp = new UnloadTemp
-                            {
-                                InvoiceNo = InvoiceNo,
-                                CustomerName = CustomerName,
-                                LocationofDelivery = Location,
-                                FGModel = Model,
-                                FGModelDesc = Description,
-                                SAPFGCode = FGCode,
-                                PartQuantity = Convert.ToInt32(pallet.Quantity),
-                                TotalQty = allocatedQty,
-                                FLCLocation = selectedPallets.Count,
-                                VehicleSize = VehicleSize,
-                                VehicleNumber = VehicleNumber,
-                                TransporterName = TransporterName,
-                                VehicleSealNo = VehicleSealNo,
-                                DriverName = DriverName,
-                                MobileNoDriver = DriverMobile,
-                                SecurityName = SecurityName,
-                                MobileNoSecurity = SecurityMobile,
-                                SupervisiorName = SupervisorName,
-                                MobileNoSupervisor = SupervisorMobile,
-                                DockNo = DockNo,
-                                PalletNo = pallet.PalletNo,
-                                PlalletQR = pallet.PalletQr,
-                                LocationId =
-                                pallet.MTransNo.ToString(),
-                                LocationName =
-                                pallet.LocationName,
-                                Status = "Pending",
-                                CreatedBy = "System",
-                                CreatedOn = DateTime.Now
-                            };
-                            db.UnloadTemps.Add(temp);
-
-                        }
-                        db.SaveChanges();
-
-                        //unload material temp table insert for printing the label
-                        UnloadMaterialTemp material = new UnloadMaterialTemp()
-                        {
-                            InvoiceNo = InvoiceNo,
-                            Customer = CustomerName,
-                            Location = Location,
-                            Model = Model,
-                            SAPFGCode = FGCode,
-                            Description = Description,
-                            EnteredQty = Quantity,
-                            FLCQty = selectedPallets.Count,
-                            TransporterName = TransporterName,
-                            VehicleRegNo = VehicleNumber,
-                            AvailableQty = AvailableQty,
-                            VehicleSealNo = VehicleSealNo,
-                            DriverName = DriverName,
-                            MobileNoDriver = DriverMobile,
-                            SecurityName = SecurityName,
-                            MobileNoSecurity = SecurityMobile,
-                            SupervisiorName = SupervisorName,
-                            MobileNoSupervisor = SupervisorMobile,
-                            DockNo = DockNo,
-                            Date = DateTime.Now.ToString("dd/MM/yyyy"),
-                            Time = DateTime.Now.ToString("HH:mm"),
-                            Shift = shift
-                        };
-
-                        db.UnloadMaterialTemps.Add(material);
-                        db.SaveChanges();
-
-
-                        //=========================================
-                        // UPDATE LOCATION MASTER
-                        //=========================================
-
-
-                        foreach (var pallet in selectedPallets)
-                        {
-                            pallet.Quantity = 0;
-                            pallet.LocaStatus = "OCCUPIED";
-                            pallet.ModifiedOn = DateTime.Now;
-                            db.Entry(pallet).State = EntityState.Modified;
-                        }
-                        db.SaveChanges();
-
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        return Json(new
-                        {
-                            Success = false,
-                            Message = ex.Message
-                        });
-
-                    }               
-                    transaction.Commit();
-                        return Json(new
-                        {
-                            Success = true,
-                            Message = "Loading saved successfully"
-                        });
-
-                    }
-                }
-            }
-
-        
     }
 }
 

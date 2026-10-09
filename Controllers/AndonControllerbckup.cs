@@ -8,7 +8,7 @@ using System.Data.Entity;
 
 namespace S1947.Controllers
 {
-    public class AndonController : Controller
+    public class AndonControllerbckup : Controller
     {
         UtilityController utility = new UtilityController();
 

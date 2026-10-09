@@ -56,7 +56,7 @@
 
         .header-right {
             width: 27%;
-            display: flex;
+            display: flex; 
             flex-direction: column;
             align-items: flex-end;
             gap: 10px;
@@ -792,7 +792,7 @@
                             DOCK NO
                         </span>
                         <span class="dockValue" id="DockNo">
-                            @Model.DockNo
+                            @*@Model.DockNo*@
                         </span>
                     </div>
                 </div>
@@ -977,12 +977,21 @@
 <script>
 
     $(document).ready(function () {
+
         updateDateTime();
         setInterval(updateDateTime, 1000);
+
         calculateTotal();
         createVehicleGrid();
-        loadVehicleStatus();               // Initial load
-        setInterval(loadVehicleStatus, 5000); // Refresh every 5 seconds
+
+        // Determine which dock this TV should display
+        loadAndonDock();
+
+        // Re-check dock assignment every 5 seconds
+        setInterval(loadAndonDock, 5000);
+
+        // Refresh status of currently displayed dock
+        setInterval(loadVehicleStatus, 5000);
     });
 
 
@@ -1138,59 +1147,153 @@
 
     }
 
-    var dockNo = $("#DockNo").text().trim();
-    function loadVehicleStatus() {
+    //var dockNo = $("#DockNo").text().trim();
+    var currentDockNo = null;
+var screenId = @ViewBag.ScreenId;
+function loadAndonDock() {
 
-        if (!dockNo) {   // null, undefined, or empty string
-            $("#vehicleStatus")
-                .removeClass()
-                .addClass("statusBox statusRed")
-                .text("NOT YET STARTED");
-            return;
-        }
+    $.get('@Url.Action("GetAndonDock", "Andon")',
+        {
+            screenId: screenId
+        },
+        function (data) {
 
+            if (!data || !data.DockNo) {
+                return;
+            }
 
-        $.get('GetVehicleLoadingStatus',
-            {
-                dockNo: dockNo
-            },
-            function (data) {
-                if (data.Status == "R") {
+            var newDockNo = data.DockNo;
 
-                    $("#vehicleStatus")
-                        .removeClass()
-                        .addClass("statusBox statusRed")
-                        .text("NOT YET STARTED");
+            // Dock has changed
+            if (currentDockNo !== newDockNo) {
 
-                }
-                else if (data.Status == "Y") {
+                currentDockNo = newDockNo;
 
-                    $("#vehicleStatus")
-                        .removeClass()
-                        .addClass("statusBox statusYellow")
-                        .text("IN PROCESS");
+                $("#DockNo").text(currentDockNo);
 
-                }
-                else if (data.Status == "G") {
+                // Clear old vehicle status
+                $("#vehicleStatus")
+                    .removeClass()
+                    .addClass("statusBox statusRed")
+                    .text("NOT YET STARTED");
 
-                    $("#vehicleStatus")
-                        .removeClass()
-                        .addClass("statusBox statusGreen")
-                        .text("COMPLETED");
+                // Reload current dock status
+                loadVehicleStatus();
+            }
+        });
+}
 
-                } else {
-                    $("#vehicleStatus")
-                        .removeClass()
-                        .addClass("statusBox statusRed")
-                        .text("NOT YET STARTED");
+function loadVehicleStatus() {
 
+    if (!currentDockNo) {
 
-                }
+        $("#vehicleStatus")
+            .removeClass()
+            .addClass("statusBox statusRed")
+            .text("NOT YET STARTED");
 
-                updateVehicleSlots(data.Status, data.ScannedCount);
-            });
-
+        return;
     }
+
+    $.get('@Url.Action("GetVehicleLoadingStatus", "Andon")',
+        {
+            dockNo: currentDockNo
+        },
+        function (data) {
+
+            if (data.Status == "R") {
+
+                $("#vehicleStatus")
+                    .removeClass()
+                    .addClass("statusBox statusRed")
+                    .text("NOT YET STARTED");
+
+            }
+            else if (data.Status == "Y") {
+
+                $("#vehicleStatus")
+                    .removeClass()
+                    .addClass("statusBox statusYellow")
+                    .text("IN PROCESS");
+
+            }
+            else if (data.Status == "G") {
+
+                $("#vehicleStatus")
+                    .removeClass()
+                    .addClass("statusBox statusGreen")
+                    .text("COMPLETED");
+
+            }
+            else {
+
+                $("#vehicleStatus")
+                    .removeClass()
+                    .addClass("statusBox statusRed")
+                    .text("NOT YET STARTED");
+            }
+
+            updateVehicleSlots(
+                data.Status,
+                data.ScannedCount
+            );
+        }
+    );
+}
+
+
+    //function loadVehicleStatus() {
+
+    //    if (!dockNo) {   // null, undefined, or empty string
+    //        $("#vehicleStatus")
+    //            .removeClass()
+    //            .addClass("statusBox statusRed")
+    //            .text("NOT YET STARTED");
+    //        return;
+    //    }
+
+
+    //    $.get('GetVehicleLoadingStatus',
+    //        {
+    //            dockNo: dockNo
+    //        },
+    //        function (data) {
+    //            if (data.Status == "R") {
+
+    //                $("#vehicleStatus")
+    //                    .removeClass()
+    //                    .addClass("statusBox statusRed")
+    //                    .text("NOT YET STARTED");
+
+    //            }
+    //            else if (data.Status == "Y") {
+
+    //                $("#vehicleStatus")
+    //                    .removeClass()
+    //                    .addClass("statusBox statusYellow")
+    //                    .text("IN PROCESS");
+
+    //            }
+    //            else if (data.Status == "G") {
+
+    //                $("#vehicleStatus")
+    //                    .removeClass()
+    //                    .addClass("statusBox statusGreen")
+    //                    .text("COMPLETED");
+
+    //            } else {
+    //                $("#vehicleStatus")
+    //                    .removeClass()
+    //                    .addClass("statusBox statusRed")
+    //                    .text("NOT YET STARTED");
+
+
+    //            }
+
+    //            updateVehicleSlots(data.Status, data.ScannedCount);
+    //        });
+
+    //}
 
     function updateVehicleSlots(status, scannedCount) {
 

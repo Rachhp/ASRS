@@ -1,18 +1,12 @@
-﻿
-@using S1947.Models;
+﻿@using S1947.Models;
 @{
     S1947Entities conn = new S1947Entities();
-
     var userId = Session["Userid"]?.ToString() ?? "";
     var userType = Session["UserType"]?.ToString() ?? "";
     var userName = Session["UserName"]?.ToString() ?? "";
-
     var currentUser = conn.UserMasters
         .FirstOrDefault(x => x.UserId == userId);
-
-
     List<int> authorizedModuleNos = new List<int>();
-
     if (currentUser != null)
     {
         if (currentUser.UserType.Equals("ADMIN", StringComparison.OrdinalIgnoreCase))
@@ -39,8 +33,6 @@
             .ToList();
         }
     }
-
-
     var modulesList = conn.Menulists
         .Where(x => authorizedModuleNos.Contains(x.MTransNo))
         .Select(x => new
@@ -52,32 +44,24 @@
             x.MTransNo
         })
         .ToList();
-
     /*
         Check whether the user has at least one module in each category.
     */
     bool hasMasterAccess = modulesList.Any(x =>
         x.ModuleType == "MASTERS");
-
     bool hasOperationAccess = modulesList.Any(x =>
         x.ModuleType == "OPERATIONS");
-
     bool hasReportAccess = modulesList.Any(x =>
         x.ModuleType == "REPORTS");
-
     bool isAdmin = currentUser != null &&
                    currentUser.UserType.Equals("ADMIN", StringComparison.OrdinalIgnoreCase);
-
     bool isOperator = currentUser != null &&
                       currentUser.UserType.Equals("OPERATOR", StringComparison.OrdinalIgnoreCase);
-
     bool isNotCautomate = !userName.Equals(
         "cautomate",
         StringComparison.OrdinalIgnoreCase
     );
-
 }
-
 <!DOCTYPE html>
 <html class="sidebar-dark sidebar-left-big-icons">
 <head>
@@ -89,39 +73,28 @@
             left: -5px;
             color: rgb(0, 0, 0);
         }
-
         .page-header {
             margin: -25px -28px 41px -27px;
             border-bottom: 5px solid #ff6a00;
         }
     </style>
-
     <!-- Basic -->
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="~/Content/img/C_icon.png">
-
     <title>WMS</title>
-
     <meta name="keywords" content="HTML5 Admin Template" />
     <meta name="description" content="Porto Admin - Responsive HTML5 Template">
     <meta name="author" content="okler.net">
-
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
     <script src="~/Content/vendor/jquery/jquery-3.6.0.min.js"></script>
-
     <!-- Web Fonts -->
     @Html.Partial("_jsHeader")
-
     <link rel="stylesheet"
           href="@Url.Content("~/Content/vendor/font-awesome/css/all.min.css")" />
-
     <link href="@Url.Content("~/Content/css/Layout.css")"
           rel="stylesheet" />
-
     <style>
-
         .sidebar {
             width: 220px;
             background: black;
@@ -137,7 +110,6 @@
             flex-direction: column;
             overflow: hidden;
         }
-
         .sidebar-toggle {
             position: absolute;
             top: 15px;
@@ -148,73 +120,55 @@
             color: white;
             font-size: 22px;
         }
-
         /* Closed Sidebar */
-
         .sidebar.collapsed {
             width: 70px;
         }
-
-            /* Hide Text When Closed */
-
-            .sidebar.collapsed .menu-item span,
-            .sidebar.collapsed .user-details,
-            .sidebar.collapsed .words9 {
-                display: none !important;
-            }
-
-            /* Center icons when collapsed */
-
-            .sidebar.collapsed .menu-item {
-                justify-content: center;
-                padding: 14px 0;
-            }
-
-                .sidebar.collapsed .menu-item i {
-                    margin: 0;
-                    font-size: 20px;
+        /* Hide Text When Closed */
+        .sidebar.collapsed .menu-item span,
+        .sidebar.collapsed .user-details,
+        .sidebar.collapsed .words9 {
+        display: none !important;
+        }
+        /* Center icons when collapsed */
+        .sidebar.collapsed .menu-item {
+        justify-content: center;
+        padding: 14px 0;
+        }
+        .sidebar.collapsed .menu-item i {
+        margin: 0;
+        font-size: 20px;
                 }
-
-            /* Hide logo text + shrink header */
-
-            .sidebar.collapsed .sidebar-header {
-                justify-content: center;
-            }
-
-            .sidebar.collapsed .loader9 {
-                justify-content: center;
-            }
-
+        /* Hide logo text + shrink header */
+        .sidebar.collapsed .sidebar-header {
+            justify-content: center;
+        }
+        .sidebar.collapsed .loader9 {
+            justify-content: center;
+        }
         /* Move Content */
-
         .content-body {
             margin-left: 220px;
             transition: all 0.3s ease;
         }
-
-            .content-body.expanded {
-                margin-left: 70px;
-            }
-
+        .content-body.expanded {
+            margin-left: 70px;
+        }
         * {
             box-sizing: border-box;
         }
-
         .menu-item.dashboard {
             margin-top: -12px !important;
         }
-
         ::-webkit-scrollbar {
             display: none;
         }
-
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             background: #ffffff;
             display: flex;
         }
-
         .menu-item {
             display: flex;
             align-items: center;
@@ -226,36 +180,28 @@
             transition: 0.3s;
             margin-top: 08px;
         }
-
             .menu-item:hover,
             .active {
                 background: linear-gradient(135deg, #003366 0%, #001a33 100%);
                 color: #fff;
                 border-radius: 17px;
             }
-
             .menu-item i {
                 font-size: 20px;
             }
-
         /* Responsive */
-
         @@media (max-width: 768px) {
-
             .sidebar {
                 width: 70px;
             }
-
             .menu-item span,
             .sidebar-header span {
                 display: none;
             }
         }
-
         .menu-item.active {
             background: linear-gradient(135deg, #003366 0%, #001a33 100%);
         }
-
         .content-body {
             display: block;
             padding: 35px;
@@ -265,16 +211,13 @@
             background-color: #f0f2f5;
             transition: all .3s ease;
         }
-
             .content-body.expanded {
                 margin-left: 70px;
                 width: calc(100% - 70px);
             }
-
         .menu-item.dashboard {
             margin-top: 25px !important;
         }
-
         .loader9 {
             color: rgb(124, 124, 124);
             font-family: "Poppins", sans-serif;
@@ -289,7 +232,6 @@
             display: flex;
             border-radius: 8px;
         }
-
         .words9 {
             overflow: hidden;
             position: relative;
@@ -297,7 +239,6 @@
             left: -5px;
             color: rgb(0, 0, 0);
         }
-
             .words9::after {
                 content: "";
                 position: absolute;
@@ -305,7 +246,6 @@
                 background: linear-gradient( var(--bg-color) 10%, transparent 30%, transparent 70%, var(--bg-color) 90% );
                 z-index: 20;
             }
-
         .word9 {
             display: block;
             height: 100%;
@@ -314,350 +254,94 @@
             text-align: left;
             animation: spin_4991 10s infinite;
         }
-
         @@keyframes spin_4991 {
-
             10% {
                 -webkit-transform: translateY(-102%);
                 transform: translateY(-102%);
             }
-
             25% {
                 -webkit-transform: translateY(-100%);
                 transform: translateY(-100%);
             }
-
             35% {
                 -webkit-transform: translateY(-202%);
                 transform: translateY(-202%);
             }
-
             50% {
                 -webkit-transform: translateY(-200%);
                 transform: translateY(-200%);
             }
-
             60% {
                 -webkit-transform: translateY(-302%);
                 transform: translateY(-302%);
             }
-
             75% {
                 -webkit-transform: translateY(-300%);
                 transform: translateY(-300%);
             }
-
             85% {
                 -webkit-transform: translateY(-402%);
                 transform: translateY(-402%);
             }
-
             100% {
                 -webkit-transform: translateY(-400%);
                 transform: translateY(-400%);
             }
         }
-
-        /* Kundan */
-
-        body.dark-mode .reportAccess {
-            background: #2d3748;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .sidebar-title {
-            background: #2d3748;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .fp-card {
-            background: #2d3748;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .section-title {
-            color: #ffffff;
-        }
-
-        body.dark-mode input.disabled,
-        body.dark-mode input[disabled],
-        body.dark-mode input[readonly],
-        body.dark-mode textarea.disabled,
-        body.dark-mode textarea[disabled],
-        body.dark-mode textarea[readonly],
-        body.dark-mode select.disabled,
-        body.dark-mode select.readonly-select,
-        body.dark-mode selected,
-        body.dark-mode select[disabled] {
-            background-color: #7c7c7c !important;
-            color: #e2e8f0 !important;
-            opacity: 1 !important;
-            cursor: not-allowed;
-        }
-
-        select.readonly-select {
-            pointer-events: none;
-            background-color: #e9ecef !important;
-            color: #495057;
-            opacity: 1;
-        }
-
-        body.dark-mode
-        .select2-container--default.select2-container--disabled
-        .select2-selection--single {
-            background-color: #7c7c7c !important;
-            color: #e2e8f0 !important;
-            opacity: 1 !important;
-            cursor: not-allowed;
-        }
-
-        body.dark-mode .content-body th,
-        body.dark-mode .content-body td {
-            border-bottom: 1px solid #334155;
-        }
-
-        body.dark-mode .content-body tbody tr:hover {
-            background: #57677e;
-        }
-
-        /* REPORT PANELS */
-
-        body.dark-mode .report-container .report-sidebar,
-        body.dark-mode .card-modern,
-        body.dark-mode .card-body,
-        body.dark-mode .report-container .report-right {
-            background-color: #1e293b;
-            color: #e2e8f0;
-            border: 1px solid #334155;
-            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8);
-        }
-
-        /* LABELS */
-
-        .content-body label {
-            color: #1f2937;
-        }
-
-        body.dark-mode .content-body label {
-            color: #e2e8f0;
-        }
-
-        /* INPUTS / SELECTS */
-
-        .content-body input,
-        .content-body select,
-        .content-body textarea {
-            color: #1f2937;
-            background-color: #ffffff;
-        }
-
-        body.dark-mode .content-body input,
-        body.dark-mode .content-body select,
-        body.dark-mode .content-body textarea {
-            color: black;
-            background-color: #ffffff;
-            border-color: #334155;
-        }
-
-        /* TOP BAR */
-
-        body.dark-mode #top-bar select,
-        body.dark-mode #top-bar button {
-            background: #1f2937;
-            color: #e2e8f0;
-            border: 1px solid #334155;
-        }
-
-            body.dark-mode #top-bar select:hover,
-            body.dark-mode #top-bar button:hover {
-                background: #2d3748;
-            }
-
-        /* DASHBOARD */
-
-        body.dark-mode #dashboard-header {
-            color: #e2e8f0;
-            border-bottom-color: #334155;
-        }
-
-        body.dark-mode .chart-box {
-            background: #2d3748;
-            color: #e2e8f0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-            body.dark-mode .chart-box h3 {
-                color: #60a5fa;
-            }
-
-        body.dark-mode #storage-legend {
-            border-left-color: #334155;
-            color: #94a3b8;
-        }
-
-        body.dark-mode .dashboard-title {
-            color: #e2e8f0;
-        }
-
-            body.dark-mode .dashboard-title i {
-                color: #fbbf24;
-            }
-
         /* TABLE */
-
         #myTable tbody tr:nth-child(odd) {
             background-color: #ffffff;
         }
-
         #myTable tbody tr:nth-child(even) {
             background-color: #f9fafb;
         }
-
         #myTable tbody tr:hover {
             background-color: #e2e8f0;
             transition: background-color 0.3s ease;
         }
-
-        body.dark-mode #myTable tbody tr:nth-child(odd) {
-            background-color: #2d3748;
-        }
-
-        body.dark-mode #myTable tbody tr:nth-child(even) {
-            background-color: #374151;
-        }
-
-        body.dark-mode #myTable tbody tr:hover {
-            background-color: #475569;
-            transition: background-color 0.3s ease;
-        }
-
-        #myTable th,
-        #myTable td {
-            border: 1px solid #e5e7eb;
-        }
-
-        body.dark-mode #myTable th,
-        body.dark-mode #myTable td {
-            border: 1px solid #334155;
-        }
-
-        /* THEME SWITCH */
-
-        .theme-switch {
-            position: relative;
-            display: flex;
-            align-items: center;
-            width: 70px;
-            height: 34px;
-        }
-
-            .theme-switch input {
-                display: none;
-            }
-
-        .toggle-label {
-            position: relative;
-            display: block;
-            width: 70px;
-            height: 34px;
-            background: #e5e7eb;
-            border-radius: 34px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-            .toggle-label i {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                font-size: 16px;
-                pointer-events: none;
-            }
-
-                .toggle-label i.moon {
-                    right: 7px;
-                    color: #394046;
-                }
-
-                .toggle-label i.sun {
-                    left: 7px;
-                    color: #fbbf24;
-                }
-
-            .toggle-label .slider {
-                position: absolute;
-                top: 2px;
-                left: 2px;
-                width: 30px;
-                height: 30px;
-                background: #fff;
-                border-radius: 50%;
-                transition: transform 0.3s;
-            }
-
-        .theme-switch input:checked + .toggle-label {
-            background-color: #1e293b;
-        }
-
-            .theme-switch input:checked + .toggle-label .slider {
-                transform: translateX(36px);
-            }
-
         @@media (max-width: 992px) {
-
             #main-content {
                 padding: 20px;
             }
-
             #charts-tables,
             #tables {
                 flex-direction: column;
                 gap: 20px;
             }
-
             .chart-box,
             table {
                 flex: 1 1 100% !important;
                 min-width: unset;
             }
         }
-
         @@media (max-width: 600px) {
-
             #main-content {
                 padding: 15px;
             }
-
             #top-bar {
                 justify-content: space-between;
                 margin-bottom: 20px;
             }
         }
-
         .header-flex {
             position: fixed;
             display: flex;
             align-items: center;
             width: 100%;
         }
-
         .logo-wrapper {
             display: flex;
             align-items: center;
         }
-
         .theme-right {
             margin-left: auto;
         }
-
         .header-flex > * {
             white-space: nowrap;
         }
-
         .header {
             position: fixed;
         }
-
         .custom-toast1 {
             background: linear-gradient(to right, #28a745, #218838);
             border-radius: 10px;
@@ -676,7 +360,6 @@
             z-index: 9999;
             display: none;
         }
-
         .custom-toast {
             background: linear-gradient(to right, #ff416c, #ff4b2b);
             border-radius: 10px;
@@ -695,14 +378,12 @@
             z-index: 9999;
             display: none;
         }
-
         #globalToast {
             position: fixed;
             bottom: 55px;
             right: 25px;
             z-index: 999999;
         }
-
         .toast-message {
             min-width: 320px;
             max-width: 450px;
@@ -717,37 +398,29 @@
             transform: translateX(120%);
             transition: all .35s ease;
         }
-
             .toast-message.show {
                 opacity: 1;
                 transform: translateX(0);
             }
-
         .toast-success {
             background: linear-gradient(135deg,#28a745,#218838);
         }
-
         .toast-error {
             background: linear-gradient(135deg,#dc3545,#c82333);
         }
-
         .toast-warning {
             background: linear-gradient(135deg,#ff9800,#f57c00);
         }
-
         .toast-info {
             background: linear-gradient(135deg,#2196f3,#1565c0);
         }
-
         /* Button CSS */
-
         .button-group {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 20px;
         }
-
         .theme-btn {
             border-radius: 10px;
             padding: 10px 40px;
@@ -758,24 +431,20 @@
             text-align: center;
             min-width: 170px;
         }
-
         .btn-orange {
             background: linear-gradient(45deg, #ff9800, #ff6d00);
             color: #fff;
         }
-
         .btn-black {
             background: #4f4b4b;
             color: #fff;
         }
-
         select.input-box {
             height: 42px !important;
             padding-top: 8px;
             padding-bottom: 8px;
             line-height: 42px;
         }
-
         .theme-btn:focus,
         .theme-btn:active,
         .theme-btn:focus-visible {
@@ -783,11 +452,9 @@
             box-shadow: none !important;
             border: none !important;
         }
-
         .sidebar.collapsed .logo-wrapper {
             justify-content: center;
         }
-
         .logo-wrapper {
             display: flex;
             align-items: center;
@@ -795,307 +462,188 @@
             padding: 10px;
             transition: 0.2s;
         }
-
             .logo-wrapper:hover {
                 opacity: 0.8;
             }
-
         .fa-sign-out-alt {
             font-size: 1.7rem;
         }
-
         .page-header {
             position: sticky;
             top: 0;
             z-index: 1050;
         }
     </style>
-
     <style>
-
         .dark-mode-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
         }
-
         .theme-switch {
             display: flex;
             align-items: center;
         }
     </style>
-
 </head>
 <body>
     <script>
-
         function showToastMessage(message, type = "success", speak = false) {
-
             const container = document.getElementById("globalToast");
-
             const toast = document.createElement("div");
-
             toast.className = "toast-message toast-" + type;
-
             toast.innerHTML = message;
-
             container.appendChild(toast);
-
             setTimeout(function () {
                 toast.classList.add("show");
             }, 50);
-
             if (speak) {
                 voiceMsg(message);
             }
-
             setTimeout(function () {
-
                 toast.classList.remove("show");
-
                 setTimeout(function () {
                     toast.remove();
                 }, 350);
-
             }, 3000);
         }
-
     </script>
-
     <div id="loading1"></div>
-
     <div id="globalToast"></div>
-
     <section class="body">
-
         <nav>
-
             <div class="sidebar">
-
                 <div class="sidebar-header">
-
                     <div class="loader9 floating-character"
                          alt="Character Illustration"
                          id="sidebarToggle">
-
                         <div class="loader9">
-
                             <img src="~/Content/img/CAUTOMATION.png"
                                  alt="C Logo"
                                  style="height:45px; width:auto; object-fit:contain; margin:0 !important; padding:0; display:block;" />
-
                             <div class="words9">
-
                                 <span class="word9">automate</span>
                                 <span class="word9">reintors</span>
                                 <span class="word9">automate</span>
                                 <span class="word9">reintors</span>
                                 <span class="word9">automate</span>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
-                <div class="menu-item dark-mode-item" hidden>
-
-                    <span>Dark Mode</span>
-
-                    <div class="theme-switch">
-
-                        <input type="checkbox"
-                               id="theme-toggle"
-                               aria-label="Toggle dark mode">
-
-                        <label for="theme-toggle"
-                               class="toggle-label">
-
-                            <i class="fa-solid fa-sun sun"></i>
-
-                            <i class="fa-solid fa-moon moon"></i>
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-                </div>
-
                 @if (isNotCautomate)
                 {
-
                     <!-- Dashboard - always visible -->
-
                     <div class="menu-item dashboard"
                          onclick="location.href='/Home/Dashboard'">
-
                         <i class="fa-solid fa-house"></i>
-
                         <span>Dashboard</span>
-
                     </div>
-
                     @*
             ====================================================
             ADMIN
             ====================================================
                     *@
-
                     if (isAdmin)
                     {
                         if (hasMasterAccess)
                         {
                             <div class="menu-item master"
                                  onclick="location.href='/Home/MastersManagement'">
-
                                 <i class="fa-solid fa-angles-right"></i>
-
                                 <span>Masters</span>
-
                             </div>
                         }
-
                         if (hasOperationAccess)
                         {
                             <div class="menu-item operation"
                                  onclick="location.href='/Home/operationManagement'">
-
                                 <i class="fa-solid fa-box"></i>
-
                                 <span>Operations</span>
-
                             </div>
                         }
-
                         if (hasReportAccess)
                         {
                             <div class="menu-item operation"
                                  onclick="location.href='/reports/Index'">
-
                                 <i class="fa-solid fa-adjust"></i>
-
                                 <span>Reports</span>
-
                             </div>
                         }
-
                         /*
                             DISPLAY SCREEN
-
                             Existing behavior preserved.
                         */
-
                         if (!userName.Equals(
                             "cautomate",
                             StringComparison.OrdinalIgnoreCase))
                         {
                             <div class="menu-item liveStock"
                                  onclick="location.href='/Andon/AndonScreen'">
-
                                 <i class="fas fa-boxes"></i>
-
                                 <span>Display Screen</span>
-
                             </div>
                         }
-
                     }
-
                     /*
                         ====================================================
                         OPERATOR
                         ====================================================
                     */
-
                     else if (isOperator)
                     {
-
                         if (hasMasterAccess)
                         {
                             <div class="menu-item master"
                                  onclick="location.href='/Home/MastersManagement'">
-
                                 <i class="fa-solid fa-angles-right"></i>
-
                                 <span>Masters</span>
-
                             </div>
                         }
-
                         if (hasOperationAccess)
                         {
                             <div class="menu-item operation"
                                  onclick="location.href='/Home/operationManagement'">
-
                                 <i class="fa-solid fa-box"></i>
-
                                 <span>Operations</span>
-
                             </div>
                         }
-
-
                         if (hasReportAccess)
                         {
                             <div class="menu-item operation"
                                  onclick="location.href='/reports/Index'">
-
                                 <i class="fa-solid fa-adjust"></i>
                                 <span>Reports</span>
-
                             </div>
                         }
-
                     }
-
                     <!-- Logout - always visible -->
-
                     <div class="menu-item"
                          onclick="location.href='/Home/Login'">
-
                         <i class="fa-solid fa-right-from-bracket"></i>
-
                         <span>Logout</span>
-
                     </div>
-
                     <!-- User information -->
-
                     <div class="sidebar-user">
-
                         <div class="user-profile">
-
                             <i class="fa-solid fa-circle-user user-icon"></i>
-
                             <div class="user-details">
-
                                 <span class="user-name">
                                     @userName
                                 </span>
-
                             </div>
-
                         </div>
-
                     </div>
-
                     <style>
-
                         .sidebar {
                             display: flex;
                             flex-direction: column;
                         }
-
                         .sidebar-user {
                             margin-top: auto;
                             padding: 15px;
                         }
-
                         .user-profile {
                             display: flex;
                             align-items: center;
@@ -1105,33 +653,27 @@
                             border-radius: 12px;
                             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
                         }
-
                         .user-icon {
                             font-size: 38px;
                             color: #ffffff;
                         }
-
                         .user-details {
                             display: flex;
                             flex-direction: column;
                         }
-
                         .user-label {
                             font-size: 11px;
                             color: #cbd5e1;
                             letter-spacing: 1px;
                             text-transform: uppercase;
                         }
-
                         .user-name {
                             font-size: 16px;
                             font-weight: 600;
                             color: #ffffff;
                         }
                     </style>
-
                     <style>
-
                         .session-timer {
                             margin-top: 15px;
                             padding: 8px 12px;
@@ -1147,79 +689,51 @@
                             box-shadow: 0 2px 6px rgba(17,80,216,0.4);
                             transition: background 0.3s ease;
                         }
-
                             .session-timer:hover {
                                 background: linear-gradient( 90deg, rgba(17,80,216,0.4), rgba(33,150,243,0.4) );
                             }
-
                         .timer-icon {
                             font-size: 16px;
                             animation: pulse 1.5s infinite;
                         }
-
                         .timer-label {
                             font-size: 10px;
                             text-transform: uppercase;
                             color: #aad1ff;
                             letter-spacing: 1px;
                         }
-
                         @@keyframes pulse {
-
                             0% {
                                 transform: scale(1);
                             }
-
                             50% {
                                 transform: scale(1.2);
                             }
-
                             100% {
                                 transform: scale(1);
                             }
                         }
                     </style>
-
                 }
-
             </div>
-
         </nav>
-
         <div class="content-body">
-
             @RenderBody()
-
         </div>
-
     </section>
-
     <script src="~/Content/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
-
     <script src="~/Content/vendor/popper/umd/popper.min.js"></script>
-
     <script src="~/Content/vendor/bootstrap/js/bootstrap.js"></script>
-
     <script src="~/Content/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-
     <script src="~/Content/vendor/common/common.js"></script>
-
     <script src="~/Content/vendor/nanoscroller/nanoscroller.js"></script>
-
     <script src="~/Content/vendor/magnific-popup/jquery.magnific-popup.js"></script>
-
     <script src="~/Content/vendor/jquery-placeholder/jquery-placeholder.js"></script>
-
     <script>
-
         let timerInterval;
-
         window.addEventListener("load", function () {
-
             var duration = 60 * 5;
-
             var display = document.querySelector('#time');
-
             if (window.location.pathname === "/Load/LoadMaterial") {
                 stopTimer();
             }
@@ -1232,493 +746,251 @@
             else if (window.location.pathname === "/UnloadOperation/UnloadMaterial") {
                 stopTimer();
             }
-
         });
-
         function stopTimer() {
             clearInterval(timerInterval);
         }
-
     </script>
-
     <script type='text/javascript'>
-
         $(document).ready(function () {
             $("#loading1").hide();
         });
-
         function loading() {
             $("#loading1").show();
         }
-
         $(".pro").click(function () {
             $("#loading1").show();
         });
-
     </script>
-
     <script>
-
-        const body = document.body;
-
-        const themeToggle =
-            document.getElementById('theme-toggle');
-
-        const themeKey = 'isDarkMode';
-
-        function setDark(isDark) {
-
-            if (isDark) {
-
-                body.classList.add('dark-mode');
-
-                themeToggle.checked = true;
-
-            }
-            else {
-
-                body.classList.remove('dark-mode');
-
-                themeToggle.checked = false;
-
-            }
-
-            localStorage.setItem(
-                themeKey,
-                isDark ? 'true' : 'false'
-            );
-
-            updateChartTheme();
-        }
-
-        themeToggle.addEventListener('change', () => {
-
-            setDark(themeToggle.checked);
-
-        });
-
-        window.addEventListener('DOMContentLoaded', () => {
-
-            const storedTheme =
-                localStorage.getItem(themeKey) === 'true';
-
-            setDark(storedTheme);
-
-            if (typeof initCharts === 'function')
-                initCharts();
-
-        });
-
-        function updateChartTheme() {
-
-            if (typeof getChartColors !== 'function')
-                return;
-
-            const colors = getChartColors();
-
-            if (typeof costChart !== 'undefined' && costChart) {
-
-                costChart.options.plugins.legend.labels.color =
-                    colors.textColor;
-
-                costChart.options.scales.x.ticks.color =
-                    colors.textColor;
-
-                costChart.options.scales.y.ticks.color =
-                    colors.textColor;
-
-                costChart.options.scales.y.grid.color =
-                    colors.gridColor;
-
-                costChart.update();
-
-            }
-
-            if (typeof issueReturnChart !== 'undefined' &&
-                issueReturnChart) {
-
-                issueReturnChart.options.plugins.legend.labels.color =
-                    colors.textColor;
-
-                issueReturnChart.update();
-
-            }
-
-        }
-
-    </script>
-
-    <script>
-
         document.addEventListener("DOMContentLoaded", function () {
-
             const sidebar =
                 document.querySelector(".sidebar");
-
             const content =
                 document.querySelector(".content-body");
-
             const toggleBtn =
                 document.getElementById("sidebarToggle");
-
             if (localStorage.getItem("sidebarCollapsed") === "true") {
-
                 sidebar.classList.add("collapsed");
-
                 content.classList.add("expanded");
-
             }
-
             toggleBtn.addEventListener("click", function () {
-
                 sidebar.classList.toggle("collapsed");
-
                 content.classList.toggle("expanded");
-
                 localStorage.setItem(
                     "sidebarCollapsed",
                     sidebar.classList.contains("collapsed")
                 );
-
             });
-
         });
-
     </script>
-
     <script>
-
         function pNof(til, txt) {
-
             new PNotify({
-
                 title: til,
                 text: txt,
                 shadow: true,
                 addclass: 'stack-topright'
-
             });
-
         }
-
         function pNofsuc(til, txt) {
-
             new PNotify({
-
                 title: til,
                 text: txt,
                 type: 'success',
                 shadow: true,
                 addclass: 'stack-topright'
-
             });
-
         }
-
         function pNoffail(til, txt) {
-
             new PNotify({
-
                 title: til,
                 text: txt,
                 type: 'error',
                 shadow: true,
                 addclass: 'stack-topright'
-
             });
-
         }
-
         function voiceMsg(voice_msg) {
-
             var msg =
                 new SpeechSynthesisUtterance(voice_msg);
-
             var voices =
                 window.speechSynthesis.getVoices();
-
             msg.voice =
                 voices.find(
                     voice => voice.name === "Google US English"
                 );
-
             window.speechSynthesis.speak(msg);
-
         }
-
         window.speechSynthesis.onvoiceschanged = function () {
-
             window.speechSynthesis.getVoices();
-
         };
-
         function showMessage(message) {
-
             var messageContainer =
                 document.createElement("div");
-
             messageContainer.style.position = "fixed";
-
             messageContainer.style.top = "20%";
-
             messageContainer.style.right = "20px";
-
             messageContainer.style.transform =
                 "translateY(-50%)";
-
             messageContainer.style.zIndex = "9999";
-
             var messageDiv =
                 document.createElement("div");
-
             messageDiv.textContent = message;
-
             messageDiv.style.backgroundColor =
                 "rgba(255, 0, 0, 0.7)";
-
             messageDiv.style.color = "white";
-
             messageDiv.style.padding = "10px";
-
             messageDiv.style.borderRadius = "5px";
-
             messageDiv.style.boxShadow =
                 "0px 0px 5px rgba(0, 0, 0, 0.5)";
-
             messageContainer.appendChild(messageDiv);
-
             document.body.appendChild(messageContainer);
-
             setTimeout(function () {
-
                 document.body.removeChild(messageContainer);
-
             }, 5000);
-
         }
-
         function addTempMessage(element, message) {
-
             $('.temp-message').remove();
-
             var tempMessage =
                 $('<div>')
                     .text(message)
                     .addClass('temp-message');
-
             element.after(tempMessage);
-
             setTimeout(function () {
-
                 tempMessage.remove();
-
             }, 3000);
-
         }
-
         function showHeaderMessage(message, type) {
-
             const header =
                 document.getElementById('drawerMessage');
-
             header.textContent = message;
-
             header.style.display = "block";
-
             switch (type) {
-
                 case "success":
                     header.style.color = "green";
                     break;
-
                 case "error":
                     header.style.color = "red";
                     break;
-
                 case "warning":
                     header.style.color = "orange";
                     break;
-
                 default:
                     header.style.color = "black";
-
             }
-
             header.style.display = "block";
-
         }
-
         let linkClickHandlers = [];
-
         let formSubmitHandlers = [];
-
         let navBlocked = false;
-
         /* ================= BLOCK ================= */
-
         function blockNav() {
-
             navBlocked = true;
-
             document.addEventListener(
                 'keydown',
                 blockRefresh
             );
-
             history.pushState(
                 null,
                 null,
                 location.href
             );
-
             window.addEventListener(
                 'popstate',
                 blockBack
             );
-
             document.querySelectorAll('a').forEach(a => {
-
                 a.addEventListener(
                     'click',
                     blockAnchors,
                     true
                 );
-
             });
-
             document.querySelectorAll('.menu-item').forEach(item => {
-
                 item.addEventListener(
                     'click',
                     blockSidebar,
                     true
                 );
-
             });
-
         }
-
         /* ================= UNBLOCK ================= */
-
         function unblockNav() {
-
             navBlocked = false;
-
             document.removeEventListener(
                 'keydown',
                 blockRefresh
             );
-
             window.removeEventListener(
                 'popstate',
                 blockBack
             );
-
             document.querySelectorAll('a').forEach(a => {
-
                 a.removeEventListener(
                     'click',
                     blockAnchors,
                     true
                 );
-
             });
-
             document.querySelectorAll('.menu-item').forEach(item => {
-
                 item.removeEventListener(
                     'click',
                     blockSidebar,
                     true
                 );
-
             });
-
         }
-
         /* ================= HANDLERS ================= */
-
         function blockAnchors(e) {
-
             if (navBlocked) {
-
                 e.preventDefault();
-
                 e.stopImmediatePropagation();
-
             }
-
         }
-
         function blockSidebar(e) {
-
             if (navBlocked) {
-
                 e.preventDefault();
-
                 e.stopImmediatePropagation();
-
             }
-
         }
-
         function blockRefresh(e) {
-
             if (
                 e.key === 'F5' ||
                 (e.ctrlKey &&
                     e.key.toLowerCase() === 'r')
             ) {
-
                 e.preventDefault();
-
             }
-
         }
-
         function blockBack() {
-
             history.pushState(
                 null,
                 null,
                 location.href
             );
-
         }
-
         function showCustomToast(message) {
-
             $('#customToast')
                 .text(message)
                 .stop(true, true)
                 .fadeIn(300)
                 .delay(4000)
                 .fadeOut(400);
-
         }
-
         function showCustomToast1(message) {
-
             $('#customToast1')
                 .text(message)
                 .stop(true, true)
                 .fadeIn(300)
                 .delay(4000)
                 .fadeOut(400);
-
         }
-
     </script>
-
     <link href="~/Content/vendor/select2/css/select2.min.css"
           rel="stylesheet" />
-
     <script src="~/Content/vendor/select2/js/select2.min.js"></script>
-
     <!-- Specific Page Vendor -->
-
     <script src="~/Content/vendor/jquery-appear/jquery-appear.js"></script>
-
     <script src="~/Content/vendor/owl.carousel/owl.carousel.js"></script>
-
     <script src="~/Content/vendor/isotope/isotope.js"></script>

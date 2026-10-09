@@ -29,6 +29,13 @@ namespace S1947.Controllers
                 new SelectListItem {Text="Slower", Value="C", Selected=false},
                 };
 
+            //another drodpown for category
+            ViewBag.Segment = new List<SelectListItem>(){
+                new SelectListItem {Text="SC", Value="SC", Selected=false},
+                new SelectListItem {Text="MC", Value="MC", Selected=false},
+              
+                };
+
             if (MTransNo > 0)
             {
                 var details = conn.PartMasters.FirstOrDefault(x => x.MTransNo == MTransNo);
@@ -41,6 +48,8 @@ namespace S1947.Controllers
                     material.FGDesc = details.FGDesc;
                     material.Type = details.Type.Trim();
                     material.LockStatus = details.LockStatus;
+                    material.Segment = details.Segment;
+                    material.FGWeight =details.FGWeight;
                 }
 
                 return View(material);
@@ -62,8 +71,7 @@ namespace S1947.Controllers
 
             if (data.MTransNo > 0)
             {
-                var Material = conn.PartMasters
-                                   .FirstOrDefault(x => x.MTransNo == data.MTransNo);
+                var Material = conn.PartMasters.FirstOrDefault(x => x.MTransNo == data.MTransNo);
 
                 if (Material != null)
                 {
@@ -72,6 +80,8 @@ namespace S1947.Controllers
                     Material.FGDesc = data.FGName;
                     Material.Type = data.Type.Trim();
                     Material.LockStatus = data.LockStatus;
+                    Material.Segment = data.Segment;
+                    Material.FGWeight = data.FGWeight;
                     Material.ModifiedOn = DateTime.Now;
                     Material.ModifiedBy = ModifiedBy != null
                         ? Convert.ToInt16(ModifiedBy)
@@ -102,6 +112,8 @@ namespace S1947.Controllers
                     FGDesc = data.FGName,
                     Type = data.Type.Trim(),
                     LockStatus = data.LockStatus,
+                    Segment = data.Segment,
+                    FGWeight = data.FGWeight,
                     DeleteStatus = "N",
                     CreatedOn = DateTime.Now,
                     ModifiedOn = DateTime.Now,

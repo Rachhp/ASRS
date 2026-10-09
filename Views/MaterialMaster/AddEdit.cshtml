@@ -300,17 +300,6 @@
         padding-bottom: 8px;
         line-height: 42px;
     }
-
-
-
-/*    .form-control:not(.form-control-sm):not(.form-control-lg) {
-        font-size: 13.6px;
-        font-size: 0.85rem;
-        line-height: 1.85;
-        min-height: 2.4rem;
-    }*/
-
-
 </style>
 
 <section role="main">
@@ -347,13 +336,26 @@
                             <span class="required">*</span>Part Code
                         </label>
                         <div class="col-lg-4">
-                            @Html.TextBoxFor(m => m.FGCode, new { @class = "form-control input-box", placeholder = "Enter FG Code", maxlength = "200" })
+                            @Html.TextBoxFor(m => m.FGCode, new { @class = "form-control input-box", placeholder = "Enter Part Code", maxlength = "200" })
                             @Html.ValidationMessageFor(m => m.FGCode, "", new { @class = "error" })
                         </div>
                         <label class="col-lg-2 col-form-label text-lg-right"><span class="required">*</span>Part Description</label>
                         <div class="col-lg-4">
-                            @Html.TextBoxFor(m => m.FGName, new { @class = "form-control input-box", placeholder = "Enter FG Description",maxlength = "200" })
+                            @Html.TextBoxFor(m => m.FGName, new { @class = "form-control input-box", placeholder = "Enter Part Description",maxlength = "200" })
                             @Html.ValidationMessageFor(m => m.FGName, "", new { @class = "error" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-2 col-form-label text-lg-right"><span class="required">*</span>Part Weight</label>
+                        <div class="col-lg-4">
+                            @Html.TextBoxFor(m => m.FGWeight, new { @class = "form-control input-box", placeholder = "Enter Part Weight", maxlength = "200" })
+                            @Html.ValidationMessageFor(m => m.FGWeight, "", new { @class = "error" })
+                        </div>
+
+                        <label class="col-lg-2 col-form-label text-lg-right"><span class="required">*</span>Segment</label>
+                        <div class="col-lg-4">
+                            @Html.DropDownListFor(m => m.Segment, null, "-- Select Segment --", new { @class = "form-control input-box" })
+                            @Html.ValidationMessageFor(m => m.Segment, "", new { @class = "error" })
                         </div>
                     </div>
                     <div class="form-group row">
@@ -421,6 +423,8 @@
         var materialName = $("#FGName").val().trim();
         var status = $("#LockStatus").val();
         var Type = $("#Type").val();
+        var Segment = $("#Segment").val();
+        var FGWeight = $("#FGWeight").val();
 
         if (materialCode === "") {
             //alert("⚠️ Please enter Material Code");
@@ -443,6 +447,18 @@
             $("#LockStatus").focus();
             return;
         }
+        if (Segment === "" || Segment === "0" || Segment === null) {
+            showCustomToast("⚠️ Please Select Segment");
+            $("#Segment").focus();
+            return;
+        }
+        if (FGWeight === "") {
+            //alert("⚠️ Please enter Material Code");
+            $('#customToast').text("⚠️ Please Enter FGWeight ", "").stop(true, true).fadeIn(300).delay(4000).fadeOut(400);
+            $("#FGWeight").focus();
+            return;
+        }
+
       
         if ($("#MainSubmit").data("clicked")) return;
         $("#MainSubmit").data("clicked", true);
@@ -480,8 +496,6 @@
 
     });
     function ClearForm() {
-
-
     
         // Text fields
         $("#FGCode").val('');
@@ -545,7 +559,3 @@
 
 
 </script>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}

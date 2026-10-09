@@ -18,6 +18,8 @@ namespace S1947.Models
         public string FGCode { get; set; }
         public string FGModel { get; set; }
         public string FGDesc { get; set; }
+        public string Segment { get; set; }
+        public Nullable<decimal> FGWeight { get; set; }
         public string Type { get; set; }
         public string LockStatus { get; set; }
         public Nullable<short> CreatedBy { get; set; }

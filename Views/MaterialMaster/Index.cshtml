@@ -40,13 +40,7 @@
         overflow-y: auto; /* enable vertical scroll */
     }
 
-    #datatable-tabletools thead th {
-        position: sticky;
-        top: 0;
-        color: #fff;
-        z-index: 10; /* make sure header stays on top */
-    }
-
+   
 
 
     .table-container {
@@ -96,7 +90,7 @@
     <!-- Main Content -->
     <div class="card-modern">
         <div class="table-responsive">
-            <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search here..." />
+            @*<input type="text" id="searchInput" class="form-control mb-2" placeholder="Search here..." />*@
             <table class="table table-bordered table-hover table-scroll" id="datatable-tabletools">
                 <thead>
                     <tr>
@@ -180,6 +174,39 @@
 <!-- Scripts -->
 <script>
     $(document).ready(function () {
+        $('#datatable-tabletools').DataTable({
+            ordering: true,
+            searching: true,
+            paging: true,
+            pageLength: 25,
+            lengthMenu: [10, 25, 50, 100],
+            order: [],
+            scrollY: '500px',
+            scrollX: true,
+            scrollCollapse: true,
+
+            // Do not sort the Edit button column or hidden ID column
+            columnDefs: [
+                {
+                    orderable: false,
+                    targets: [5, 6]
+                },
+                {
+                    visible: false,
+                    targets: [6]
+                }
+            ],
+
+            language: {
+                search: "Search:",
+                emptyTable: "No materials available",
+                zeroRecords: "No matching materials found"
+            }
+        });
+
+    });
+
+   
         //$("#datatable-tabletools").on('click', '.RecEdit', function () {
         //    var row = $(this).closest("tr");
         //    var MTransNo = row.find("td:eq(6)").html();
