@@ -9,7 +9,7 @@ namespace S1834.Controllers
     public class UserAuthController : Controller
     {
         public ActionResult Index()
-        {
+        {           
             if (Session["Userid"] == null)
             {
                 return RedirectToAction("Login", "Home");

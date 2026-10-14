@@ -557,17 +557,10 @@
 
             vehicleSlots = 36;
             allowedCapacity = 36;
-
-        }
-        // Always create grid on page load
-        if (vehicleSlots > 0) {
-            createVehicleGrid();
         }
 
         calculateTotal();
         updateDateTime();
-
-
         loadASRSStatus();
         // continuous refresh
         setInterval(function () { loadASRSStatus(); }, 3000);   // 3 seconds
@@ -579,7 +572,6 @@
     $.ajax({
         url: '@Url.Action("GetASRSLoadingStatus","UnloadingOperation")',
         type: 'GET',
-
         success: function (data) {
 
             let html = "";
@@ -608,16 +600,11 @@
                 sl++;
 
             });
-
-
             $("#asrsTableBody").html(html);
-
         },
-
         error:function(){
             console.log("ASRS loading failed");
         }
-
     });
 
     }
@@ -635,8 +622,8 @@
     $("#SupervisorName,#SupervisorMobile,#DriverName,#DriverMobile,#SecurityName,#SecurityMobile").on("keyup change", function () {
             updateBottomSection(); });
 
-        let rowCount = 1;
-        function addNewRow() {
+    let rowCount = 1;
+    function addNewRow() {
 
     rowCount++;
 
@@ -737,9 +724,7 @@
             .text("Add");
     }
 
-   // =========================================================
     // DISABLE EVERYTHING WHEN VEHICLE CAPACITY IS FULL
-    // =========================================================
     function disableAllLoadingRows() {
 
         $("#loadingTableContainer tr").each(function () {
@@ -759,87 +744,44 @@
     }
 
 
-        function updateDateTime() {
-            let now = new Date();
-            $("#currentDate").val(now.toLocaleDateString('en-IN'));
-            $("#currentTime").val(now.toLocaleTimeString('en-IN'));
-            let hour = now.getHours();
-            let shift = "";
-            if (hour >= 6 && hour < 14)
-                shift = "Shift A";
-            else if (hour >= 14 && hour < 22)
-                shift = "Shift B";
-            else
-                shift = "Shift C";
-            $("#shiftName").val(shift);
-        }
+    function updateDateTime() {
+        let now = new Date();
+        $("#currentDate").val(now.toLocaleDateString('en-IN'));
+        $("#currentTime").val(now.toLocaleTimeString('en-IN'));
+        let hour = now.getHours();
+        let shift = "";
+        if (hour >= 6 && hour < 14)
+            shift = "Shift A";
+        else if (hour >= 14 && hour < 22)
+            shift = "Shift B";
+        else
+            shift = "Shift C";
+        $("#shiftName").val(shift);
+    }
 
         let vehicleSlots = 0;
         let allowedCapacity = 0;
 
 
-        $("#VehicleSize").change(function () {
+    $("#VehicleSize").change(function () {
 
-            let size = $(this).val();
+        let size = $(this).val();
 
-            if (size == "20") {
-                vehicleSlots = 28;
-                allowedCapacity = 28;
-            }
-            else if (size == "32") {
-                vehicleSlots = 36;
-                allowedCapacity = 36;
-            }
-            else {
-                vehicleSlots = 0;
-                allowedCapacity = 0;
-            }
-
-            createVehicleGrid();
-
-
-        });
-
-
-    function createVehicleGrid() {
-
-        let html = "";
-
-        let columns = 0;
-
-        if (vehicleSlots == 36) {
-            columns = 9;
+        if (size == "20") {
+            vehicleSlots = 28;
+            allowedCapacity = 28;
         }
-        else if (vehicleSlots == 28) {
-            columns = 7;
+        else if (size == "32") {
+            vehicleSlots = 36;
+            allowedCapacity = 36;
         }
-        let rows = 4;
-        let count = vehicleSlots;
-        for (let r = 0; r < rows; r++) {
-            html += "<tr>";
-            for (let c = 0; c < columns; c++) {
-
-                if (count > 0) {
-
-                    html += `<td class="empty" data-slot="${count}">
-                            ${count}
-                         </td>`;
-
-                    count--;
-
-                }
-                else {
-
-                    html += "<td></td>";
-
-                }
-            }
-
-            html += "</tr>";
+        else {
+            vehicleSlots = 0;
+            allowedCapacity = 0;
         }
 
-        $("#vehicleGrid").html(html);
-    }
+    });
+
 
 
 
@@ -862,26 +804,19 @@
                 calculateTotal();
                 return false;
             }
-
             if (totalFLC >= allowedCapacity) {
 
                 alert("Vehicle capacity is full. No more rows can be added.");
-
                 // Disable all rows
                 disableAllLoadingRows();
-
                 // Submit also disabled
                // $("#btnSubmit").prop("disabled", true); 03-10-2026
             }
             else {
-
                 // Capacity still available
                 $("#btnSubmit").prop("disabled", false);
             }
-
             return true;
-
-
         }
 
 

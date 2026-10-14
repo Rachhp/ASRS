@@ -295,16 +295,23 @@ namespace S1947.Services
                         "Part Master not found for FG Code: "+ pallet.FGCode);
 
                 // 6. GET MASTER VALUES
-                decimal singlePartWeight = 15;
-                int maxQtyPerPallet = 100;
+                //decimal singlePartWeight = 15;
+                //int maxQtyPerPallet = 87;
+                //int maxQtyPerPallet = partMaster.MaxQtyPerPallet;
                 //later unomment these
-                //   decimal singlePartWeight =
-                //    partMaster.SinglePartWeight;
-                //    int maxQtyPerPallet =
-                //    partMaster.MaxQtyPerPallet;
-
+                int maxQtyPerPallet = 0;
+                //new chnages after discussion with team october 8
+                decimal singlePartWeight = (decimal)partMaster.FGWeight;
+                if (partMaster.Segment == "MC")
+                {
+                     maxQtyPerPallet = 38;
+                }
+                else if (partMaster.Segment == "SC")
+                {
+                     maxQtyPerPallet = 87;
+                }
                 // 7. GET RECEIVED QUANTITY
-                int receivedQuantity =history.ReceivedQuantity ?? 0;
+                int receivedQuantity = history.ReceivedQuantity ?? 0;
 
                 // 8. METHOD 2
                //  Product Weight = Quantity × Single Part Weight              
