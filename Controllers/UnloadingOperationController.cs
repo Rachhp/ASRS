@@ -73,7 +73,7 @@ namespace S1947.Controllers
                 var data = db.UnloadTemps
                     .OrderBy(x => x.MTransNo)
                     .Select(x => new
-                    {
+                    {                                                                                                                                             
                         InvoiceNo = x.InvoiceNo,
                         DockNo = x.DockNo,
                         CustomerName = x.CustomerName,
@@ -226,6 +226,7 @@ namespace S1947.Controllers
                 // STEP 4: Identify the loading pattern
                 bool normalPattern = IsNormalLoadingPattern(sequencePallets);
                 List<dynamic> selectedPallets;
+
                 if (normalPattern)
                 {
                     // IF: Normal alternating-layer pattern
@@ -235,14 +236,12 @@ namespace S1947.Controllers
                 {
                     // ELSE: Same-layer / non-normal pattern
                     // Oldest loading date first
-                    var dateWisePallets = pallets
-                                .OrderBy(x => x.CreatedOn.HasValue ? x.CreatedOn.Value.Date : DateTime.MinValue)
-                                .ToList();
+                    var dateWisePallets = pallets.OrderBy(x => x.CreatedOn.HasValue ? x.CreatedOn.Value.Date : DateTime.MinValue).ToList();
 
                     // Group by loading date. Shift priority must be
                     // applied within the relevant date group using
                     // your actual Shift Master fields.
-                    var priorityPallets =ApplyShiftPriority(dateWisePallets);
+                    var priorityPallets = ApplyShiftPriority(dateWisePallets);
 
                     // Choose from both ends of the row order.
                     var alternatingPallets =GetAlternatingEnds(priorityPallets);
@@ -282,7 +281,6 @@ namespace S1947.Controllers
                 return true;
 
             var ordered = pallets.OrderBy(x => x.sequence).ToList();
-
             // Check consecutive pallets in sequence order.
             for (int i = 1; i < ordered.Count; i++)
             {
@@ -344,61 +342,112 @@ namespace S1947.Controllers
             return selected;
         }
 
-        private List<dynamic> ApplyShiftPriority(List<dynamic> dateWisePallets)
+        private List<GoodsExisiting> ApplyShiftPriority(List<GoodsExisiting> dateWisePallets)
         {
-            // TODO:
-            // Read the original loading shift for each pallet.
-            // Join/map it to Shift Master.
-            // Sort by the configured shift priority.
-            //
-            // Return the complete list in date + shift priority.
+            using (var db = new S1947Entities())
+            {
+                var shifts = db.shift_master
+                    .Where(s => s.is_active )
+                    .OrderBy(s => s.Id)
+                    .ToList();
 
-            shift_master shiftMaster = new shift_master();
-            return dateWisePallets;
+                var result = dateWisePallets
+                    .Select(p =>
+                    {
+                        DateTime createdOn = Convert.ToDateTime(p.CreatedOn);
+                        TimeSpan palletTime = createdOn.TimeOfDay;
+
+                        var matchingShift = shifts.FirstOrDefault(s =>
+                        {
+                            TimeSpan start = s.start_time;
+                            TimeSpan end = s.end_time;
+
+                            // Normal shift, e.g. 06:00 to 14:00
+                            if (start < end)
+                            {
+                                return palletTime >= start &&
+                                       palletTime < end;
+                            }
+
+                            // Overnight shift, e.g. 22:00 to 06:00
+                            return palletTime >= start ||
+                                   palletTime < end;
+                        });
+
+                        return new
+                        {
+                            Pallet = p,
+                            LoadingDate = createdOn.Date,
+                            ShiftId = matchingShift?.Id ?? int.MaxValue
+                        };
+                    })
+                    .OrderBy(x => x.LoadingDate)
+                    .ThenBy(x => x.ShiftId)
+                    .Select(x => x.Pallet)
+                    .ToList();
+
+                return result;
+            }
         }
 
-        private List<dynamic> GetAlternatingEnds(
-            List<dynamic> pallets)
+        private List<GoodsExisiting> GetAlternatingEnds(List<GoodsExisiting> pallets)
         {
-            // First row, last row, second row,
-            // second-last row, and so on.
-            //
-            // This is a basic alternating-ends helper.
-            var ordered = pallets
-                .OrderBy(x => x.Row)
-                .ThenBy(x => x.sequence)
-                .ToList();
+            var result = new List<GoodsExisiting>();
 
-            var result = new List<dynamic>();
+            if (pallets == null || pallets.Count == 0)
+                return result;
 
-            int left = 0;
-            int right = ordered.Count - 1;
 
-            while (left <= right)
+            // First row, last row, second row, second-last row, and so on. This is a basic alternating-ends helper.
+            //var ordered = pallets
+            //    .OrderBy(x => x.Row)
+            //    .ThenBy(x => x.sequence)
+            //    .ToList();
+            var groups = pallets.GroupBy(x => new { x.Layer, x.Col }).ToList();
+            foreach (var group in groups)
             {
-                result.Add(ordered[left]);
-                left++;
+                var rows = group
+                    .OrderBy(x => x.Row)
+                    .ToList();
 
-                if (left <= right)
+                int left = 0;
+                int right = rows.Count - 1;
+
+                while (left <= right)
                 {
-                    result.Add(ordered[right]);
-                    right--;
+                    result.Add(rows[left]);
+                    left++;
+
+                    if (left <= right)
+                    {
+                        result.Add(rows[right]);
+                        right--;
+                    }
                 }
             }
 
             return result;
         }
+            //var result = new List<dynamic>();
+
+            //int left = 0;
+            //int right = ordered.Count - 1;
+
+            //while (left <= right)
+            //{
+            //    result.Add(ordered[left]);
+            //    left++;
+
+            //    if (left <= right)
+            //    {
+            //        result.Add(ordered[right]);
+            //        right--;
+            //    }
+            //}
+
+            //return result;
 
         //toherefor unload 
-
-
-
-
-
-
-
-
-
         [HttpPost]
         public JsonResult SaveLoading(int DockNo, int VehicleSize, string VehicleNumber, string TransporterName, string VehicleSealNo, string InvoiceNo,
                                          string CustomerName, string Location, string Model, string FGCode, string Description, int Quantity, int AvailableQty,
