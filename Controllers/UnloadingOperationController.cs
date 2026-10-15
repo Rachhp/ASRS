@@ -197,19 +197,107 @@ namespace S1947.Controllers
         //}
 
 
+        //public JsonResult GetPalletDetails( string fgCode,string description,string model,int qty)
+        //{
+        //    using (var db = new S1947Entities())
+        //    {
+        //        var pallets = db.GoodsExisitings
+        //            .Where(x => x.FGModel == model &&
+        //                x.FGCode == fgCode &&
+        //                x.FGDesc == description &&
+        //                x.LocaStatus == "LOADED" &&
+        //                x.Quantity > 0).ToList();
+
+        //        // STEP 1: Check available quantity
+        //        int availableQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
+        //        if (qty <= 0 || availableQty < qty)
+        //        {
+        //            return Json(new
+        //            {
+        //                Success = false,
+        //                Message = "Insufficient stock available.",
+        //                AvailableQty = availableQty
+        //            }, JsonRequestBehavior.AllowGet);
+        //        }
+
+        //        // STEP 3: Sort by actual loading sequence
+        //        var sequencePallets = pallets.OrderBy(x => x.sequence).ToList();
+
+        //        // STEP 4: Identify the loading pattern
+        //        bool normalPattern = IsNormalLoadingPattern(sequencePallets);
+        //        List<dynamic> selectedPallets;
+
+        //        if (normalPattern)
+        //        {
+        //            // IF: Normal alternating-layer pattern
+        //            selectedPallets = SelectUntilQuantity(sequencePallets, qty);
+        //        }
+        //        else
+        //        {
+        //            // NON-NORMAL PATTERN:
+        //            // 1. Oldest loading date
+        //            // 2. Shift priority
+        //            // 3. Loading time within the shift
+
+
+        //            // ELSE: Same-layer / non-normal pattern
+        //            // Oldest loading date first
+        //            var dateWisePallets = pallets.OrderBy(x => x.CreatedOn.HasValue ? x.CreatedOn.Value.Date : DateTime.MinValue).ToList();
+
+        //            // Group by loading date. Shift priority must be
+        //            // applied within the relevant date group using
+        //            // your actual Shift Master fields.
+        //            var priorityPallets = ApplyShiftPriority(dateWisePallets);
+
+        //            // Choose from both ends of the row order.
+        //            var alternatingPallets =GetAlternatingEnds(priorityPallets);
+
+        //            selectedPallets = SelectUntilQuantity(alternatingPallets, qty);
+        //        }
+
+
+        //        // STEP 5: Return selected pallets
+        //        var result = selectedPallets.Select(p => new
+        //        {
+        //            PalletNo = p.PalletNo,
+        //            QR = p.PalletQr,
+        //            Qty = p.Quantity,
+        //            Location = p.LocationName,
+        //            LocationId = p.MTransNo,
+        //            Layer = p.Layer,
+        //            Row = p.Row,
+        //            Col = p.Col
+        //        }).ToList();
+
+        //        return Json(new
+        //        {
+        //            Success = true,
+        //            FLCCount = result.Count,
+        //            AllocatedQty = result.Sum(x => Convert.ToInt32(x.Qty)),
+        //            Pallets = result,
+        //            LoadingPattern = normalPattern? "Normal": "SameLayer"
+        //        }, JsonRequestBehavior.AllowGet);
+        //    }
+        //}
+
+
         public JsonResult GetPalletDetails( string fgCode,string description,string model,int qty)
         {
             using (var db = new S1947Entities())
             {
                 var pallets = db.GoodsExisitings
-                    .Where(x => x.FGModel == model &&
+                    .Where(x =>
+                        x.FGModel == model &&
                         x.FGCode == fgCode &&
                         x.FGDesc == description &&
                         x.LocaStatus == "LOADED" &&
-                        x.Quantity > 0).ToList();
+                        x.Quantity > 0)
+                    .ToList();
 
-                // STEP 1: Check available quantity
-                int availableQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
+                // STEP 1: Validate requested quantity.
+                int availableQty = pallets.Sum(
+                    x => Convert.ToInt32(x.Quantity));
+
                 if (qty <= 0 || availableQty < qty)
                 {
                     return Json(new
@@ -220,37 +308,30 @@ namespace S1947.Controllers
                     }, JsonRequestBehavior.AllowGet);
                 }
 
-                // STEP 3: Sort by actual loading sequence
-                var sequencePallets = pallets.OrderBy(x => x.sequence).ToList();
+                // STEP 2: Check the existing loading sequence.
 
-                // STEP 4: Identify the loading pattern
-                bool normalPattern = IsNormalLoadingPattern(sequencePallets);
-                List<dynamic> selectedPallets;
+                var selectedPallets = SelectPalletsForUnloading(pallets, qty);
 
-                if (normalPattern)
-                {
-                    // IF: Normal alternating-layer pattern
-                    selectedPallets = SelectUntilQuantity(sequencePallets, qty);
-                }
-                else
-                {
-                    // ELSE: Same-layer / non-normal pattern
-                    // Oldest loading date first
-                    var dateWisePallets = pallets.OrderBy(x => x.CreatedOn.HasValue ? x.CreatedOn.Value.Date : DateTime.MinValue).ToList();
+                //var sequencePallets = pallets.OrderBy(x => x.sequence).ToList();
 
-                    // Group by loading date. Shift priority must be
-                    // applied within the relevant date group using
-                    // your actual Shift Master fields.
-                    var priorityPallets = ApplyShiftPriority(dateWisePallets);
+                //bool normalPattern =IsNormalLoadingPattern(sequencePallets);
 
-                    // Choose from both ends of the row order.
-                    var alternatingPallets =GetAlternatingEnds(priorityPallets);
+                //// STEP 3: Select pallets according to the pattern.
+                //List<GoodsExisiting> selectedPallets;
+                //if (normalPattern)
+                //{
+                //    // Normal pattern: retain actual loading sequence.
+                //    selectedPallets = SelectUntilQuantity(sequencePallets, qty);
+                //}
+                //else
+                //{
+                //    // Non-normal pattern:
+                //    // oldest date, shift priority, loading time.
+                //    var priorityPallets = ApplyShiftPriority(pallets);
+                //    selectedPallets = SelectUntilQuantity(priorityPallets, qty);
+                //}
 
-                    selectedPallets = SelectUntilQuantity(alternatingPallets, qty);
-                }
-
-
-                // STEP 5: Return selected pallets
+                // STEP 4: Return the selected pallet details.
                 var result = selectedPallets.Select(p => new
                 {
                     PalletNo = p.PalletNo,
@@ -260,16 +341,22 @@ namespace S1947.Controllers
                     LocationId = p.MTransNo,
                     Layer = p.Layer,
                     Row = p.Row,
-                    Col = p.Col
+                    Col = p.Col,
+                    Sequence = p.sequence,
+                    CreatedOn = p.CreatedOn
                 }).ToList();
 
                 return Json(new
                 {
                     Success = true,
                     FLCCount = result.Count,
-                    AllocatedQty = result.Sum(x => Convert.ToInt32(x.Qty)),
+                    AllocatedQty = result.Sum(
+                        x => Convert.ToInt32(x.Qty)),
+                    RequestedQty = qty,
                     Pallets = result,
-                    LoadingPattern = normalPattern? "Normal": "SameLayer"
+                    //LoadingPattern = normalPattern
+                    //    ? "Normal"
+                    //    : "NonNormal"
                 }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -307,11 +394,17 @@ namespace S1947.Controllers
                     // Example: Layer 7 Row 1 -> Layer 8 Row 1
                     validPattern = currentLayer != previousLayer;
                 }
-                else if (currentRow == previousRow + 1)
+                else if (Math.Abs(currentRow - previousRow) == 1)
                 {
-                    // Example: Layer 8 Row 1 -> Layer 7 Row 2
+                    // Adjacent rows: layers must differ.
                     validPattern = currentLayer != previousLayer;
+
                 }
+                //else if (currentRow == previousRow + 1)
+                //{
+                //    // Example: Layer 8 Row 1 -> Layer 7 Row 2
+                //    validPattern = currentLayer != previousLayer;
+                //}
                 else
                 {
                     validPattern = false;
@@ -324,10 +417,13 @@ namespace S1947.Controllers
             return true;
         }
 
+  
         //sequnecial unloading
-        private List<dynamic> SelectUntilQuantity(IEnumerable<dynamic> pallets, int requestedQty)
+
+         private List<GoodsExisiting> SelectUntilQuantity( IEnumerable<GoodsExisiting> pallets,
+            int requestedQty)
         {
-            var selected = new List<dynamic>();
+            var selected = new List<GoodsExisiting>();
             int allocatedQty = 0;
 
             foreach (var pallet in pallets)
@@ -335,6 +431,8 @@ namespace S1947.Controllers
                 selected.Add(pallet);
                 allocatedQty += Convert.ToInt32(pallet.Quantity);
 
+                // Whole pallets: stop when requested quantity is met
+                // or exceeded.
                 if (allocatedQty >= requestedQty)
                     break;
             }
@@ -342,53 +440,81 @@ namespace S1947.Controllers
             return selected;
         }
 
-        private List<GoodsExisiting> ApplyShiftPriority(List<GoodsExisiting> dateWisePallets)
+
+
+        private List<GoodsExisiting> SelectPalletsForUnloading( List<GoodsExisiting> pallets,int requestedQty)
+        {
+            var sequencePallets = pallets
+                .OrderBy(x => x.sequence)
+                .ToList();
+
+            bool normalPattern = IsNormalLoadingPattern(sequencePallets);
+
+            if (normalPattern)
+            {
+                return SelectUntilQuantity(
+                    sequencePallets, requestedQty);
+            }
+
+            var priorityPallets = ApplyShiftPriority(pallets);
+
+            return SelectUntilQuantity(
+                priorityPallets, requestedQty);
+        }
+
+
+
+        private List<GoodsExisiting> ApplyShiftPriority(List<GoodsExisiting> pallets)
         {
             using (var db = new S1947Entities())
             {
                 var shifts = db.shift_master
-                    .Where(s => s.is_active )
+                    .Where(s => s.is_active)
                     .OrderBy(s => s.Id)
                     .ToList();
 
-                var result = dateWisePallets
-                    .Select(p =>
+                var prioritized = pallets.Select(p =>
+                {
+                    DateTime createdOn = p.CreatedOn
+                        ?? DateTime.MinValue;
+
+                    TimeSpan palletTime = createdOn.TimeOfDay;
+
+                    var matchingShift = shifts.FirstOrDefault(s =>
                     {
-                        DateTime createdOn = Convert.ToDateTime(p.CreatedOn);
-                        TimeSpan palletTime = createdOn.TimeOfDay;
+                        TimeSpan start = s.start_time;
+                        TimeSpan end = s.end_time;
 
-                        var matchingShift = shifts.FirstOrDefault(s =>
+                        if (start < end)
                         {
-                            TimeSpan start = s.start_time;
-                            TimeSpan end = s.end_time;
-
-                            // Normal shift, e.g. 06:00 to 14:00
-                            if (start < end)
-                            {
-                                return palletTime >= start &&
-                                       palletTime < end;
-                            }
-
-                            // Overnight shift, e.g. 22:00 to 06:00
-                            return palletTime >= start ||
+                            return palletTime >= start &&
                                    palletTime < end;
-                        });
+                        }
 
-                        return new
-                        {
-                            Pallet = p,
-                            LoadingDate = createdOn.Date,
-                            ShiftId = matchingShift?.Id ?? int.MaxValue
-                        };
-                    })
+                        // Overnight shift.
+                        return palletTime >= start ||
+                               palletTime < end;
+                    });
+
+                    return new
+                    {
+                        Pallet = p,
+                        LoadingDate = createdOn.Date,
+                        LoadingTime = createdOn.TimeOfDay,
+                        ShiftId = matchingShift?.Id ?? int.MaxValue
+                    };
+                });
+
+                return prioritized
                     .OrderBy(x => x.LoadingDate)
                     .ThenBy(x => x.ShiftId)
+                    .ThenBy(x => x.LoadingTime)
+                    .ThenBy(x => x.Pallet.sequence)
                     .Select(x => x.Pallet)
                     .ToList();
-
-                return result;
             }
         }
+
 
         private List<GoodsExisiting> GetAlternatingEnds(List<GoodsExisiting> pallets)
         {
@@ -492,43 +618,61 @@ namespace S1947.Controllers
                 {
                     try
                     {
+                        //var pallets = db.GoodsExisitings
+                        //    .Where(x =>
+                        //        x.LocaStatus == "LOADED" &&
+                        //        x.FGModel == Model &&
+                        //        x.FGCode == FGCode &&
+                        //        x.FGDesc == Description &&
+                        //        x.Quantity > 0
+                        //    )
+                        //    //.OrderBy(x => x.ModifiedOn)
+                        //    //.ThenBy(x => x.Row)
+                        //    .OrderBy(x => x.CreatedOn)
+                        //    .ThenBy(x => x.Layer)
+                        //    .ThenBy(x => x.Row)
+                        //    .ThenBy(x => x.Col)
+                        //    .ToList();
+
+                        //int allocatedQty = 0;
+
+                        //List<GoodsExisiting> selectedPallets = new List<GoodsExisiting>();
+                        //foreach (var pallet in pallets)
+                        //{
+                        //    selectedPallets.Add(pallet);
+                        //    allocatedQty += Convert.ToInt32(pallet.Quantity);
+
+                        //    if (allocatedQty >= Quantity)
+                        //        break;
+                        //}
+
                         var pallets = db.GoodsExisitings
                             .Where(x =>
                                 x.LocaStatus == "LOADED" &&
                                 x.FGModel == Model &&
                                 x.FGCode == FGCode &&
                                 x.FGDesc == Description &&
-                                x.Quantity > 0
-                            )
-                            //.OrderBy(x => x.ModifiedOn)
-                            //.ThenBy(x => x.Row)
-                            .OrderBy(x => x.CreatedOn)
-                            .ThenBy(x => x.Layer)
-                            .ThenBy(x => x.Row)
-                            .ThenBy(x => x.Col)
+                                x.Quantity > 0)
                             .ToList();
 
-                        int allocatedQty = 0;
 
-                        List<GoodsExisiting> selectedPallets = new List<GoodsExisiting>();
-                        foreach (var pallet in pallets)
-                        {
-                            selectedPallets.Add(pallet);
-                            allocatedQty += Convert.ToInt32(pallet.Quantity);
+                        List<GoodsExisiting> selectedPallets =
+                            SelectPalletsForUnloading(pallets, Quantity);
 
-                            if (allocatedQty >= Quantity)
-                                break;
-                        }
+                        int allocatedQty = selectedPallets.Sum(
+                            x => Convert.ToInt32(x.Quantity));
 
                         if (allocatedQty < Quantity)
                         {
                             transaction.Rollback();
+
                             return Json(new
                             {
                                 Success = false,
                                 Message = "Insufficient stock available."
                             });
                         }
+
 
                         string firstSerialCode = null;
                         foreach (var pallet in selectedPallets)
@@ -1364,7 +1508,7 @@ namespace S1947.Controllers
 
                     db.SaveChanges();
                 }
-            }
+            }                            
             catch
             {
                 // VERY IMPORTANT:
@@ -1372,6 +1516,93 @@ namespace S1947.Controllers
             }
         }
 
+
+
+
+        /// for move task caling 
+ 
+        private async Task<WcsApiResponse> SendMoveTaskToApi(int mtransno)
+        {
+            string apiUrl =
+                System.Configuration.ConfigurationManager
+                    .AppSettings["MoveTaskApiUrl"];
+
+            if (string.IsNullOrWhiteSpace(apiUrl))
+            {
+                return new WcsApiResponse
+                {
+                    code = 500,
+                    status = false,
+                    message = "MoveTaskApiUrl is not configured.",
+                    data = false
+                };
+            }
+
+            // TEMPORARY REQUEST TEMPLATE.
+            // Confirm the actual MOVE API request format before production use.
+            var requestData = new
+            {
+                MTransNo = mtransno
+            };
+
+            using (var client = new HttpClient())
+            {
+                try
+                {
+                    string json = Newtonsoft.Json.JsonConvert
+                        .SerializeObject(requestData);
+
+                    var content = new StringContent(
+                        json,
+                        System.Text.Encoding.UTF8,
+                        "application/json");
+
+                    HttpResponseMessage response =
+                        await client.PostAsync(apiUrl, content);
+
+                    string responseJson =
+                        await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new WcsApiResponse
+                        {
+                            code = (int)response.StatusCode,
+                            status = false,
+                            message = "MOVE API request failed: " + responseJson,
+                            data = false
+                        };
+                    }
+
+                    var result =
+                        Newtonsoft.Json.JsonConvert
+                            .DeserializeObject<WcsApiResponse>(responseJson);
+
+                    if (result == null)
+                    {
+                        return new WcsApiResponse
+                        {
+                            code = 500,
+                            status = false,
+                            message = "Invalid response from MOVE API.",
+                            data = false
+                        };
+                    }
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    return new WcsApiResponse
+                    {
+                        code = 500,
+                        status = false,
+                        message = "MOVE API error: " + ex.Message,
+                        data = false
+                    };
+                }
+            }
+        }
 
 
     }
