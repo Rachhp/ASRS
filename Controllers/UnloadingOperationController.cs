@@ -1,14 +1,9 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.EMMA;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Bcpg;
+﻿using Newtonsoft.Json;
 using S1947.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -73,7 +68,7 @@ namespace S1947.Controllers
                 var data = db.UnloadTemps
                     .OrderBy(x => x.MTransNo)
                     .Select(x => new
-                    {                                                                                                                                             
+                    {
                         InvoiceNo = x.InvoiceNo,
                         DockNo = x.DockNo,
                         CustomerName = x.CustomerName,
@@ -116,7 +111,7 @@ namespace S1947.Controllers
                 //scenario 1 
                 var result = db.GoodsExisitings
                     .Where(x => x.FGModel == modelName
-                             && x.LocaStatus == "LOADED" && x.Quantity>0)
+                             && x.LocaStatus == "LOADED" && x.Quantity > 0)
                     .GroupBy(x => new
                     {
                         x.FGCode,
@@ -281,7 +276,7 @@ namespace S1947.Controllers
         //}
 
 
-        public JsonResult GetPalletDetails( string fgCode,string description,string model,int qty)
+        public JsonResult GetPalletDetails(string fgCode, string description, string model, int qty)
         {
             using (var db = new S1947Entities())
             {
@@ -295,8 +290,7 @@ namespace S1947.Controllers
                     .ToList();
 
                 // STEP 1: Validate requested quantity.
-                int availableQty = pallets.Sum(
-                    x => Convert.ToInt32(x.Quantity));
+                int availableQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
 
                 if (qty <= 0 || availableQty < qty)
                 {
@@ -311,25 +305,6 @@ namespace S1947.Controllers
                 // STEP 2: Check the existing loading sequence.
 
                 var selectedPallets = SelectPalletsForUnloading(pallets, qty);
-
-                //var sequencePallets = pallets.OrderBy(x => x.sequence).ToList();
-
-                //bool normalPattern =IsNormalLoadingPattern(sequencePallets);
-
-                //// STEP 3: Select pallets according to the pattern.
-                //List<GoodsExisiting> selectedPallets;
-                //if (normalPattern)
-                //{
-                //    // Normal pattern: retain actual loading sequence.
-                //    selectedPallets = SelectUntilQuantity(sequencePallets, qty);
-                //}
-                //else
-                //{
-                //    // Non-normal pattern:
-                //    // oldest date, shift priority, loading time.
-                //    var priorityPallets = ApplyShiftPriority(pallets);
-                //    selectedPallets = SelectUntilQuantity(priorityPallets, qty);
-                //}
 
                 // STEP 4: Return the selected pallet details.
                 var result = selectedPallets.Select(p => new
@@ -350,13 +325,9 @@ namespace S1947.Controllers
                 {
                     Success = true,
                     FLCCount = result.Count,
-                    AllocatedQty = result.Sum(
-                        x => Convert.ToInt32(x.Qty)),
+                    AllocatedQty = result.Sum(x => Convert.ToInt32(x.Qty)),
                     RequestedQty = qty,
                     Pallets = result,
-                    //LoadingPattern = normalPattern
-                    //    ? "Normal"
-                    //    : "NonNormal"
                 }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -374,54 +345,41 @@ namespace S1947.Controllers
                 var previous = ordered[i - 1];
                 var current = ordered[i];
 
-                int previousLayer = Convert.ToInt32(previous.Layer);
-                int currentLayer = Convert.ToInt32(current.Layer);
-
-                int previousRow = Convert.ToInt32(previous.Row);
-                int currentRow = Convert.ToInt32(current.Row);
-
                 int previousCol = Convert.ToInt32(previous.Col);
                 int currentCol = Convert.ToInt32(current.Col);
                 // Different columns: no same-column obstruction
-                // for this pattern check. Continue sequence-wise.
                 if (currentCol != previousCol)
                     continue;
 
-                // Same column: check the expected loading pattern.
-                bool validPattern;
-                if (currentRow == previousRow)
-                {
-                    // Example: Layer 7 Row 1 -> Layer 8 Row 1
-                    validPattern = currentLayer != previousLayer;
-                }
-                else if (Math.Abs(currentRow - previousRow) == 1)
-                {
-                    // Adjacent rows: layers must differ.
-                    validPattern = currentLayer != previousLayer;
+                int previousLayer = Convert.ToInt32(previous.Layer);
+                int currentLayer = Convert.ToInt32(current.Layer);
+                // Same column: layers must be different and any positio.
+                if (currentLayer == previousLayer)
+                    return false;
 
-                }
-                //else if (currentRow == previousRow + 1)
+                int previousRow = Convert.ToInt32(previous.Row);
+                int currentRow = Convert.ToInt32(current.Row);
+                // ame column: layers must be different and same position.
+                //bool validPattern;
+                //if (currentRow == previousRow)
                 //{
-                //    // Example: Layer 8 Row 1 -> Layer 7 Row 2
+                //    // Example: Layer 7 Row 1 -> Layer 8 Row 1
                 //    validPattern = currentLayer != previousLayer;
                 //}
-                else
-                {
-                    validPattern = false;
-                }
+                //EXTRA IF REQUIREMENT
+                //else if (Math.Abs(currentRow - previousRow) == 1)
+                //{
+                //    // Adjacent rows: layers must differ.
+                //    validPattern = currentLayer != previousLayer;
 
-                if (!validPattern)
-                    return false;
+                //}
             }
-
             return true;
         }
 
-  
-        //sequnecial unloading
 
-         private List<GoodsExisiting> SelectUntilQuantity( IEnumerable<GoodsExisiting> pallets,
-            int requestedQty)
+        //sequnecial unloading
+        private List<GoodsExisiting> SelectUntilQuantity(IEnumerable<GoodsExisiting> pallets, int requestedQty)
         {
             var selected = new List<GoodsExisiting>();
             int allocatedQty = 0;
@@ -442,42 +400,66 @@ namespace S1947.Controllers
 
 
 
-        private List<GoodsExisiting> SelectPalletsForUnloading( List<GoodsExisiting> pallets,int requestedQty)
+        private List<GoodsExisiting> SelectPalletsForUnloading(List<GoodsExisiting> pallets, int requestedQty)
         {
-            var sequencePallets = pallets
-                .OrderBy(x => x.sequence)
-                .ToList();
-
+            var sequencePallets = pallets.OrderBy(x => x.sequence).ToList();
             bool normalPattern = IsNormalLoadingPattern(sequencePallets);
-
             if (normalPattern)
             {
-                return SelectUntilQuantity(
-                    sequencePallets, requestedQty);
+                return SelectUntilQuantity(sequencePallets, requestedQty);
             }
+            else
+            {
+                //var priorityPallets = ApplyShiftPriority(pallets);
 
-            var priorityPallets = ApplyShiftPriority(pallets);
+                //return SelectUntilQuantity(priorityPallets, requestedQty);
 
-            return SelectUntilQuantity(
-                priorityPallets, requestedQty);
+                // NON-NORMAL PATTERN: Apply shift priority and alternating ends.
+                var shiftPriority = ApplyShiftPriority(pallets);
+
+                var shiftAlternating = GetAlternatingEnds(shiftPriority);
+
+                var selected = SelectUntilQuantity(
+                    shiftAlternating, requestedQty);
+
+                if (selected.Sum(x => Convert.ToInt32(x.Quantity)) >= requestedQty)
+                {
+                    return selected;
+                }
+
+                // FALLBACK: Relax shift priority to date-wise priority.
+                var datePriority = pallets
+                    .OrderBy(x => x.CreatedOn.HasValue
+                        ? x.CreatedOn.Value.Date
+                        : DateTime.MaxValue)
+                    .ThenBy(x => x.sequence)
+                    .ToList();
+
+                var dateAlternating = GetAlternatingEnds(datePriority);
+
+                return SelectUntilQuantity(dateAlternating, requestedQty);
+
+             }
         }
 
-
+        private List<GoodsExisiting> ApplyDatePriority( List<GoodsExisiting> pallets)
+        {
+            return pallets
+                .OrderBy(x => x.CreatedOn.HasValue
+                    ? x.CreatedOn.Value.Date
+                    : DateTime.MaxValue)
+                .ThenBy(x => x.sequence)
+                .ToList();
+        }
 
         private List<GoodsExisiting> ApplyShiftPriority(List<GoodsExisiting> pallets)
         {
             using (var db = new S1947Entities())
             {
-                var shifts = db.shift_master
-                    .Where(s => s.is_active)
-                    .OrderBy(s => s.Id)
-                    .ToList();
-
+                var shifts = db.shift_master.Where(s => s.is_active).OrderBy(s => s.Id).ToList();
                 var prioritized = pallets.Select(p =>
                 {
-                    DateTime createdOn = p.CreatedOn
-                        ?? DateTime.MinValue;
-
+                    DateTime createdOn = p.CreatedOn?? DateTime.MinValue;
                     TimeSpan palletTime = createdOn.TimeOfDay;
 
                     var matchingShift = shifts.FirstOrDefault(s =>
@@ -510,68 +492,106 @@ namespace S1947.Controllers
                     .ThenBy(x => x.ShiftId)
                     .ThenBy(x => x.LoadingTime)
                     .ThenBy(x => x.Pallet.sequence)
-                    .Select(x => x.Pallet)
+                    .Select(x => x.Pallet)                                                        
                     .ToList();
             }
         }
 
 
-        private List<GoodsExisiting> GetAlternatingEnds(List<GoodsExisiting> pallets)
+        //private List<GoodsExisiting> GetAlternatingEnds(List<GoodsExisiting> pallets)
+        //{
+        //    var result = new List<GoodsExisiting>();
+
+        //    if (pallets == null || pallets.Count == 0)
+        //        return result;
+
+
+        //    // First row, last row, second row, second-last row, and so on. This is a basic alternating-ends helper.
+        //    //var ordered = pallets
+        //    //    .OrderBy(x => x.Row)
+        //    //    .ThenBy(x => x.sequence)
+        //    //    .ToList();
+        //    var groups = pallets.GroupBy(x => new { x.Layer, x.Col }).ToList();
+        //    foreach (var group in groups)
+        //    {
+        //        var rows = group
+        //            .OrderBy(x => x.Row)
+        //            .ToList();
+
+        //        int left = 0;
+        //        int right = rows.Count - 1;
+
+        //        while (left <= right)
+        //        {
+        //            result.Add(rows[left]);
+        //            left++;
+
+        //            if (left <= right)
+        //            {
+        //                result.Add(rows[right]);
+        //                right--;
+        //            }
+        //        }
+        //    }
+
+        //    return result;
+        //}
+
+
+
+        private List<GoodsExisiting> GetAlternatingEnds( List<GoodsExisiting> pallets)
         {
             var result = new List<GoodsExisiting>();
 
-            if (pallets == null || pallets.Count == 0)
-                return result;
+            // A and D: keep row order; do not apply B/C two-ended selection.
+            var sectionAD = pallets
+                .Where(x => x.Cat == "A" || x.Cat == "D")
+                .OrderBy(x => x.Cat)
+                .ThenBy(x => x.Row)
+                .ToList();
 
+            // B and C: alternate between both ends.
+            var sectionBC = pallets
+                .Where(x => x.Cat == "B" || x.Cat == "C")
+                .GroupBy(x => new { x.Layer, x.Col, x.Cat })
+                .ToList();
 
-            // First row, last row, second row, second-last row, and so on. This is a basic alternating-ends helper.
-            //var ordered = pallets
-            //    .OrderBy(x => x.Row)
-            //    .ThenBy(x => x.sequence)
-            //    .ToList();
-            var groups = pallets.GroupBy(x => new { x.Layer, x.Col }).ToList();
-            foreach (var group in groups)
+            foreach (var group in sectionBC)
             {
-                var rows = group
+                var positions = group
                     .OrderBy(x => x.Row)
                     .ToList();
 
                 int left = 0;
-                int right = rows.Count - 1;
+                int right = positions.Count - 1;
 
                 while (left <= right)
                 {
-                    result.Add(rows[left]);
+                    result.Add(positions[left]);
                     left++;
 
                     if (left <= right)
                     {
-                        result.Add(rows[right]);
+                        result.Add(positions[right]);
                         right--;
                     }
                 }
             }
 
+            // Include any positions without A/B/C/D category afterward.
+            var otherPositions = pallets
+                .Where(x => x.Cat != "A" &&
+                            x.Cat != "B" &&
+                            x.Cat != "C" &&
+                            x.Cat != "D")
+                .OrderBy(x => x.sequence)
+                .ToList();
+
+            result.AddRange(sectionAD);
+            result.AddRange(otherPositions);
+
             return result;
         }
-            //var result = new List<dynamic>();
-
-            //int left = 0;
-            //int right = ordered.Count - 1;
-
-            //while (left <= right)
-            //{
-            //    result.Add(ordered[left]);
-            //    left++;
-
-            //    if (left <= right)
-            //    {
-            //        result.Add(ordered[right]);
-            //        right--;
-            //    }
-            //}
-
-            //return result;
 
         //toherefor unload 
         [HttpPost]
@@ -618,33 +638,6 @@ namespace S1947.Controllers
                 {
                     try
                     {
-                        //var pallets = db.GoodsExisitings
-                        //    .Where(x =>
-                        //        x.LocaStatus == "LOADED" &&
-                        //        x.FGModel == Model &&
-                        //        x.FGCode == FGCode &&
-                        //        x.FGDesc == Description &&
-                        //        x.Quantity > 0
-                        //    )
-                        //    //.OrderBy(x => x.ModifiedOn)
-                        //    //.ThenBy(x => x.Row)
-                        //    .OrderBy(x => x.CreatedOn)
-                        //    .ThenBy(x => x.Layer)
-                        //    .ThenBy(x => x.Row)
-                        //    .ThenBy(x => x.Col)
-                        //    .ToList();
-
-                        //int allocatedQty = 0;
-
-                        //List<GoodsExisiting> selectedPallets = new List<GoodsExisiting>();
-                        //foreach (var pallet in pallets)
-                        //{
-                        //    selectedPallets.Add(pallet);
-                        //    allocatedQty += Convert.ToInt32(pallet.Quantity);
-
-                        //    if (allocatedQty >= Quantity)
-                        //        break;
-                        //}
 
                         var pallets = db.GoodsExisitings
                             .Where(x =>
@@ -654,6 +647,17 @@ namespace S1947.Controllers
                                 x.FGDesc == Description &&
                                 x.Quantity > 0)
                             .ToList();
+
+                        if (Quantity <= 0)
+                        {
+                            transaction.Rollback();
+
+                            return Json(new
+                            {
+                                Success = false,
+                                Message = "Requested quantity must be greater than zero."
+                            });
+                        }
 
 
                         List<GoodsExisiting> selectedPallets =
@@ -1024,10 +1028,10 @@ namespace S1947.Controllers
 
 
 
-        [HttpPost] 
-        public async Task<JsonResult>SubmitLoading(SubmitLoadingModel model)
+        [HttpPost]
+        public async Task<JsonResult> SubmitLoading(SubmitLoadingModel model)
         {
-          
+
             try
             {
                 List<UnloadTemp> submittedUnloadTemps;
@@ -1085,9 +1089,9 @@ namespace S1947.Controllers
 
                     //new logic new part
                     var palletLocationIds = submittedUnloadTemps
-    .Select(x => x.LocationId)
-    .Where(x => !string.IsNullOrEmpty(x))
-    .ToList();
+                                            .Select(x => x.LocationId)
+                                            .Where(x => !string.IsNullOrEmpty(x))
+                                            .ToList();
 
                     var goodsByLocationId = db.GoodsExisitings
                         .Where(x => x.DeleteStatus == "N")
@@ -1096,8 +1100,7 @@ namespace S1947.Controllers
                         .GroupBy(x => x.MTransNo)
                         .ToDictionary(g => g.Key, g => g.First());
 
-                    submittedUnloadTemps = submittedUnloadTemps
-                        .OrderBy(x =>
+                    submittedUnloadTemps = submittedUnloadTemps.OrderBy(x =>
                         {
                             int locationId;
 
@@ -1136,8 +1139,8 @@ namespace S1947.Controllers
                     }
                     // Create one task for each UnloadTemp transaction
                     //foreach (var pallet in tempData)
-                        foreach (var pallet in submittedUnloadTemps)
-                        {
+                    foreach (var pallet in submittedUnloadTemps)
+                    {
                         //stored procedure
                         db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PlalletQR, "OUTBOUND", pallet.LocationName, "Pending", pallet.Station, pallet.MTransNo.ToString(), nextPriority, DateTime.Now, DateTime.Now, null, null, pallet.SerialCode);
 
@@ -1226,11 +1229,6 @@ namespace S1947.Controllers
                             TraySize = 0, // Standard sizes
                             from_warehouse = "WH01",
                             to_channel = stationNo == 1 ? "lift06c90" : "lift06c91",
-                            // AGV handover station  rmeoved on 3-09-2026
-                            //extraInfo = new WcsExtraInfo
-                            //{
-                            //    station_no = "AGV_STATION_A0" + stationNo
-                            //}
                         };
                         wcsTasks.Add(wcsTask);
                         taskSequence++;
@@ -1245,21 +1243,22 @@ namespace S1947.Controllers
                         Message = "No records available to send to WCS."
                     });
                 }
-                // Send COMPLETE LIST to WCS commneted for testing purpose
-                // ============================================================
-                //WcsApiResponse wcsResponse = await SendTasksToWcs(wcsTasks);
+                //Send COMPLETE LIST to WCS commneted for testing purpose
 
-                //if (wcsResponse == null ||
-                //    wcsResponse.code != 200 ||
-                //    wcsResponse.status != true)
-                //{
-                //    return Json(new
-                //    {
-                //        Success = false,
-                //        Message = "WCS did not accept the task.",
-                //        WcsResponse = wcsResponse
-                //    });
-                //}
+                //============================================================
+                WcsApiResponse wcsResponse = await SendTasksToWcs(wcsTasks);
+
+                if (wcsResponse == null ||
+                    wcsResponse.code != 200 ||
+                    wcsResponse.status != true)
+                {
+                    return Json(new
+                    {
+                        Success = false,
+                        Message = "WCS did not accept the task.",
+                        WcsResponse = wcsResponse
+                    });
+                }
 
                 // STEP 6
                 // WCS SUCCESS
@@ -1291,7 +1290,7 @@ namespace S1947.Controllers
                     Success = true,
                     Message = "Loading submitted and WCS tasks sent successfully.",
                     TotalTasksSent = wcsTasks.Count,
-                   // WcsResponse = wcsResponse
+                    // WcsResponse = wcsResponse
                 });
             }
             catch (Exception ex)
@@ -1312,8 +1311,7 @@ namespace S1947.Controllers
         {
             string wcsUrl = ConfigurationManager.AppSettings["WcsInsertTaskUrl"];//fetching url
 
-            string requestJson =
-                JsonConvert.SerializeObject(tasks);
+            string requestJson = JsonConvert.SerializeObject(tasks);
             const int maxAttempts = 3;
             for (int attempt = 1; attempt <= maxAttempts; attempt++)
             {
@@ -1325,17 +1323,15 @@ namespace S1947.Controllers
 
                         client.DefaultRequestHeaders.Accept.Clear();
 
-                        client.DefaultRequestHeaders.Accept.Add(
-                            new MediaTypeWithQualityHeaderValue(
-                                "application/json"));
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                         using (var content = new StringContent(
                             requestJson,
                             Encoding.UTF8,
                             "application/json"))
                         {
-                            HttpResponseMessage response =await client.PostAsync(wcsUrl, content);
-                            string responseJson =await response.Content.ReadAsStringAsync();
+                            HttpResponseMessage response = await client.PostAsync(wcsUrl, content);
+                            string responseJson = await response.Content.ReadAsStringAsync();
 
                             // HTTP error
                             if (!response.IsSuccessStatusCode)
@@ -1348,7 +1344,7 @@ namespace S1947.Controllers
                                     continue;
                                 }
 
-                                SaveWcsLog(requestJson, responseJson,(int)response.StatusCode, null,
+                                SaveWcsLog(requestJson, responseJson, (int)response.StatusCode, null,
                                 false, "FAILED", "HTTP error from WCS");
 
                                 return new WcsApiResponse
@@ -1508,7 +1504,7 @@ namespace S1947.Controllers
 
                     db.SaveChanges();
                 }
-            }                            
+            }
             catch
             {
                 // VERY IMPORTANT:
@@ -1520,7 +1516,7 @@ namespace S1947.Controllers
 
 
         /// for move task caling 
- 
+
         private async Task<WcsApiResponse> SendMoveTaskToApi(int mtransno)
         {
             string apiUrl =

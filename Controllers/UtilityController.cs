@@ -21,8 +21,6 @@ namespace S1947.Controllers
         }
         // GET: UserMaster
 
-        //PlcController plc = new PlcController();
-        string plc_ready = "";
        
 
         static public void globalError(Exception exc)
