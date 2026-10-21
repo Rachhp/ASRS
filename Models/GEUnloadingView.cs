@@ -12,27 +12,21 @@ namespace S1947.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class GoodsExisiting_old
+    public partial class GEUnloadingView
     {
         public int MTransNo { get; set; }
         public string LocationName { get; set; }
-        public int XPos { get; set; }
-        public int YPos { get; set; }
-        public int ZPos { get; set; }
-        public int CellNo { get; set; }
+        public int Layer { get; set; }
+        public int Row { get; set; }
+        public int Col { get; set; }
         public string FGModel { get; set; }
-        public string FGDesc { get; set; }
         public string FGCode { get; set; }
+        public string FGDesc { get; set; }
         public string PalletQr { get; set; }
         public string PalletNo { get; set; }
         public Nullable<int> Quantity { get; set; }
         public string LocaStatus { get; set; }
-        public short CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
-        public Nullable<short> ModifiedBy { get; set; }
-        public Nullable<System.DateTime> ModifiedOn { get; set; }
         public string DeleteStatus { get; set; }
-        public string Verify { get; set; }
-        public string SerialCode { get; set; }
     }
 }

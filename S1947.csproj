@@ -243,16 +243,10 @@
     <Compile Include="Models\GetFastMediumLocation_Result.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\GEUnloadingView.cs">
+      <DependentUpon>S1947.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\GoodsExisiting.cs">
-      <DependentUpon>S1947.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\GoodsExisiting2.cs">
-      <DependentUpon>S1947.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\GoodsExisiting_old.cs">
-      <DependentUpon>S1947.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\GoodsExisting.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\LiveStockReportVM.cs" />

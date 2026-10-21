@@ -633,7 +633,6 @@
         <td><input type="text" class="form-control invoiceNo" /> </td>
         <td><select class="form-select customer">
                 <option value="">Select</option>
-
                 @foreach (var item in Model.CustomerList)
                 {
                     <option value="@item">@item</option>
@@ -1049,8 +1048,7 @@
 
                 calculateTotal();
 
-                let totalFLC =
-                    parseFloat($("#totalFLC").text()) || 0;
+                let totalFLC =parseFloat($("#totalFLC").text()) || 0;
 
 
                 // =====================================================
@@ -1328,9 +1326,7 @@
                     enableNewLoadingRow();
                     $("#btnSubmit").prop("disabled", false);
 
-                    $("#loadingTableContainer tr:last")
-                        .find(".invoiceNo")
-                        .focus();
+                    $("#loadingTableContainer tr:last").find(".invoiceNo").focus();
 
                 }
                 else {
@@ -1350,8 +1346,6 @@
                 // =========================================================
 
                 $("#btnSubmit").prop("disabled", false);
-
-
                 // Vehicle details editable
                 $("#VehicleSize").prop("disabled", false);
 

@@ -39,8 +39,6 @@ namespace S1947.Models
         public virtual DbSet<CustomerMaster> CustomerMasters { get; set; }
         public virtual DbSet<Errorlog> Errorlogs { get; set; }
         public virtual DbSet<GoodsExisiting> GoodsExisitings { get; set; }
-        public virtual DbSet<GoodsExisiting_old> GoodsExisiting_old { get; set; }
-        public virtual DbSet<GoodsExisiting2> GoodsExisiting2 { get; set; }
         public virtual DbSet<LiftStatusMaster> LiftStatusMasters { get; set; }
         public virtual DbSet<LoadingLog> LoadingLogs { get; set; }
         public virtual DbSet<LoadingTemp> LoadingTemps { get; set; }
@@ -65,10 +63,10 @@ namespace S1947.Models
         public virtual DbSet<UserAuthorization> UserAuthorizations { get; set; }
         public virtual DbSet<UserMaster> UserMasters { get; set; }
         public virtual DbSet<WcsApiLog> WcsApiLogs { get; set; }
-        public virtual DbSet<GoodsExisting> GoodsExistings { get; set; }
         public virtual DbSet<GELoadingView> GELoadingViews { get; set; }
         public virtual DbSet<GELoadingView_WAking_> GELoadingView_WAking_ { get; set; }
         public virtual DbSet<GELoadingView2> GELoadingView2 { get; set; }
+        public virtual DbSet<GEUnloadingView> GEUnloadingViews { get; set; }
         public virtual DbSet<vw_AgeingReport> vw_AgeingReport { get; set; }
         public virtual DbSet<vw_TransactionHistory> vw_TransactionHistory { get; set; }
         public virtual DbSet<vw_TransactionReport> vw_TransactionReport { get; set; }
@@ -527,6 +525,43 @@ namespace S1947.Models
                 new ObjectParameter("LevelTo", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_ASRS_GetLocation3", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
+        }
+    
+        public virtual int usp_ASRS_GetLocation123(string fGCode, string movementType, Nullable<int> columnFrom, Nullable<int> columnTo, Nullable<int> rowFrom, Nullable<int> rowTo, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var movementTypeParameter = movementType != null ?
+                new ObjectParameter("MovementType", movementType) :
+                new ObjectParameter("MovementType", typeof(string));
+    
+            var columnFromParameter = columnFrom.HasValue ?
+                new ObjectParameter("ColumnFrom", columnFrom) :
+                new ObjectParameter("ColumnFrom", typeof(int));
+    
+            var columnToParameter = columnTo.HasValue ?
+                new ObjectParameter("ColumnTo", columnTo) :
+                new ObjectParameter("ColumnTo", typeof(int));
+    
+            var rowFromParameter = rowFrom.HasValue ?
+                new ObjectParameter("RowFrom", rowFrom) :
+                new ObjectParameter("RowFrom", typeof(int));
+    
+            var rowToParameter = rowTo.HasValue ?
+                new ObjectParameter("RowTo", rowTo) :
+                new ObjectParameter("RowTo", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_ASRS_GetLocation123", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
         }
     }
 }

@@ -33,5 +33,6 @@ namespace S1947.Models
         public string DeleteStatus { get; set; }
         public string Cat { get; set; }
         public Nullable<int> sequence { get; set; }
+        public Nullable<int> UnloadSequence { get; set; }
     }
 }
