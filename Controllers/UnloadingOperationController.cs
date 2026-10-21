@@ -342,37 +342,28 @@ namespace S1947.Controllers
             // Check consecutive pallets in sequence order.
             for (int i = 1; i < ordered.Count; i++)
             {
-                var previous = ordered[i - 1];
                 var current = ordered[i];
-
-                int previousCol = Convert.ToInt32(previous.Col);
-                int currentCol = Convert.ToInt32(current.Col);
-                // Different columns: no same-column obstruction
-                if (currentCol != previousCol)
-                    continue;
+                var previous = ordered[i - 1];
 
                 int previousLayer = Convert.ToInt32(previous.Layer);
                 int currentLayer = Convert.ToInt32(current.Layer);
-                // Same column: layers must be different and any positio.
-                if (currentLayer == previousLayer)
-                    return false;
-
                 int previousRow = Convert.ToInt32(previous.Row);
                 int currentRow = Convert.ToInt32(current.Row);
-                // ame column: layers must be different and same position.
-                //bool validPattern;
-                //if (currentRow == previousRow)
-                //{
-                //    // Example: Layer 7 Row 1 -> Layer 8 Row 1
-                //    validPattern = currentLayer != previousLayer;
-                //}
-                //EXTRA IF REQUIREMENT
-                //else if (Math.Abs(currentRow - previousRow) == 1)
-                //{
-                //    // Adjacent rows: layers must differ.
-                //    validPattern = currentLayer != previousLayer;
 
-                //}
+                // Different layers: normal pattern
+                if (currentLayer != previousLayer)
+                    continue;
+
+                // Same layer, different categories: normal pattern
+                if (current.Cat != previous.Cat)
+                    continue;
+
+                // Same layer and category, but different rows: normal
+                if (previousRow != currentRow)
+                    continue;
+                // Same layer, same category, and same row: non-normal
+                return false;
+
             }
             return true;
         }
