@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Newtonsoft.Json;
 using S1947.Models;
 using System;
 using System.Collections.Generic;
@@ -143,13 +144,12 @@ namespace S1947.Controllers
             using (var db = new S1947Entities())
             {
                 var pallets = db.GoodsExisitings
-                    .Where(x =>
-                        x.FGModel == model &&
-                        x.FGCode == fgCode &&
-                        x.FGDesc == description &&
-                        x.LocaStatus == "LOADED" &&
-                        x.Quantity > 0)
-                    .ToList();
+                    .Where(x => x.FGModel == model &&
+                                x.FGCode == fgCode &&
+                                x.FGDesc == description &&
+                                x.LocaStatus == "LOADED" &&
+                                x.Quantity > 0)
+                            .ToList();
 
                 // STEP 1: Validate requested quantity.
                 int availableQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
@@ -163,8 +163,21 @@ namespace S1947.Controllers
                     }, JsonRequestBehavior.AllowGet);
                 }
 
-                // STEP 2: Check the existing loading sequence.
-                var selectedPallets = SelectPalletsForUnloading(pallets, qty);
+                //2:Build a list containing only the required pallets
+                var requiredPallets = new List<GoodsExisiting>();
+                int totalQty = 0;
+
+                foreach (var pallet in pallets)
+                {
+                    requiredPallets.Add(pallet);
+                    totalQty += Convert.ToInt32(pallet.Quantity);
+
+                    if (totalQty >= qty)
+                        break;
+                }
+
+                // 3.Pass ONLY the required list
+                var selectedPallets = SelectPalletsForUnloading(requiredPallets, qty);
 
                 // STEP 3: Reserve locations and assign unloading sequence.
                 for (int i = 0; i < selectedPallets.Count; i++)
@@ -198,17 +211,12 @@ namespace S1947.Controllers
             }
             else
             {
-                //var priorityPallets = ApplyShiftPriority(pallets);
-
-                //return SelectUntilQuantity(priorityPallets, requestedQty);
-
                 // NON-NORMAL PATTERN: Apply shift priority and alternating ends.
                 var shiftPriority = ApplyShiftPriority(pallets);
 
                 var shiftAlternating = GetAlternatingEnds(shiftPriority);
 
-                var selected = SelectUntilQuantity(
-                    shiftAlternating, requestedQty);
+                var selected = SelectUntilQuantity(shiftAlternating, requestedQty);
 
                 if (selected.Sum(x => Convert.ToInt32(x.Quantity)) >= requestedQty)
                 {
@@ -233,11 +241,14 @@ namespace S1947.Controllers
 
         //from here it check is normal loading patternis there 
         private bool IsNormalLoadingPattern(List<GoodsExisiting> pallets)
+        
         {
             if (pallets == null || pallets.Count <= 1)
                 return true;
 
-            var ordered = pallets.OrderBy(x => x.sequence).ToList();
+          //var ordered = pallets.OrderBy(x => x.sequence).ToList();
+            var ordered = pallets.OrderBy(x => x.CreatedOn).ToList();
+
             // Check consecutive pallets in sequence order.
             for (int i = 1; i < ordered.Count; i++)
             {
@@ -262,7 +273,6 @@ namespace S1947.Controllers
                     continue;
                 // Same layer, same category, and same row: non-normal
                 return false;
-
             }
             return true;
         }
@@ -290,11 +300,9 @@ namespace S1947.Controllers
       
         private List<GoodsExisiting> ApplyDatePriority( List<GoodsExisiting> pallets)
         {
-            return pallets
-                .OrderBy(x => x.CreatedOn.HasValue
+            return pallets.OrderBy(x => x.CreatedOn.HasValue
                     ? x.CreatedOn.Value.Date
                     : DateTime.MaxValue)
-                .ThenBy(x => x.sequence)
                 .ToList();
         }
 
@@ -553,36 +561,7 @@ namespace S1947.Controllers
                                 CreatedOn = DateTime.Now
                             };
                             db.UnloadTemps.Add(temp);
-                            db.SaveChanges();
-
-                            //// 2.INSERT TASK DTL USING STORED PROCEDURE
-                            //int nextPriority = db.TaskDtls
-                            //                .Where(x => x.TaskType == "UNLOADOPERATION")
-                            //                .Select(x => (int?)x.Priority)
-                            //                .Max() ?? 0;
-                            //nextPriority++;
-                            //int nextTaskNo = db.TaskDtls
-                            //                .Select(x => (int?)x.TaskNo)
-                            //                .Max() ?? 0;
-
-                            //nextTaskNo++;
-                            //// Save the first task number
-                            //if (firstTaskNo == 0)
-                            //{
-                            //    firstTaskNo = nextTaskNo;
-                            //}
-                            ////stored procedure
-                            //db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PalletQr, "OUTBOUND", pallet.LocationName, "Pending", stationNo.ToString(), pallet.MTransNo.ToString(), nextPriority, DateTime.Now, DateTime.Now, null, null, serialCode);
-
-
-                            //db.TaskReports.Add(new TaskReport
-                            //{
-                            //    TaskID = nextTaskNo,
-                            //    SerialCode = serialCode,
-                            //    StatusCode = "100",
-                            //    StautusMessage = "Task Created",
-                            //    OperationType = "OUTBOUND"
-                            //});
+                            db.SaveChanges(); 
                         }
 
                         //3. unload material temp table insert for view  Table 
@@ -802,7 +781,7 @@ namespace S1947.Controllers
         }
 
 
-        //serial code generation here
+        //serial code generation helper method
         private string GenerateOutboundSerialCode(S1947Entities db)
         {
             string today = DateTime.Now.ToString("yyyyMMdd");
@@ -858,256 +837,111 @@ namespace S1947.Controllers
 
 
 
-        [HttpPost]
-        public async Task<JsonResult> SubmitLoading(SubmitLoadingModel model)
+    [HttpPost]
+    public async Task<JsonResult> SubmitLoading(SubmitLoadingModel model)
+    {
+
+        try
         {
-
-            try
+            List<UnloadTemp> submittedUnloadTemps;
+            using (S1947Entities db = new S1947Entities())
             {
-                List<UnloadTemp> submittedUnloadTemps;
-                using (S1947Entities db = new S1947Entities())
+                var UnloadTempData = db.UnloadTemps.Where(x => x.Status == "Pending" && x.DockNo == model.DockNo).ToList();
+                var UnloadMaterialTempData = db.UnloadMaterialTemps.Where(x =>x.status == "Pending" && x.DockNo == model.DockNo) .ToList();
+
+                if (!UnloadTempData.Any())
                 {
-                    var UnloadTempData = db.UnloadTemps.Where(x => x.Status == "Pending" && x.DockNo == model.DockNo).ToList();
-                    var UnloadMaterialTempData = db.UnloadMaterialTemps.Where(x =>x.status == "Pending" && x.DockNo == model.DockNo) .ToList();
-
-                    if (!UnloadTempData.Any())
+                    return Json(new
                     {
-                        return Json(new
-                        {
-                            Success = false,
-                            Message = "No pending records found."
-                        });
-                    }
+                        Success = false,
+                        Message = "No pending records found."
+                    });
+                }
 
-                    foreach (var itemq in UnloadMaterialTempData)
-                    {
-                        itemq.status = "Submit";
-                        db.Entry(itemq).State = EntityState.Modified;
-                    }
+                foreach (var itemq in UnloadMaterialTempData)
+                {
+                    itemq.status = "Submit";
+                    db.Entry(itemq).State = EntityState.Modified;
+                }
 
-                    foreach (var item in UnloadTempData)
+                foreach (var item in UnloadTempData)
+                {
+                    item.Status = "Submit";
+                    //item.DockNo = model.DockNo;
+                    //item.VehicleSize = model.VehicleSize;
+                    //item.VehicleNumber = model.VehicleNumber;
+                    //item.TransporterName = model.TransporterName;
+                    //item.VehicleSealNo = model.VehicleSealNo;
+                    //item.TotalQty = model.TotalQty;
+                    //item.CreatedOn = DateTime.Now;
+                    db.Entry(item).State = EntityState.Modified;
+                }
+
+                db.SaveChanges();
+                submittedUnloadTemps = db.UnloadTemps.Where(x => x.Status == "Submit" && x.DockNo == model.DockNo).OrderBy(x => x.MTransNo).ToList();
+
+                // INSERT TASK DTL USING STORED PROCEDURE
+                int firstTaskNo = 0;
+                //task priority
+                int nextPriority = db.TaskDtls.Where(x => x.TaskType == "UNLOADOPERATION").Select(x => (int?)x.Priority).Max() ?? 0;
+                nextPriority++;
+                //task no 
+                int nextTaskNo = db.TaskDtls.Select(x => (int?)x.TaskNo).Max() ?? 0;
+
+                nextTaskNo++;
+                // Save the first task number
+                if (firstTaskNo == 0)
+                {
+                    firstTaskNo = nextTaskNo;
+                }
+                // Create one task for each UnloadTemp transaction
+                //foreach (var pallet in tempData)
+                foreach (var pallet in submittedUnloadTemps)
+                {
+                    //stored procedure
+                    db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PlalletQR, "OUTBOUND", pallet.LocationName, "Pending", pallet.Station, pallet.LocationId, nextPriority, DateTime.Now, DateTime.Now, null, null, pallet.SerialCode);
+                    db.TaskReports.Add(new TaskReport
                     {
-                        item.Status = "Submit";
-                        //item.DockNo = model.DockNo;
-                        //item.VehicleSize = model.VehicleSize;
-                        //item.VehicleNumber = model.VehicleNumber;
-                        //item.TransporterName = model.TransporterName;
-                        //item.VehicleSealNo = model.VehicleSealNo;
-                        //item.TotalQty = model.TotalQty;
-                        //item.CreatedOn = DateTime.Now;
+                        TaskID = nextTaskNo,
+                        SerialCode = pallet.SerialCode,
+                        StatusCode = "100",
+                        StautusMessage = "Task Created",
+                        OperationType = "OUTBOUND"
+                    });
+                    // IMPORTANT
+                    nextTaskNo++;
+                    nextPriority++;
+                    db.SaveChanges();
+                }
+                    //update inprocess to occupied in goods existing table
+                    var goods = db.GoodsExisitings.Where(x => x.LocaStatus == "INPROCESS").ToList();
+                    foreach (var item in goods)
+                    { 
+                        item.LocaStatus = "OCCUPIED";
                         db.Entry(item).State = EntityState.Modified;
                     }
-
-                    db.SaveChanges();
-                    submittedUnloadTemps = db.UnloadTemps.Where(x => x.Status == "Submit" && x.DockNo == model.DockNo).OrderBy(x => x.MTransNo).ToList();
-                    //new logic new part
-                    var palletLocationIds = submittedUnloadTemps.Select(x => x.LocationId).Where(x => !string.IsNullOrEmpty(x)).ToList();
-                    var goodsByLocationId = db.GoodsExisitings
-                        .Where(x => x.DeleteStatus == "N")
-                        .ToList()
-                        .Where(x => palletLocationIds.Contains(x.MTransNo.ToString()))
-                        .GroupBy(x => x.MTransNo)
-                        .ToDictionary(g => g.Key, g => g.First());
-
-                    submittedUnloadTemps = submittedUnloadTemps.OrderBy(x =>
-                        {
-                            int locationId;
-
-                            if (int.TryParse(x.LocationId, out locationId) &&
-                                goodsByLocationId.ContainsKey(locationId))
-                            {
-                                return goodsByLocationId[locationId].CreatedOn;
-                            }
-
-                            return DateTime.MaxValue;
-                        })
-                        .ThenBy(x => x.MTransNo)
-                        .ToList();
-
-
-                    // INSERT TASK DTL USING STORED PROCEDURE
-                    int firstTaskNo = 0;
-                    //task priority
-                    int nextPriority = db.TaskDtls.Where(x => x.TaskType == "UNLOADOPERATION").Select(x => (int?)x.Priority).Max() ?? 0;
-                    nextPriority++;
-
-                    ///task no 
-                    int nextTaskNo = db.TaskDtls
-                                    .Select(x => (int?)x.TaskNo)
-                                    .Max() ?? 0;
-
-                    nextTaskNo++;
-                    // Save the first task number
-                    if (firstTaskNo == 0)
-                    {
-                        firstTaskNo = nextTaskNo;
-                    }
-                    // Create one task for each UnloadTemp transaction
-                    //foreach (var pallet in tempData)
-                    foreach (var pallet in submittedUnloadTemps)
-                    {
-                        //stored procedure
-                        db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PlalletQR, "OUTBOUND", pallet.LocationName, "Pending", pallet.Station, pallet.MTransNo.ToString(), nextPriority, DateTime.Now, DateTime.Now, null, null, pallet.SerialCode);
-
-                        db.TaskReports.Add(new TaskReport
-                        {
-                            TaskID = nextTaskNo,
-                            SerialCode = pallet.SerialCode,
-                            StatusCode = "100",
-                            StautusMessage = "Task Created",
-                            OperationType = "OUTBOUND"
-                        });
-                        // IMPORTANT
-                        nextTaskNo++;
-                        nextPriority++;
-                        db.SaveChanges();
-                    }
+                  
                 }
-
-                // Build WCS task list
-                List<WcsTaskRequest> wcsTasks = new List<WcsTaskRequest>();
-                using (S1947Entities db = new S1947Entities())
-                {
-                    // Sequence for tasks in this API batch
-                    int taskSequence = 1;
-                    // Serial number for each column
-                    Dictionary<int, int> columnSerialNumbers = new Dictionary<int, int>();
-                    foreach (var item in submittedUnloadTemps)
-                    {
-                        int locationId;
-                        if (!int.TryParse(item.LocationId, out locationId))
-                        {
-                            return Json(new
-                            {
-                                Success = false,
-                                Message = "Invalid LocationId for UnloadTemp MTransNo: " + item.MTransNo
-                            });
-                        }
-
-                        var goods = db.GoodsExisitings
-                            .FirstOrDefault(x =>
-                                x.MTransNo == locationId &&
-                                x.LocaStatus == "OCCUPIED" &&
-                                x.DeleteStatus == "N");
-
-                        if (goods == null)
-                        {
-                            return Json(new
-                            {
-                                Success = false,
-                                Message = "GoodsExisiting record not found for LocationId: " + item.LocationId
-                            });
-                        }
-
-                        int stationNo = Convert.ToInt32(item.Station);
-
-                        // Create ONE WCS task for ONE UnloadTemp row
-                        // ----------------------------------------------------
-                        int column = Convert.ToInt32(goods.Col);
-
-                        if (!columnSerialNumbers.ContainsKey(column))
-                        {
-                            // First time this column appears
-                            columnSerialNumbers[column] = 1;
-                        }
-                        else
-                        {
-                            // Column appeared again
-                            columnSerialNumbers[column]++;
-                        }
-
-                        int serialNum = columnSerialNumbers[column];
-
-                        WcsTaskRequest wcsTask = new WcsTaskRequest
-                        {
-                            SerialCode = item.SerialCode,
-                            TrayCode = item.PlalletQR,
-                            method = "outbound",
-                            Layer = goods.Layer,// x-level
-                            //From_Layer = goods.XPos,//level rmeoved on 3-09-2026
-                            From_Column = goods.Col,//y-column
-                            From_Row = goods.Row,//z-row
-                            From_OrderRow = 0,  // that 0 means dynamic.
-                            SortCode = taskSequence,// Normal unloading priority
-                            SerialNum = serialNum,
-                            StockSize = 0,
-                            TraySize = 0, // Standard sizes
-                            from_warehouse = "WH01",
-                            to_channel = stationNo == 1 ? "lift06c90" : "lift06c91",
-                        };
-                        wcsTasks.Add(wcsTask);
-                        taskSequence++;
-
-                    }
-                }
-                if (!wcsTasks.Any())
-                {
-                    return Json(new
-                    {
-                        Success = false,
-                        Message = "No records available to send to WCS."
-                    });
-                }
-                //Send COMPLETE LIST to WCS commneted for testing purpose
-
-                //============================================================
-                WcsApiResponse wcsResponse = await SendTasksToWcs(wcsTasks);
-
-                if (wcsResponse == null ||
-                    wcsResponse.code != 200 ||
-                    wcsResponse.status != true)
-                {
-                    return Json(new
-                    {
-                        Success = false,
-                        Message = "WCS did not accept the task.",
-                        WcsResponse = wcsResponse
-                    });
-                }
-
-                // STEP 6
-                // WCS SUCCESS
-                using (S1947Entities db = new S1947Entities())
-                {
-                    foreach (var item in submittedUnloadTemps)
-                    {
-                        // Update UnloadTemp
-                        var unloadTemp = db.UnloadTemps
-                            .FirstOrDefault(x =>
-                                x.MTransNo == item.MTransNo);
-
-                        if (unloadTemp != null)
-                        {
-                            unloadTemp.Status = "PassedToAPI";
-
-                            db.Entry(unloadTemp).State =
-                                EntityState.Modified;
-                        }
-                        db.SaveChanges();
-                    }
-                }
+                //call the api here to send the task to wcs
 
 
-                // Final response
-                // ============================================================
                 return Json(new
                 {
                     Success = true,
-                    Message = "Loading submitted and WCS tasks sent successfully.",
-                    TotalTasksSent = wcsTasks.Count,
-                    // WcsResponse = wcsResponse
+                    Message = "succes",
+              
                 });
             }
-            catch (Exception ex)
+        catch (Exception ex)
+        {
+            return Json(new
             {
-                return Json(new
-                {
-                    Success = false,
-                    Message = "Error while submitting loading.",
-                    Error = ex.Message
-                });
-            }
+                Success = false,
+                Message = "Error while submitting loading.",
+                Error = ex.Message
+            });
         }
+    }
 
 
 
@@ -1320,91 +1154,7 @@ namespace S1947.Controllers
 
 
 
-        /// for move task caling 
-
-        private async Task<WcsApiResponse> SendMoveTaskToApi(int mtransno)
-        {
-            string apiUrl =
-                System.Configuration.ConfigurationManager
-                    .AppSettings["MoveTaskApiUrl"];
-
-            if (string.IsNullOrWhiteSpace(apiUrl))
-            {
-                return new WcsApiResponse
-                {
-                    code = 500,
-                    status = false,
-                    message = "MoveTaskApiUrl is not configured.",
-                    data = false
-                };
-            }
-
-            // TEMPORARY REQUEST TEMPLATE.
-            // Confirm the actual MOVE API request format before production use.
-            var requestData = new
-            {
-                MTransNo = mtransno
-            };
-
-            using (var client = new HttpClient())
-            {
-                try
-                {
-                    string json = Newtonsoft.Json.JsonConvert
-                        .SerializeObject(requestData);
-
-                    var content = new StringContent(
-                        json,
-                        System.Text.Encoding.UTF8,
-                        "application/json");
-
-                    HttpResponseMessage response =
-                        await client.PostAsync(apiUrl, content);
-
-                    string responseJson =
-                        await response.Content.ReadAsStringAsync();
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new WcsApiResponse
-                        {
-                            code = (int)response.StatusCode,
-                            status = false,
-                            message = "MOVE API request failed: " + responseJson,
-                            data = false
-                        };
-                    }
-
-                    var result =
-                        Newtonsoft.Json.JsonConvert
-                            .DeserializeObject<WcsApiResponse>(responseJson);
-
-                    if (result == null)
-                    {
-                        return new WcsApiResponse
-                        {
-                            code = 500,
-                            status = false,
-                            message = "Invalid response from MOVE API.",
-                            data = false
-                        };
-                    }
-
-                    return result;
-                }
-                catch (Exception ex)
-                {
-                    return new WcsApiResponse
-                    {
-                        code = 500,
-                        status = false,
-                        message = "MOVE API error: " + ex.Message,
-                        data = false
-                    };
-                }
-            }
-        }
-
+        
 
     }
 }

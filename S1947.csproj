@@ -428,6 +428,7 @@
     <Content Include="Content\ajax\ajax-treeview-nodes.html" />
     <Content Include="Content\ajax\ui-elements-lightbox-ajax.html" />
     <Content Include="Content\ajax\ui-elements-modals-ajax.html" />
+    <Content Include="Content\ASRS_Monitor.css" />
     <Content Include="Content\images\pallet1.png" />
     <Content Include="Content\images\pallet.png" />
     <Content Include="Content\images\pallets.png" />
@@ -2464,6 +2465,7 @@
     <Content Include="Rotativa\wkhtmltoimage.exe" />
     <Content Include="Rotativa\wkhtmltopdf.exe" />
     <Content Include="Scripts\03371a6ecc.js" />
+    <Content Include="Scripts\ASRS_Monitor.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />

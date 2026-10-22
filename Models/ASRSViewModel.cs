@@ -39,6 +39,7 @@ namespace S1947.Models
         public class ASRSPosition
         {
             public string LocationNo { get; set; }
+            public string PalletQr { get; set; }
 
             public int Level { get; set; }
 
