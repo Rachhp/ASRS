@@ -149,7 +149,7 @@ namespace S1947.Controllers
                                 x.FGDesc == description &&
                                 x.LocaStatus == "LOADED" &&
                                 x.Quantity > 0)
-                            .ToList();
+                    .OrderBy(x => x.CreatedOn).ToList();
 
                 // STEP 1: Validate requested quantity.
                 int availableQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
@@ -259,6 +259,8 @@ namespace S1947.Controllers
                 int currentLayer = Convert.ToInt32(current.Layer);
                 int previousRow = Convert.ToInt32(previous.Row);
                 int currentRow = Convert.ToInt32(current.Row);
+                int previouscol = Convert.ToInt32(previous.Col);
+                int currentcol = Convert.ToInt32(current.Col);
 
                 // Different layers: normal pattern
                 if (currentLayer != previousLayer)
@@ -268,8 +270,11 @@ namespace S1947.Controllers
                 if (current.Cat != previous.Cat)
                     continue;
 
-                // Same layer and category, but different rows: normal
-                if (previousRow != currentRow)
+                //// Same layer and category, but different rows: normal
+                //if (previousRow != currentRow)
+                //    continue;
+                // Same layer and category, but different col: normal
+                if (previouscol != currentcol)
                     continue;
                 // Same layer, same category, and same row: non-normal
                 return false;
@@ -867,16 +872,8 @@ namespace S1947.Controllers
                 foreach (var item in UnloadTempData)
                 {
                     item.Status = "Submit";
-                    //item.DockNo = model.DockNo;
-                    //item.VehicleSize = model.VehicleSize;
-                    //item.VehicleNumber = model.VehicleNumber;
-                    //item.TransporterName = model.TransporterName;
-                    //item.VehicleSealNo = model.VehicleSealNo;
-                    //item.TotalQty = model.TotalQty;
-                    //item.CreatedOn = DateTime.Now;
                     db.Entry(item).State = EntityState.Modified;
                 }
-
                 db.SaveChanges();
                 submittedUnloadTemps = db.UnloadTemps.Where(x => x.Status == "Submit" && x.DockNo == model.DockNo).OrderBy(x => x.MTransNo).ToList();
 
@@ -898,6 +895,17 @@ namespace S1947.Controllers
                 //foreach (var pallet in tempData)
                 foreach (var pallet in submittedUnloadTemps)
                 {
+                        // Check whether a task already exists for this pallet
+                    bool taskExists = db.TaskDtls.Any(x =>
+                        x.TaskType == "UNLOADOPERATION" &&
+                        x.DestinationLocation == pallet.LocationName &&
+                        x.SourceLocation == "OUTBOUND" );
+                        if (taskExists)
+                        {
+                            // Skip already submitted tasks
+                            continue;
+                        }
+
                     //stored procedure
                     db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PlalletQR, "OUTBOUND", pallet.LocationName, "Pending", pallet.Station, pallet.LocationId, nextPriority, DateTime.Now, DateTime.Now, null, null, pallet.SerialCode);
                     db.TaskReports.Add(new TaskReport

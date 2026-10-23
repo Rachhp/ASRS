@@ -643,14 +643,12 @@
         <td> <input type="text"  class="form-control location" readonly /> </td>
         <td> <select class="form-select model">
                 <option value="">Select</option>
-
                 @foreach (var item in Model.ModelList)
                 {
                     <option value="@item">@item</option>
                 }
             </select>
         </td>
-
         <td> <input type="text"  class="form-control description" readonly /> </td>
         <td> <input type="text" class="form-control fgCode" readonly /></td>
         <td hidden> <input type="text" class="form-control availableQty" readonly /></td> 
@@ -881,10 +879,25 @@
                 data: {
                     modelName: modelName
                 },
-                success: function (response) {
-                    row.find(".fgCode").val(response.FGCode);
-                    row.find(".description").val(response.Description);
-                    row.find(".availableQty").val(response.AvailableQty);
+                    success: function (response) {
+                        console.log(response);
+                        console.log("Description:", response.Description);
+                        console.log("FG Code:", response.FGCode);
+
+                        console.log("Description input count:",
+                            row.find(".description").length);
+
+                        console.log("FG Code input count:",
+                            row.find(".fgCode").length);
+
+                        row.find(".description").val(response.Description);
+                        row.find(".fgCode").val(response.FGCode);
+                        row.find(".availableQty").val(response.AvailableQty);
+
+
+                    //row.find(".description").val(response.Description);
+                    //row.find(".fgCode").val(response.FGCode);
+                    //row.find(".availableQty").val(response.AvailableQty);
                 },
                 error: function () {
                     alert("Unable to fetch model details");
