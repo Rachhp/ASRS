@@ -181,16 +181,6 @@ namespace S1947.Controllers
                 // 3.Pass ONLY the required list
                 var selectedPallets = SelectPalletsForUnloading(requiredPallets, qty);
 
-                //// STEP 3: Reserve locations and assign unloading sequence.
-                //for (int i = 0; i < selectedPallets.Count; i++)
-                //{
-                //    var pallet = selectedPallets[i];
-                //    pallet.LocaStatus = "INPROCESS";
-                //    pallet.UnloadSequence = i + 1;
-                //    db.Entry(pallet).State = EntityState.Modified;
-                //    db.SaveChanges();
-                //}
-
                 // STEP 4: Return only the values required by the view.
                 return Json(new
                 {
@@ -515,25 +505,82 @@ namespace S1947.Controllers
                 {
                     try
                     {
-                        var pallets = db.GoodsExisitings
+                        //var pallets = db.GoodsExisitings
+                        //    .Where(x =>
+                        //        x.LocaStatus == "INPROCESS" &&
+                        //        x.FGModel == Model &&
+                        //        x.FGCode == FGCode &&
+                        //        x.FGDesc == Description)
+                        //    .OrderBy(x => x.UnloadSequence)
+                        //    .ToList();
+
+                        //int allocatedQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
+                        //if (allocatedQty < Quantity)
+                        //{
+                        //    transaction.Rollback();
+                        //    return Json(new
+                        //    {
+                        //        Success = false,
+                        //        Message = "Insufficient stock available."
+                        //    });
+                        //}
+                         var availablePallets = db.GoodsExisitings
                             .Where(x =>
-                                x.LocaStatus == "INPROCESS" &&
+                                x.LocaStatus == "LOADED" &&
                                 x.FGModel == Model &&
                                 x.FGCode == FGCode &&
-                                x.FGDesc == Description)
-                            .OrderBy(x => x.UnloadSequence)
+                                x.FGDesc == Description &&
+                                x.Quantity > 0)
+                            .OrderBy(x => x.CreatedOn)
                             .ToList();
 
-                        int allocatedQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
-                        if (allocatedQty < Quantity)
+                        int availableQty = availablePallets.Sum(x => Convert.ToInt32(x.Quantity));
+
+                        if (availableQty < Quantity)
                         {
                             transaction.Rollback();
+
                             return Json(new
                             {
                                 Success = false,
                                 Message = "Insufficient stock available."
                             });
                         }
+
+                        var requiredPallets = new List<GoodsExisiting>();
+                        int totalQty = 0;
+
+                        foreach (var pallet in availablePallets)
+                        {
+                            requiredPallets.Add(pallet);
+                            totalQty += Convert.ToInt32(pallet.Quantity);
+
+                            if (totalQty >= Quantity)
+                                break;
+                        }
+
+                        var pallets = SelectPalletsForUnloading(requiredPallets, Quantity);
+                        int allocatedQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
+
+                        if (allocatedQty < Quantity)
+                        {
+                            transaction.Rollback();
+
+                            return Json(new
+                            {
+                                Success = false,
+                                Message = "Unable to allocate the requested quantity."
+                            });
+                        }
+
+                        // Reserve the exact pallets selected for this save.
+                        for (int i = 0; i < pallets.Count; i++)
+                        {
+                            pallets[i].LocaStatus = "INPROCESS";
+                            pallets[i].UnloadSequence = i + 1;
+                        }
+
+                        db.SaveChanges();
 
                         string firstSerialCode = null;
                         foreach (var pallet in pallets)
