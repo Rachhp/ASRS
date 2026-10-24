@@ -783,229 +783,231 @@
 
 
         // ================= CAPACITY CHECK =================
-        function checkCapacity(currentRow) {
-            let totalFLC = 0;
-            $(".flcQty").each(function () {
-                totalFLC += parseFloat($(this).val()) || 0;
-            });
-            $("#usedFLC").text(totalFLC.toFixed(2));
-            let balance = allowedCapacity - totalFLC;
-            $("#balanceFLC").text(balance.toFixed(2));
-            if (totalFLC > allowedCapacity) {
-                alert(
-                    "Vehicle Capacity Exceeded. Maximum allowed FLC : "
-                    + allowedCapacity
-                );
-                currentRow.find(".qty").val("");
-                currentRow.find(".flcQty").val("");
-                calculateTotal();
-                return false;
-            }
-            if (totalFLC >= allowedCapacity) {
+    function checkCapacity(currentRow) {
+        let totalFLC = 0;
+        $(".flcQty").each(function () {
+            totalFLC += parseFloat($(this).val()) || 0;
+        });
+  
+        let balance = allowedCapacity - totalFLC;
+        $("#usedFLC").text(totalFLC.toFixed(2));
+        $("#balanceFLC").text(balance.toFixed(2));
 
-                alert("Vehicle capacity is full. No more rows can be added.");
-                // Disable all rows
-                disableAllLoadingRows();
-                // Submit also disabled
-               // $("#btnSubmit").prop("disabled", true); 03-10-2026
-            }
-            else {
-                // Capacity still available
-                $("#btnSubmit").prop("disabled", false);
-            }
-            return true;
+        if (allowedCapacity <= 0) {
+            alert("Please select a valid Vehicle Size.");
+            currentRow.find(".qty").val("");
+            currentRow.find(".flcQty").val("");
+            calculateTotal();
+            return false;
         }
 
+        if (totalFLC > allowedCapacity) {
+            alert(
+                "Vehicle Capacity Exceeded. Maximum allowed FLC: "
+                + allowedCapacity
+            );
 
-        function calculateTotal(){
-            let totalQty=0;
-            let totalFLC = 0;
-            $("#loadingTableContainer  tr").each(function () {
-                let qty = parseFloat($(this).find(".qty").val()) || 0;
-                let flc = parseFloat($(this).find(".flcQty").val()) || 0;
-                totalQty += qty;
-                totalFLC += flc;
-            });
-            $("#totalQty").text(totalQty);
-            $("#totalFLC").text(totalFLC);
+            currentRow.find(".qty").val("");
+            currentRow.find(".flcQty").val("");
+
+            calculateTotal();
+            return false;
         }
 
+        // Do not disable rows or Submit here.
+        calculateTotal();
 
-        // customer change
-        $(document).on("change", ".customer", function () {
-            let customerName = $(this).val();
-            let row = $(this).closest("tr");
-            if (customerName == "") {
-                row.find(".location").val("");
-                return;
+        return true;
+    }
+
+
+    function calculateTotal(){
+        let totalQty=0;
+        let totalFLC = 0;
+        $("#loadingTableContainer  tr").each(function () {
+            let qty = parseFloat($(this).find(".qty").val()) || 0;
+            let flc = parseFloat($(this).find(".flcQty").val()) || 0;
+            totalQty += qty;
+            totalFLC += flc;
+        });
+        $("#totalQty").text(totalQty);
+        $("#totalFLC").text(totalFLC);
+    }
+
+
+    // customer change
+    $(document).on("change", ".customer", function () {
+        let customerName = $(this).val();
+        let row = $(this).closest("tr");
+        if (customerName == "") {
+            row.find(".location").val("");
+            return;
+        }
+        //alert("here"+customerName);
+        $.ajax({
+            url: 'GetCustomerLocation',
+            type: 'GET',
+            data: {customer: customerName},
+            success: function (response) {
+                if (response.location) {
+                    row.find(".location").val(response.location);
+                }
+                else {
+                    row.find(".location").val("");
+                    alert("Location not found");
+                }
+            },
+            error: function () {
+                alert("Unable to fetch customer location");
             }
-            //alert("here"+customerName);
+        });
+
+    });
+
+    // MODEL change
+    $(document).on("change", ".model", function () {
+
+        let modelName = $(this).val();
+        let row = $(this).closest("tr");
+
+        if (modelName == "") {
+            row.find(".fgCode").val("");
+            row.find(".description").val("");
+            row.find(".availableQty").val("");
+            row.data("qtyperflc", 0);
+            return;
+        }
             $.ajax({
-                url: 'GetCustomerLocation',
-                type: 'GET',
-                data: {customer: customerName},
+            url: 'GetModelDtl',
+            type: 'GET',
+            data: {
+                modelName: modelName
+            },
                 success: function (response) {
-                    if (response.location) {
-                        row.find(".location").val(response.location);
-                    }
-                    else {
-                        row.find(".location").val("");
-                        alert("Location not found");
-                    }
-                },
-                error: function () {
-                    alert("Unable to fetch customer location");
-                }
-            });
+                    console.log(response);
+                    console.log("Description:", response.Description);
+                    console.log("FG Code:", response.FGCode);
 
-        });
+                    console.log("Description input count:",
+                        row.find(".description").length);
 
-        // MODEL change
-        $(document).on("change", ".model", function () {
+                    console.log("FG Code input count:",
+                        row.find(".fgCode").length);
 
-            let modelName = $(this).val();
-            let row = $(this).closest("tr");
-
-            if (modelName == "") {
-                row.find(".fgCode").val("");
-                row.find(".description").val("");
-                row.find(".availableQty").val("");
-                row.data("qtyperflc", 0);
-                return;
+                    row.find(".description").val(response.Description);
+                    row.find(".fgCode").val(response.FGCode);
+                    row.find(".availableQty").val(response.AvailableQty);
+            },
+            error: function () {
+                alert("Unable to fetch model details");
             }
-                $.ajax({
-                url: 'GetModelDtl',
-                type: 'GET',
-                data: {
-                    modelName: modelName
-                },
-                    success: function (response) {
-                        console.log(response);
-                        console.log("Description:", response.Description);
-                        console.log("FG Code:", response.FGCode);
-
-                        console.log("Description input count:",
-                            row.find(".description").length);
-
-                        console.log("FG Code input count:",
-                            row.find(".fgCode").length);
-
-                        row.find(".description").val(response.Description);
-                        row.find(".fgCode").val(response.FGCode);
-                        row.find(".availableQty").val(response.AvailableQty);
-
-
-                    //row.find(".description").val(response.Description);
-                    //row.find(".fgCode").val(response.FGCode);
-                    //row.find(".availableQty").val(response.AvailableQty);
-                },
-                error: function () {
-                    alert("Unable to fetch model details");
-                }
-            });
         });
+    });
 
-        // Qty change
-        $(document).on("change", ".qty", function () {
-            let row = $(this).closest("tr");
-            let qty = parseInt($(this).val()) || 0;
-            if(qty <= 0)
+    // Qty change
+    $(document).on("change", ".qty", function () {
+        let row = $(this).closest("tr");
+        let qty = parseInt($(this).val()) || 0;
+        if(qty <= 0)
+        {
+            row.find(".flcQty").val("");
+            return;
+        }
+        $.ajax({
+            url:'GetPalletDetails',
+            type:'GET',
+            data:{
+                fgCode: row.find(".fgCode").val(),
+                description: row.find(".description").val(),
+                model: row.find(".model").val(),
+                qty: qty
+            },
+            success:function(response)
             {
-                row.find(".flcQty").val("");
-                return;
-            }
-            $.ajax({
-                url:'GetPalletDetails',
-                type:'GET',
-                data:{
-                    fgCode: row.find(".fgCode").val(),
-                    description: row.find(".description").val(),
-                    model: row.find(".model").val(),
-                    qty: qty
-                },
-                success:function(response)
+                if(!response.Success)
                 {
-                    if(!response.Success)
-                    {
-                        alert(response.Message);
-                        row.find(".qty").val("");
-                        row.find(".flcQty").val("");
-                        return;
-                    }
-                    // only display FLC count
-                    row.find(".flcQty").val(response.FLCCount);
+                    alert(response.Message);
+                    row.find(".qty").val("");
+                    row.find(".flcQty").val("");
                     calculateTotal();
-                    checkCapacity(row);
-                },
-                error:function()
-                {
-                    alert("Unable to check pallet availability");
+                    return;
                 }
-            });
+                // only display FLC count
+                row.find(".flcQty").val(response.FLCCount);
+                calculateTotal();
+                checkCapacity(row);
+            },
+            error:function()
+            {
+                alert("Unable to check pallet availability");
+            }
         });
+    });
 
 
-        // ================= SAVE ROW BUTTON CLICK =================
-        $(document).on("click", ".saveRow", function () {
-            var row = $(this).closest("tr");
-            // Basic Validation
-            if ($("#DockNo").val() == "") {
-                alert("Select Dock");
-                $("#DockNo").focus();
-                return;
-            }
-            if (row.find(".invoiceNo").val().trim() == "") {
-                alert("Enter Invoice No");
-                row.find(".invoiceNo").focus();
-                return;
-            }
-            if (row.find(".customer").val() == "") {
-                alert("Select Customer");
-                row.find(".customer").focus();
-                return;
-            }
-            if (row.find(".model").val() == "") {
-                alert("Select Model");
-                row.find(".model").focus();
-                return;
-            }
-            if (row.find(".qty").val() == "" || parseInt(row.find(".qty").val()) <= 0) {
-                alert("Enter Quantity");
-                row.find(".qty").focus();
-                return;
-            }
-            function isValidMobile(mobile) {
-                return /^[0-9]{10}$/.test(mobile);
-            }
+    // ================= SAVE ROW BUTTON CLICK =================
+    $(document).on("click", ".saveRow", function () {
+        var row = $(this).closest("tr");
+        // Basic Validation
+        if ($("#DockNo").val() == "") {
+            alert("Select Dock");
+            $("#DockNo").focus();
+            return;
+        }
+        if (row.find(".invoiceNo").val().trim() == "") {
+            alert("Enter Invoice No");
+            row.find(".invoiceNo").focus();
+            return;
+        }
+        if (row.find(".customer").val() == "") {
+            alert("Select Customer");
+            row.find(".customer").focus();
+            return;
+        }
+        if (row.find(".model").val() == "") {
+            alert("Select Model");
+            row.find(".model").focus();
+            return;
+        }
+        if (row.find(".qty").val() == "" || parseInt(row.find(".qty").val()) <= 0) {
+            alert("Enter Quantity");
+            row.find(".qty").focus();
+            return;
+        }
+        if (parseInt(row.find(".qty").val()) < 0) {
+            alert("Requested quantity must be greater than zero.");
+            row.find(".qty").focus();
+            return;
+        }
+        function isValidMobile(mobile) {
+            return /^[0-9]{10}$/.test(mobile);
+        }
 
-            if (!isValidMobile($("#SupervisorMobile").val())) {
-                alert("Enter a valid 10-digit Supervisor Mobile Number.");
-                $("#SupervisorMobile").focus();
-                $("#SupervisorMobile").val('');
-                return;
-            }
+        if (!isValidMobile($("#SupervisorMobile").val())) {
+            alert("Enter a valid 10-digit Supervisor Mobile Number.");
+            $("#SupervisorMobile").focus();
+            $("#SupervisorMobile").val('');
+            return;
+        }
 
-            if (!isValidMobile($("#DriverMobile").val())) {
-                alert("Enter a valid 10-digit Driver Mobile Number.");
-                $("#DriverMobile").focus();
-                $("#DriverMobile").val('');
-                return;
-            }
+        if (!isValidMobile($("#DriverMobile").val())) {
+            alert("Enter a valid 10-digit Driver Mobile Number.");
+            $("#DriverMobile").focus();
+            $("#DriverMobile").val('');
+            return;
+        }
 
-            if (!isValidMobile($("#SecurityMobile").val())) {
-                alert("Enter a valid 10-digit Security Mobile Number.");
-                $("#SecurityMobile").focus();
-                $("#SecurityMobile").val('');
-                return;
-            }
-
-            saveCurrentRow(row);
-        });
+        if (!isValidMobile($("#SecurityMobile").val())) {
+            alert("Enter a valid 10-digit Security Mobile Number.");
+            $("#SecurityMobile").focus();
+            $("#SecurityMobile").val('');
+            return;
+        }
+        saveCurrentRow(row);
+    });
 
     function saveCurrentRow(row) {
-
         $.ajax({
-
             url: 'SaveLoading',
             type: 'POST',
 
@@ -1022,7 +1024,6 @@
                 FGCode: row.find(".fgCode").val(),
                 Description: row.find(".description").val(),
                 Quantity: row.find(".qty").val(),
-                // IMPORTANT
                 AvailableQty: row.find(".availableQty").length > 0 ? row.find(".availableQty").val() : "",
                 DriverName: $("#DriverName").val(),
                 DriverMobile: $("#DriverMobile").val(),
@@ -1041,79 +1042,42 @@
                     return;
                 }
 
-                // =====================================================
-                // LOCK ONLY THE ROW THAT WAS JUST SAVED
-                // =====================================================
-
                 row.find("input").prop("readonly", true);
                 row.find("select").prop("disabled", true);
-
-                row.find(".saveRow")
-                    .removeClass("btn-success")
-                    .addClass("btn-secondary")
-                    .text("Saved")
-                    .prop("disabled", true);
-
-
-                // =====================================================
-                // RECALCULATE TOTAL
-                // =====================================================
+                row.find(".saveRow").removeClass("btn-success") .addClass("btn-secondary")
+                    .text("Saved").prop("disabled", true);
 
                 calculateTotal();
-
-                let totalFLC =parseFloat($("#totalFLC").text()) || 0;
-
-
-                // =====================================================
-                // CAPACITY AVAILABLE
-                // =====================================================
+                let totalFLC = parseFloat($("#totalFLC").text()) || 0;
+                // Keep Submit enabled.
+                $("#btnSubmit").prop("disabled", false);
 
                 if (totalFLC < allowedCapacity) {
-
                     // Create ONE new row
                     addNewRow();
-
-                    // Enable ONLY the new row
                     enableNewLoadingRow();
-
-                    // Submit allowed
-                    $("#btnSubmit").prop("disabled", false);
-
-                    // Focus new row
-                    $("#loadingTableContainer tr:last")
-                        .find(".invoiceNo")
-                        .focus();
+                    $("#loadingTableContainer tr:last").find(".invoiceNo").focus();
                 }
-
-                // =====================================================
-                // CAPACITY FULL
-                // =====================================================
-
                 else {
+                    // Capacity reached: do not create another row.
+                    // Existing saved rows remain locked.
+                    // Submit remains enabled.
+                    alert("Vehicle loading completed. You can now submit.");
 
-                    disableAllLoadingRows();
-
-                    $("#btnSubmit").prop("disabled", true);
-
-                    alert(
-                        "Vehicle loading completed. Maximum FLC reached."
-                    );
+                    //disableAllLoadingRows();
+                    //$("#btnSubmit").prop("disabled", true);
+                    //alert( "Vehicle loading completed. Maximum FLC reached.");
                 }
             },
 
             error: function (xhr, status, error) {
-
                 console.log("========== SAVE LOADING ERROR ==========");
                 console.log("Status Code:", xhr.status);
                 console.log("Status:", status);
                 console.log("Error:", error);
                 console.log("Response:", xhr.responseText);
 
-                alert(
-                    "Error while saving loading.\n\n" +
-                    "HTTP Status: " + xhr.status +
-                    "\n\n" +
-                    xhr.responseText
+                alert("Error while saving loading.\n\n" + "HTTP Status: " + xhr.status + "\n\n" +xhr.responseText
                 );
             }
         });
@@ -1128,19 +1092,55 @@
             alert("Select Dock");
             return;
         }
-
         if ($("#VehicleSize").val() == "") {
             alert("Select Vehicle Size");
             return;
         }
-
         if ($("#VehicleNumber").val().trim() == "") {
             alert("Enter Vehicle Number");
             return;
         }
-
         if (totalQty <= 0) {
             alert("Add loading details");
+            return;
+        }
+        // Validate capacity directly before submission.
+        if (allowedCapacity <= 0) {
+            alert("Invalid vehicle capacity.");
+            return;
+        }
+        if (totalFLC > allowedCapacity) {
+            alert(
+                "Vehicle capacity exceeded. Maximum allowed FLC: "
+                + allowedCapacity
+            );
+            return;
+        }
+
+        // Ensure there is no unsaved row containing entered data.
+        let hasUnsavedData = false;
+
+        $("#loadingTableContainer tr").each(function () {
+
+            let row = $(this);
+
+            if (row.find(".saveRow").length > 0 &&
+                !row.find(".saveRow").prop("disabled")) {
+
+                let invoice = row.find(".invoiceNo").val();
+                let customer = row.find(".customer").val();
+                let model = row.find(".model").val();
+                let qty = row.find(".qty").val();
+
+                if (invoice || customer || model || qty) {
+                    hasUnsavedData = true;
+                    return false;
+                }
+            }
+        });
+
+        if (hasUnsavedData) {
+            alert("Please save the current loading row before submitting.");
             return;
         }
 
@@ -1345,7 +1345,7 @@
                 else {
 
                     // Vehicle already full
-                    disableAllLoadingRows();
+                    //disableAllLoadingRows();
                     $("#btnSubmit").prop("disabled", true);
 
                 }
@@ -1400,90 +1400,7 @@
                 }
 
             }
-            //if (existingData) {
-
-            //    $("#btnSubmit").prop("disabled", true);
-
-
-            //    $(".saveRow")
-            //        .prop("disabled", true)
-            //        .removeClass("btn-success")
-            //        .addClass("btn-secondary")
-            //        .text("Saved");
-
-
-            //    $("#VehicleSize").prop("disabled", true);
-
-            //    $("#VehicleNumber").prop("readonly", true);
-            //    $("#TransporterName").prop("readonly", true);
-            //    $("#VehicleSealNo").prop("readonly", true);
-
-            //    $("#DriverName").prop("readonly", true);
-            //    $("#DriverMobile").prop("readonly", true);
-
-            //    $("#SecurityName").prop("readonly", true);
-            //    $("#SecurityMobile").prop("readonly", true);
-
-            //    $("#SupervisorName").prop("readonly", true);
-            //    $("#SupervisorMobile").prop("readonly", true);
-
-
-            //    // lock new entry row also
-            //    $("#loadingTableContainer input")
-            //        .prop("readonly", true);
-
-            //    $("#loadingTableContainer select")
-            //        .prop("disabled", true);
-            //    calculateTotal();
-
-
-            //    $("#loadingTableContainer tr").each(function () {
-
-            //        var invoice = $(this).find(".invoiceNo").val();
-
-            //        if ($(this).find(".saveRow").length > 0 && (!invoice || invoice.trim() === "")) {
-            //            $(this).remove();
-            //        }
-
-            //    });
-
-
-            //}
-            //else {
-            //    $("#btnSubmit").prop("disabled", false);
-
-
-            //    $(".saveRow")
-            //        .prop("disabled", false)
-            //        .removeClass("btn-success")
-            //        .addClass("btn-success")
-            //        .text("Add");
-
-
-            //    $("#VehicleSize").prop("disabled", false);
-
-            //    $("#VehicleNumber").prop("readonly", false);
-            //    $("#TransporterName").prop("readonly", false);
-            //    $("#VehicleSealNo").prop("readonly", false);
-
-            //    $("#DriverName").prop("readonly", false);
-            //    $("#DriverMobile").prop("readonly", false);
-
-            //    $("#SecurityName").prop("readonly", false);
-            //    $("#SecurityMobile").prop("readonly", false);
-
-            //    $("#SupervisorName").prop("readonly", false);
-            //    $("#SupervisorMobile").prop("readonly", false);
-
-
-            //    // lock new entry row also
-            //    $("#loadingTableContainer input")
-            //        .prop("readonly", false);
-
-            //    $("#loadingTableContainer select")
-            //        .prop("disabled", false);
-            //    calculateTotal();
-            //}
+           
 
         },
         error: function (xhr) {

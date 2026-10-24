@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Bcpg;
 using S1947.Models;
 using System;
 using System.Collections.Generic;
@@ -140,6 +141,7 @@ namespace S1947.Controllers
     
 
         public JsonResult GetPalletDetails(string fgCode, string description, string model, int qty)
+        
         {
             using (var db = new S1947Entities())
             {
@@ -179,15 +181,15 @@ namespace S1947.Controllers
                 // 3.Pass ONLY the required list
                 var selectedPallets = SelectPalletsForUnloading(requiredPallets, qty);
 
-                // STEP 3: Reserve locations and assign unloading sequence.
-                for (int i = 0; i < selectedPallets.Count; i++)
-                {
-                    var pallet = selectedPallets[i];
-                    pallet.LocaStatus = "INPROCESS";
-                    pallet.UnloadSequence = i + 1;
-                    db.Entry(pallet).State = EntityState.Modified;
-                    db.SaveChanges();
-                }
+                //// STEP 3: Reserve locations and assign unloading sequence.
+                //for (int i = 0; i < selectedPallets.Count; i++)
+                //{
+                //    var pallet = selectedPallets[i];
+                //    pallet.LocaStatus = "INPROCESS";
+                //    pallet.UnloadSequence = i + 1;
+                //    db.Entry(pallet).State = EntityState.Modified;
+                //    db.SaveChanges();
+                //}
 
                 // STEP 4: Return only the values required by the view.
                 return Json(new
@@ -211,29 +213,55 @@ namespace S1947.Controllers
             }
             else
             {
-                // NON-NORMAL PATTERN: Apply shift priority and alternating ends.
+                //first check datewise list in that check shiftwise 
+                // STEP 1: Apply datewise priority first.
+                var datePriority = pallets.OrderBy(x => x.CreatedOn.HasValue
+                        ? x.CreatedOn.Value.Date
+                        : DateTime.MaxValue)
+                        .ToList();
+
+                // STEP 2: Check alternative ends within the datewise list.
+                var dateAlternating = GetAlternatingEnds(datePriority);
+
+                var dateSelected = SelectUntilQuantity(dateAlternating, requestedQty);
+
+                // If datewise selection satisfies the quantity, unload directly.
+                if (dateSelected.Sum(x => Convert.ToInt32(x.Quantity)) >= requestedQty)
+                {
+                    return dateSelected;
+                }
+
+                // STEP 3: Datewise alternative ends are insufficient.
+                // Apply shiftwise priority, then check alternative ends again.
                 var shiftPriority = ApplyShiftPriority(pallets);
 
                 var shiftAlternating = GetAlternatingEnds(shiftPriority);
 
-                var selected = SelectUntilQuantity(shiftAlternating, requestedQty);
+                return SelectUntilQuantity(shiftAlternating, requestedQty);
 
-                if (selected.Sum(x => Convert.ToInt32(x.Quantity)) >= requestedQty)
-                {
-                    return selected;
-                }
+                ////// NON-NORMAL PATTERN: Apply shift priority and alternating ends.
+                ////var shiftPriority = ApplyShiftPriority(pallets);
 
-                // FALLBACK: Relax shift priority to date-wise priority.
-                var datePriority = pallets
-                    .OrderBy(x => x.CreatedOn.HasValue
-                        ? x.CreatedOn.Value.Date
-                        : DateTime.MaxValue)
-                    .ThenBy(x => x.sequence)
-                    .ToList();
+                ////var shiftAlternating = GetAlternatingEnds(shiftPriority);
 
-                var dateAlternating = GetAlternatingEnds(datePriority);
+                //var selected = SelectUntilQuantity(shiftAlternating, requestedQty);
 
-                return SelectUntilQuantity(dateAlternating, requestedQty);
+                //if (selected.Sum(x => Convert.ToInt32(x.Quantity)) >= requestedQty)
+                //{
+                //    return selected;
+                //}
+
+                //// FALLBACK: Relax shift priority to date-wise priority.
+                //var datePriority = pallets
+                //    .OrderBy(x => x.CreatedOn.HasValue
+                //        ? x.CreatedOn.Value.Date
+                //        : DateTime.MaxValue)
+                //    .ThenBy(x => x.sequence)
+                //    .ToList();
+
+                //var dateAlternating = GetAlternatingEnds(datePriority);
+
+                //return SelectUntilQuantity(dateAlternating, requestedQty);
 
             }
         }
@@ -299,8 +327,6 @@ namespace S1947.Controllers
             }
             return selected;
         }
-
-
 
       
         private List<GoodsExisiting> ApplyDatePriority( List<GoodsExisiting> pallets)
@@ -494,22 +520,10 @@ namespace S1947.Controllers
                                 x.LocaStatus == "INPROCESS" &&
                                 x.FGModel == Model &&
                                 x.FGCode == FGCode &&
-                                x.FGDesc == Description 
-                                //&&x.Quantity >= Quantity
-                                )
+                                x.FGDesc == Description)
                             .OrderBy(x => x.UnloadSequence)
                             .ToList();
 
-                        if (Quantity <= 0)
-                        {
-                            transaction.Rollback();
-                            return Json(new
-                            {
-                                Success = false,
-                                Message = "Requested quantity must be greater than zero."
-                            });
-                        }
-                        //List<GoodsExisiting> selectedPallets =SelectPalletsForUnloading(pallets, Quantity);
                         int allocatedQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
                         if (allocatedQty < Quantity)
                         {
@@ -521,13 +535,12 @@ namespace S1947.Controllers
                             });
                         }
 
-
                         string firstSerialCode = null;
                         foreach (var pallet in pallets)
                         {
                             // Generate a UNIQUE SerialCode for EACH pallet/task
                             string serialCode = GenerateOutboundSerialCode(db);
-                            // Keep first SerialCode for UnloadMaterialTemp
+                            // Keep first SerialCode for Temp
                             if (firstSerialCode == null)
                             {
                                 firstSerialCode = serialCode;
@@ -593,42 +606,28 @@ namespace S1947.Controllers
                             MobileNoSupervisor = SupervisorMobile,
                             DockNo = DockNo,
                             Station = stationNo,
-                            // First pallet's SerialCode
                             SerialCode = firstSerialCode,
-
                             status = "Pending",
                             Date = DateTime.Now.ToString("dd/MM/yyyy"),
                             Time = DateTime.Now.ToString("HH:mm"),
                             Shift = shift
                         };
-
                         db.UnloadMaterialTemps.Add(material);
                         db.SaveChanges();
-
-                        //4. UPDATE LOCATION  in Goods Exisiting
-                        foreach (var pallet in pallets)
-                        {
-                            //pallet.Quantity = 0;
-                            pallet.LocaStatus = "OCCUPIED";
-                            pallet.ModifiedOn = DateTime.Now;
-                            db.Entry(pallet).State = EntityState.Modified;
-                        }
-                        db.SaveChanges();
+                       
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
                         return Json(new
                         {
-                            Success = false,
-                            Message = ex.Message
+                            Success = false, Message = ex.Message
                         });
                     }
                     transaction.Commit();
                     return Json(new
                     {
-                        Success = true,
-                        Message = "Loading saved successfully"
+                        Success = true, Message = "Data saved successfully"
                     });
                 }
             }
@@ -845,7 +844,6 @@ namespace S1947.Controllers
     [HttpPost]
     public async Task<JsonResult> SubmitLoading(SubmitLoadingModel model)
     {
-
         try
         {
             List<UnloadTemp> submittedUnloadTemps;
@@ -867,14 +865,16 @@ namespace S1947.Controllers
                 {
                     itemq.status = "Submit";
                     db.Entry(itemq).State = EntityState.Modified;
+                    db.SaveChanges();
                 }
 
                 foreach (var item in UnloadTempData)
                 {
                     item.Status = "Submit";
                     db.Entry(item).State = EntityState.Modified;
+                    db.SaveChanges();
                 }
-                db.SaveChanges();
+        
                 submittedUnloadTemps = db.UnloadTemps.Where(x => x.Status == "Submit" && x.DockNo == model.DockNo).OrderBy(x => x.MTransNo).ToList();
 
                 // INSERT TASK DTL USING STORED PROCEDURE
@@ -884,7 +884,6 @@ namespace S1947.Controllers
                 nextPriority++;
                 //task no 
                 int nextTaskNo = db.TaskDtls.Select(x => (int?)x.TaskNo).Max() ?? 0;
-
                 nextTaskNo++;
                 // Save the first task number
                 if (firstTaskNo == 0)
@@ -896,8 +895,7 @@ namespace S1947.Controllers
                 foreach (var pallet in submittedUnloadTemps)
                 {
                         // Check whether a task already exists for this pallet
-                    bool taskExists = db.TaskDtls.Any(x =>
-                        x.TaskType == "UNLOADOPERATION" &&
+                    bool taskExists = db.TaskDtls.Any(x =>x.TaskType == "UNLOADOPERATION" &&
                         x.DestinationLocation == pallet.LocationName &&
                         x.SourceLocation == "OUTBOUND" );
                         if (taskExists)
@@ -926,9 +924,11 @@ namespace S1947.Controllers
                     foreach (var item in goods)
                     { 
                         item.LocaStatus = "OCCUPIED";
+                        item.UnloadSequence = 0;
+                        item.ModifiedOn = DateTime.Now;
                         db.Entry(item).State = EntityState.Modified;
+                        db.SaveChanges();
                     }
-                  
                 }
                 //call the api here to send the task to wcs
 
