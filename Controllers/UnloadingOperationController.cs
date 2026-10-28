@@ -288,6 +288,10 @@ namespace S1947.Controllers
                 if (current.Cat != previous.Cat)
                     continue;
 
+                //apply condtion if smae column adn sme row & smae cat then its non normal
+
+                
+
                 //// Same layer and category, but different rows: normal
                 //if (previousRow != currentRow)
                 //    continue;
@@ -371,48 +375,6 @@ namespace S1947.Controllers
                     .ToList();
             }
         }
-
-
-        //private List<GoodsExisiting> GetAlternatingEnds(List<GoodsExisiting> pallets)
-        //{
-        //    var result = new List<GoodsExisiting>();
-
-        //    if (pallets == null || pallets.Count == 0)
-        //        return result;
-
-
-        //    // First row, last row, second row, second-last row, and so on. This is a basic alternating-ends helper.
-        //    //var ordered = pallets
-        //    //    .OrderBy(x => x.Row)
-        //    //    .ThenBy(x => x.sequence)
-        //    //    .ToList();
-        //    var groups = pallets.GroupBy(x => new { x.Layer, x.Col }).ToList();
-        //    foreach (var group in groups)
-        //    {
-        //        var rows = group
-        //            .OrderBy(x => x.Row)
-        //            .ToList();
-
-        //        int left = 0;
-        //        int right = rows.Count - 1;
-
-        //        while (left <= right)
-        //        {
-        //            result.Add(rows[left]);
-        //            left++;
-
-        //            if (left <= right)
-        //            {
-        //                result.Add(rows[right]);
-        //                right--;
-        //            }
-        //        }
-        //    }
-
-        //    return result;
-        //}
-
-
 
         private List<GoodsExisiting> GetAlternatingEnds( List<GoodsExisiting> pallets)
         {
@@ -952,7 +914,7 @@ namespace S1947.Controllers
                         }
 
                     //stored procedure
-                    db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PlalletQR, "OUTBOUND", pallet.LocationName, "Pending", pallet.Station, pallet.LocationId, nextPriority, DateTime.Now, DateTime.Now, null, null, pallet.SerialCode);
+                    db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PlalletQR, "OUTBOUND", pallet.LocationName, "PENDING", pallet.Station, pallet.LocationId, nextPriority, DateTime.Now, DateTime.Now, null, null, pallet.SerialCode);
                     db.TaskReports.Add(new TaskReport
                     {
                         TaskID = nextTaskNo,
@@ -977,8 +939,26 @@ namespace S1947.Controllers
                         db.SaveChanges();
                     }
                 }
-                //call the api here to send the task to wcs
+                //triger the unloading api here
+                // SendTasksToWcs();
+                //// https://localhost:44341/api/MoveAPI/MoveTaskUnload  thsi url with no parameters post method 
+                // Trigger unloading API
+                //bool apiSuccess = await TriggerUnloadApi();
 
+                //if (!apiSuccess)
+                //{
+                //    return Json(new
+                //    {
+                //        Success = false,
+                //        Message = "Database submission completed, but unloading API failed."
+                //    });
+                //}
+
+                //return Json(new
+                //{
+                //    Success = true,
+                //    Message = "Unloading submitted and API triggered successfully."
+                //});
 
                 return Json(new
                 {
@@ -1001,181 +981,24 @@ namespace S1947.Controllers
 
 
         //for outbound api method
-        private async Task<WcsApiResponse> SendTasksToWcs(List<WcsTaskRequest> tasks)
+        private async Task<bool> TriggerUnloadApi()
         {
-            string wcsUrl = ConfigurationManager.AppSettings["WcsInsertTaskUrl"];//fetching url
+            string apiUrl = ConfigurationManager.AppSettings["MoveTaskUnloadUrl"];
 
-            string requestJson = JsonConvert.SerializeObject(tasks);
-            const int maxAttempts = 3;
-            for (int attempt = 1; attempt <= maxAttempts; attempt++)
+            using (HttpClient client = new HttpClient())
             {
-                try
-                {
-                    using (HttpClient client = new HttpClient())
-                    {
-                        client.Timeout = TimeSpan.FromSeconds(30);
+                client.Timeout = TimeSpan.FromSeconds(30);
 
-                        client.DefaultRequestHeaders.Accept.Clear();
+                // POST with no parameters and no request body
+                HttpResponseMessage response = await client.PostAsync(
+                    apiUrl,
+                    null
+                );
 
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        using (var content = new StringContent(
-                            requestJson,
-                            Encoding.UTF8,
-                            "application/json"))
-                        {
-                            HttpResponseMessage response = await client.PostAsync(wcsUrl, content);
-                            string responseJson = await response.Content.ReadAsStringAsync();
-
-                            // HTTP error
-                            if (!response.IsSuccessStatusCode)
-                            {
-                                // Retry only HTTP 5xx
-                                if ((int)response.StatusCode >= 500 &&
-                                    attempt < maxAttempts)
-                                {
-                                    await Task.Delay(1000);
-                                    continue;
-                                }
-
-                                SaveWcsLog(requestJson, responseJson, (int)response.StatusCode, null,
-                                false, "FAILED", "HTTP error from WCS");
-
-                                return new WcsApiResponse
-                                {
-                                    code = (int)response.StatusCode,
-                                    status = false,
-                                    message = "WCS HTTP error.",
-                                    data = false
-                                };
-                            }
-
-                            // Deserialize WCS response
-                            WcsApiResponse result = JsonConvert.DeserializeObject<WcsApiResponse>(
-                                    responseJson);
-
-                            if (result == null)
-                            {
-                                SaveWcsLog(
-                                    requestJson,
-                                    responseJson,
-                                    (int)response.StatusCode,
-                                    null,
-                                    false,
-                                    "FAILED",
-                                    "Invalid response from WCS");
-
-                                return new WcsApiResponse
-                                {
-                                    code = 500,
-                                    status = false,
-                                    message = "Invalid response from WCS.",
-                                    data = false
-                                };
-                            }
-
-                            // WCS business failure
-                            if (result.code != 200 || result.status != true)
-                            {
-                                SaveWcsLog(
-                                    requestJson,
-                                    responseJson,
-                                    (int)response.StatusCode,
-                                    result.code,
-                                    result.status,
-                                    "FAILED",
-                                    result.message);
-
-                                return result;
-                            }
-
-                            // WCS success
-                            SaveWcsLog(
-                                requestJson,
-                                responseJson,
-                                (int)response.StatusCode,
-                                result.code,
-                                result.status,
-                                "SUCCESS",
-                                null);
-
-                            return result;
-                        }
-                    }
-                }
-                catch (TaskCanceledException ex)
-                {
-                    if (attempt < maxAttempts)
-                    {
-                        await Task.Delay(1000);
-                        continue;
-                    }
-
-                    SaveWcsLog(
-                    requestJson,
-                    null,
-                    null,
-                    null,
-                    false,
-                    "EXCEPTION",
-                    "WCS API timeout: " + ex.Message);
-
-                    return new WcsApiResponse
-                    {
-                        code = 408,
-                        status = false,
-                        message = "WCS API timeout after 3 attempts.",
-                        data = false
-                    };
-                }
-                catch (HttpRequestException ex)
-                {
-                    // CONNECTION / NETWORK ERROR
-                    SaveWcsLog(
-                    requestJson,
-                    null,
-                    null,
-                    null,
-                    false,
-                    "EXCEPTION",
-                    "WCS connection error: " + ex.Message);
-
-                    return new WcsApiResponse
-                    {
-                        code = 503,
-                        status = false,
-                        message = "Unable to connect to WCS after 3 atempts.",
-                        data = false
-                    };
-                }
-                catch (Exception ex)
-                {
-                    SaveWcsLog(
-                        requestJson,
-                        null,
-                        null,
-                        null,
-                        false,
-                        "EXCEPTION",
-                        ex.ToString());
-
-                    return new WcsApiResponse
-                    {
-                        code = 500,
-                        status = false,
-                        message = "Unexpected WCS API error.",
-                        data = false
-                    };
-                }
+                return response.IsSuccessStatusCode;
             }
-            return new WcsApiResponse
-            {
-                code = 500,
-                status = false,
-                message = "WCS request failed after 3 attempts.",
-                data = false
-            };
         }
+
 
         private void SaveWcsLog(string requestData, string responseData, int? httpStatusCode, int? wcsCode, bool? wcsStatus, string result, string errorMessage)
         {
