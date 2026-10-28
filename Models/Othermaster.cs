@@ -18,5 +18,6 @@ namespace S1947.Models
         public Nullable<int> Autoscan { get; set; }
         public Nullable<decimal> EmptyPalletwight { get; set; }
         public Nullable<int> MaxDockRange { get; set; }
+        public Nullable<double> palletWeightTolerance { get; set; }
     }
 }

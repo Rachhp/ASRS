@@ -10,44 +10,47 @@
         <EntityTypeShape EntityType="S1947Model.ApiErrorLog" Width="1.5" PointX="0.75" PointY="3.75" />
         <EntityTypeShape EntityType="S1947Model.ApiErrorMaster" Width="1.5" PointX="2.75" PointY="3.75" />
         <EntityTypeShape EntityType="S1947Model.App_Location" Width="1.5" PointX="4.75" PointY="0.75" />
-        <EntityTypeShape EntityType="S1947Model.ASRSColumnCategoryTurn" Width="1.5" PointX="6.75" PointY="0.75" />
-        <EntityTypeShape EntityType="S1947Model.ASRSLocationZoneMaster" Width="1.5" PointX="6.75" PointY="3.75" />
-        <EntityTypeShape EntityType="S1947Model.ASRSPairReservation" Width="1.5" PointX="2.75" PointY="7.75" />
-        <EntityTypeShape EntityType="S1947Model.AsrsZone" Width="1.5" PointX="8.75" PointY="0.75" />
-        <EntityTypeShape EntityType="S1947Model.CustomerMaster" Width="1.5" PointX="8.75" PointY="3.75" />
-        <EntityTypeShape EntityType="S1947Model.Errorlog" Width="1.5" PointX="4.75" PointY="8.75" />
-        <EntityTypeShape EntityType="S1947Model.GoodsExisiting" Width="1.5" PointX="6.75" PointY="8.75" />
-        <EntityTypeShape EntityType="S1947Model.LiftStatusMaster" Width="1.5" PointX="8.75" PointY="7.75" />
-        <EntityTypeShape EntityType="S1947Model.LoadingLog" Width="1.5" PointX="10.75" PointY="0.75" />
-        <EntityTypeShape EntityType="S1947Model.LoadingTemp" Width="1.5" PointX="10.75" PointY="7.75" />
-        <EntityTypeShape EntityType="S1947Model.Menulist" Width="1.5" PointX="0.75" PointY="11.75" />
-        <EntityTypeShape EntityType="S1947Model.MoveLog" Width="1.5" PointX="12.75" PointY="0.75" />
-        <EntityTypeShape EntityType="S1947Model.MoveTemp" Width="1.5" PointX="2.75" PointY="12.75" />
-        <EntityTypeShape EntityType="S1947Model.Othermaster" Width="1.5" PointX="12.75" PointY="7.75" />
-        <EntityTypeShape EntityType="S1947Model.PartMaster" Width="1.5" PointX="12.75" PointY="10.75" />
+        <EntityTypeShape EntityType="S1947Model.ASRS_AllocationRules" Width="1.5" PointX="6.75" PointY="0.75" />
+        <EntityTypeShape EntityType="S1947Model.ASRS_CategoryConfig" Width="1.5" PointX="6.75" PointY="3.75" />
+        <EntityTypeShape EntityType="S1947Model.ASRS_ColumnPriority" Width="1.5" PointX="6.75" PointY="6.75" />
+        <EntityTypeShape EntityType="S1947Model.ASRSColumnCategoryTurn" Width="1.5" PointX="2.75" PointY="7.75" />
+        <EntityTypeShape EntityType="S1947Model.ASRSLocationZoneMaster" Width="1.5" PointX="8.75" PointY="0.75" />
+        <EntityTypeShape EntityType="S1947Model.ASRSPairReservation" Width="1.5" PointX="8.75" PointY="5.75" />
+        <EntityTypeShape EntityType="S1947Model.AsrsZone" Width="1.5" PointX="4.75" PointY="9.75" />
+        <EntityTypeShape EntityType="S1947Model.ASRSZoneFallback" Width="1.5" PointX="6.75" PointY="9.75" />
+        <EntityTypeShape EntityType="S1947Model.CustomerMaster" Width="1.5" PointX="8.75" PointY="9.75" />
+        <EntityTypeShape EntityType="S1947Model.Errorlog" Width="1.5" PointX="10.75" PointY="0.75" />
+        <EntityTypeShape EntityType="S1947Model.GoodsExisiting" Width="1.5" PointX="0.75" PointY="10.75" />
+        <EntityTypeShape EntityType="S1947Model.LiftStatusMaster" Width="1.5" PointX="10.75" PointY="4.75" />
+        <EntityTypeShape EntityType="S1947Model.LoadingLog" Width="1.5" PointX="10.75" PointY="8.75" />
+        <EntityTypeShape EntityType="S1947Model.LoadingTemp" Width="1.5" PointX="12.75" PointY="0.75" />
+        <EntityTypeShape EntityType="S1947Model.Menulist" Width="1.5" PointX="2.75" PointY="12.75" />
+        <EntityTypeShape EntityType="S1947Model.MoveLog" Width="1.5" PointX="4.75" PointY="12.75" />
+        <EntityTypeShape EntityType="S1947Model.MoveTemp" Width="1.5" PointX="12.75" PointY="7.75" />
+        <EntityTypeShape EntityType="S1947Model.Othermaster" Width="1.5" PointX="6.75" PointY="13.75" />
+        <EntityTypeShape EntityType="S1947Model.PartMaster" Width="1.5" PointX="12.75" PointY="13.75" />
         <EntityTypeShape EntityType="S1947Model.PartMaster_old" Width="1.5" PointX="14.75" PointY="0.75" />
         <EntityTypeShape EntityType="S1947Model.PokaYokaPallet" Width="1.5" PointX="14.75" PointY="4.75" />
-        <EntityTypeShape EntityType="S1947Model.PokaYokaQCHistory" Width="1.5" PointX="4.75" PointY="14.75" />
-        <EntityTypeShape EntityType="S1947Model.shift_master" Width="1.5" PointX="6.75" PointY="14.75" />
-        <EntityTypeShape EntityType="S1947Model.ShuttleDtl" Width="1.5" PointX="8.75" PointY="14.75" />
-        <EntityTypeShape EntityType="S1947Model.sysdiagram" Width="1.5" PointX="14.75" PointY="9.75" />
-        <EntityTypeShape EntityType="S1947Model.TaskDtl" Width="1.5" PointX="14.75" PointY="12.75" />
-        <EntityTypeShape EntityType="S1947Model.TaskReport" Width="1.5" PointX="10.75" PointY="15.75" />
-        <EntityTypeShape EntityType="S1947Model.TaskStatusCode" Width="1.5" PointX="16.75" PointY="0.75" />
-        <EntityTypeShape EntityType="S1947Model.UnloadedData" Width="1.5" PointX="16.75" PointY="3.75" />
-        <EntityTypeShape EntityType="S1947Model.UnloadingLog" Width="1.5" PointX="16.75" PointY="12.75" />
-        <EntityTypeShape EntityType="S1947Model.UnloadMaterialTemp" Width="1.5" PointX="12.75" PointY="17.75" />
-        <EntityTypeShape EntityType="S1947Model.UnloadTemp" Width="1.5" PointX="18.75" PointY="0.75" />
-        <EntityTypeShape EntityType="S1947Model.UserAuthorization" Width="1.5" PointX="0.75" PointY="18.75" />
-        <EntityTypeShape EntityType="S1947Model.UserMaster" Width="1.5" PointX="6.75" PointY="18.75" />
-        <EntityTypeShape EntityType="S1947Model.WcsApiLog" Width="1.5" PointX="8.75" PointY="18.75" />
-        <EntityTypeShape EntityType="S1947Model.GELoadingView" Width="1.5" PointX="18.75" PointY="10.75" />
-        <EntityTypeShape EntityType="S1947Model.GELoadingView_WAking_" Width="1.5" PointX="18.75" PointY="17.75" />
-        <EntityTypeShape EntityType="S1947Model.GELoadingView2" Width="1.5" PointX="20.75" PointY="0.75" />
-        <EntityTypeShape EntityType="S1947Model.GEUnloadingView" Width="1.5" PointX="20.75" PointY="7.75" />
-        <EntityTypeShape EntityType="S1947Model.vw_AgeingReport" Width="1.5" PointX="20.75" PointY="12.75" />
-        <EntityTypeShape EntityType="S1947Model.vw_TransactionHistory" Width="1.5" PointX="20.75" PointY="17.75" />
-        <EntityTypeShape EntityType="S1947Model.vw_TransactionReport" Width="1.5" PointX="0.75" PointY="21.75" />
+        <EntityTypeShape EntityType="S1947Model.PokaYokaQCHistory" Width="1.5" PointX="14.75" PointY="9.75" />
+        <EntityTypeShape EntityType="S1947Model.shift_master" Width="1.5" PointX="8.75" PointY="15.75" />
+        <EntityTypeShape EntityType="S1947Model.ShuttleDtl" Width="1.5" PointX="16.75" PointY="0.75" />
+        <EntityTypeShape EntityType="S1947Model.sysdiagram" Width="1.5" PointX="0.75" PointY="16.75" />
+        <EntityTypeShape EntityType="S1947Model.TaskDtl" Width="1.5" PointX="16.75" PointY="4.75" />
+        <EntityTypeShape EntityType="S1947Model.TaskReport" Width="1.5" PointX="16.75" PointY="11.75" />
+        <EntityTypeShape EntityType="S1947Model.TaskStatusCode" Width="1.5" PointX="16.75" PointY="14.75" />
+        <EntityTypeShape EntityType="S1947Model.UnloadedData" Width="1.5" PointX="14.75" PointY="17.75" />
+        <EntityTypeShape EntityType="S1947Model.UnloadingLog" Width="1.5" PointX="16.75" PointY="17.75" />
+        <EntityTypeShape EntityType="S1947Model.UnloadMaterialTemp" Width="1.5" PointX="18.75" PointY="0.75" />
+        <EntityTypeShape EntityType="S1947Model.UnloadTemp" Width="1.5" PointX="6.75" PointY="18.75" />
+        <EntityTypeShape EntityType="S1947Model.UserAuthorization" Width="1.5" PointX="18.75" PointY="7.75" />
+        <EntityTypeShape EntityType="S1947Model.UserMaster" Width="1.5" PointX="8.75" PointY="18.75" />
+        <EntityTypeShape EntityType="S1947Model.WcsApiLog" Width="1.5" PointX="18.75" PointY="10.75" />
+        <EntityTypeShape EntityType="S1947Model.GELoadingView" Width="1.5" PointX="10.75" PointY="18.75" />
+        <EntityTypeShape EntityType="S1947Model.GELoadingView_WAking_" Width="1.5" PointX="18.75" PointY="14.75" />
+        <EntityTypeShape EntityType="S1947Model.GEUnloadingView" Width="1.5" PointX="0.75" PointY="19.75" />
+        <EntityTypeShape EntityType="S1947Model.vw_AgeingReport" Width="1.5" PointX="2.75" PointY="19.75" />
+        <EntityTypeShape EntityType="S1947Model.vw_TransactionHistory" Width="1.5" PointX="20.75" PointY="0.75" />
+        <EntityTypeShape EntityType="S1947Model.vw_TransactionReport" Width="1.5" PointX="20.75" PointY="10.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

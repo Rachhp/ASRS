@@ -228,13 +228,22 @@
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ASRSViewModel.cs" />
+    <Compile Include="Models\ASRSZoneFallback.cs">
+      <DependentUpon>S1947.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ASRS_AllocationRules.cs">
+      <DependentUpon>S1947.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ASRS_CategoryConfig.cs">
+      <DependentUpon>S1947.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ASRS_ColumnPriority.cs">
+      <DependentUpon>S1947.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Errorlog.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\GELoadingView.cs">
-      <DependentUpon>S1947.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\GELoadingView2.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\GELoadingView_WAking_.cs">
@@ -325,6 +334,9 @@
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserAuthorizationModuleViewModel.cs" />
+    <Compile Include="Models\usp_ASRS_GetLocation_SLOW_Result.cs">
+      <DependentUpon>S1947.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\WeightResultModel.cs" />
     <Compile Include="Models\QRDataModel.cs" />
     <Compile Include="Models\ReportsValidation.cs" />

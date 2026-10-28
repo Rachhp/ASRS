@@ -126,5 +126,6 @@ namespace S1947.Models.PokaYoka
         public bool QRScanned { get; set; }
 
         public bool WeightFetched { get; set; }
+        public int MissingQuantity { get; set; }
     }
 }

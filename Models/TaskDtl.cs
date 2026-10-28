@@ -30,5 +30,14 @@ namespace S1947.Models
         public Nullable<System.DateTime> CompletedAt { get; set; }
         public string UUID { get; set; }
         public string SerialCode { get; set; }
+        public Nullable<int> MoveLogId { get; set; }
+        public Nullable<int> From_Layer { get; set; }
+        public Nullable<int> From_Column { get; set; }
+        public Nullable<int> From_Row { get; set; }
+        public Nullable<int> From_OrderRow { get; set; }
+        public Nullable<int> To_Layer { get; set; }
+        public Nullable<int> To_Column { get; set; }
+        public Nullable<int> To_Row { get; set; }
+        public Nullable<int> To_OrderRow { get; set; }
     }
 }

@@ -32,10 +32,14 @@ namespace S1947.Models
         public virtual DbSet<ApiErrorLog> ApiErrorLogs { get; set; }
         public virtual DbSet<ApiErrorMaster> ApiErrorMasters { get; set; }
         public virtual DbSet<App_Location> App_Location { get; set; }
+        public virtual DbSet<ASRS_AllocationRules> ASRS_AllocationRules { get; set; }
+        public virtual DbSet<ASRS_CategoryConfig> ASRS_CategoryConfig { get; set; }
+        public virtual DbSet<ASRS_ColumnPriority> ASRS_ColumnPriority { get; set; }
         public virtual DbSet<ASRSColumnCategoryTurn> ASRSColumnCategoryTurns { get; set; }
         public virtual DbSet<ASRSLocationZoneMaster> ASRSLocationZoneMasters { get; set; }
         public virtual DbSet<ASRSPairReservation> ASRSPairReservations { get; set; }
         public virtual DbSet<AsrsZone> AsrsZones { get; set; }
+        public virtual DbSet<ASRSZoneFallback> ASRSZoneFallbacks { get; set; }
         public virtual DbSet<CustomerMaster> CustomerMasters { get; set; }
         public virtual DbSet<Errorlog> Errorlogs { get; set; }
         public virtual DbSet<GoodsExisiting> GoodsExisitings { get; set; }
@@ -65,7 +69,6 @@ namespace S1947.Models
         public virtual DbSet<WcsApiLog> WcsApiLogs { get; set; }
         public virtual DbSet<GELoadingView> GELoadingViews { get; set; }
         public virtual DbSet<GELoadingView_WAking_> GELoadingView_WAking_ { get; set; }
-        public virtual DbSet<GELoadingView2> GELoadingView2 { get; set; }
         public virtual DbSet<GEUnloadingView> GEUnloadingViews { get; set; }
         public virtual DbSet<vw_AgeingReport> vw_AgeingReport { get; set; }
         public virtual DbSet<vw_TransactionHistory> vw_TransactionHistory { get; set; }
@@ -562,6 +565,89 @@ namespace S1947.Models
                 new ObjectParameter("LevelTo", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_ASRS_GetLocation123", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
+        }
+    
+        public virtual int usp_ASRS_GetLocation_Keep_(string fGCode, string movementType, Nullable<int> columnFrom, Nullable<int> columnTo, Nullable<int> rowFrom, Nullable<int> rowTo, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var movementTypeParameter = movementType != null ?
+                new ObjectParameter("MovementType", movementType) :
+                new ObjectParameter("MovementType", typeof(string));
+    
+            var columnFromParameter = columnFrom.HasValue ?
+                new ObjectParameter("ColumnFrom", columnFrom) :
+                new ObjectParameter("ColumnFrom", typeof(int));
+    
+            var columnToParameter = columnTo.HasValue ?
+                new ObjectParameter("ColumnTo", columnTo) :
+                new ObjectParameter("ColumnTo", typeof(int));
+    
+            var rowFromParameter = rowFrom.HasValue ?
+                new ObjectParameter("RowFrom", rowFrom) :
+                new ObjectParameter("RowFrom", typeof(int));
+    
+            var rowToParameter = rowTo.HasValue ?
+                new ObjectParameter("RowTo", rowTo) :
+                new ObjectParameter("RowTo", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_ASRS_GetLocation_Keep_", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
+        }
+    
+        public virtual ObjectResult<usp_ASRS_GetLocation_SLOW_Result> usp_ASRS_GetLocation_SLOW(string fGCode, string movementType, Nullable<int> columnFrom, Nullable<int> columnTo, Nullable<int> rowFrom, Nullable<int> rowTo, Nullable<int> levelFrom, Nullable<int> levelTo)
+        {
+            var fGCodeParameter = fGCode != null ?
+                new ObjectParameter("FGCode", fGCode) :
+                new ObjectParameter("FGCode", typeof(string));
+    
+            var movementTypeParameter = movementType != null ?
+                new ObjectParameter("MovementType", movementType) :
+                new ObjectParameter("MovementType", typeof(string));
+    
+            var columnFromParameter = columnFrom.HasValue ?
+                new ObjectParameter("ColumnFrom", columnFrom) :
+                new ObjectParameter("ColumnFrom", typeof(int));
+    
+            var columnToParameter = columnTo.HasValue ?
+                new ObjectParameter("ColumnTo", columnTo) :
+                new ObjectParameter("ColumnTo", typeof(int));
+    
+            var rowFromParameter = rowFrom.HasValue ?
+                new ObjectParameter("RowFrom", rowFrom) :
+                new ObjectParameter("RowFrom", typeof(int));
+    
+            var rowToParameter = rowTo.HasValue ?
+                new ObjectParameter("RowTo", rowTo) :
+                new ObjectParameter("RowTo", typeof(int));
+    
+            var levelFromParameter = levelFrom.HasValue ?
+                new ObjectParameter("LevelFrom", levelFrom) :
+                new ObjectParameter("LevelFrom", typeof(int));
+    
+            var levelToParameter = levelTo.HasValue ?
+                new ObjectParameter("LevelTo", levelTo) :
+                new ObjectParameter("LevelTo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_ASRS_GetLocation_SLOW_Result>("usp_ASRS_GetLocation_SLOW", fGCodeParameter, movementTypeParameter, columnFromParameter, columnToParameter, rowFromParameter, rowToParameter, levelFromParameter, levelToParameter);
+        }
+    
+        public virtual ObjectResult<string> usp_ASRS_GetZoneFallback(string selectZone)
+        {
+            var selectZoneParameter = selectZone != null ?
+                new ObjectParameter("SelectZone", selectZone) :
+                new ObjectParameter("SelectZone", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("usp_ASRS_GetZoneFallback", selectZoneParameter);
         }
     }
 }

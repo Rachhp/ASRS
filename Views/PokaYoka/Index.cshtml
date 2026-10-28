@@ -461,6 +461,13 @@
                         0 PCS
                     </span>
                 </div>
+                <div class="result-item difference">
+                    <span class="result-label">Missing Quantity</span>
+                    <span id="lblMissingQuantity"
+                          class="result-value">
+                        0 PCS
+                    </span>
+                </div>
             </div>
             <div id="qcStatus" class="qc-status"></div>
         </div>
@@ -566,6 +573,7 @@
             $("#lblActualQuantity").text(currentModel.ActualQuantity + " PCS");
             $("#lblWeightDifference").text(currentModel.WeightDifference + " KG");
             $("#lblQuantityDifference").text(currentModel.QuantityDifference + " PCS");
+            $("#lblMissingQuantity").text(currentModel.MissingQuantity + " PCS");
             $("#machineStatus").text(currentModel.MachineStatus);
 
             // QC Status

@@ -123,7 +123,7 @@ namespace S1947.Services
                     ReadTime = DateTime.Now
                 };
             }
-        }
+         }
 
         // ============================================================
         // TCP IMPLEMENTATION - uncomment when machine is connected.
