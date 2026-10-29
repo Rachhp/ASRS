@@ -35,8 +35,8 @@ namespace S1947.Services
                 return new WeightResultModel
                 {
                     Success = true,
-                    Weight = 125.400m,
-                    RawResponse = "125.400",
+                    Weight = 300.00m,
+                    RawResponse = "300.00",
                     ReadTime = DateTime.Now
                 };
 

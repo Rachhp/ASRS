@@ -1028,10 +1028,6 @@ namespace S1947.Controllers
                 // Logging failure must never affect business logic.
             }
         }
-
-
-
-
         
 
     }

@@ -35,7 +35,6 @@ namespace S1947.Controllers
             try
             {
                 var result = _pokaYokaService.ScanQr(qrCode);
-
                 return Json(new
                 {
                     success = true,
@@ -58,13 +57,25 @@ namespace S1947.Controllers
         {
             try
             {
-                var result = _pokaYokaService.FetchWeightMeth1(transactionId);
+                var result = _pokaYokaService.FetchWeightMeth2(transactionId);
+
+                if (result != null &&
+                result.Message == "Already scanned and accepted.")
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = result.Message
+                    });
+                }
 
                 return Json(new
                 {
                     success = true,
                     data = result
                 });
+
+
             }
             catch (Exception ex)
             {

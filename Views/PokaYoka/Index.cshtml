@@ -5,16 +5,20 @@
 }
 <script src="~/Scripts/jquery-3.6.0.min.js"></script>
 <style>
+
     .poka-page {
         width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        font-size: 12px;
     }
 
     .poka-card {
         background: #fff;
         border: 1px solid #d7dee8;
-        border-radius: 10px;
-        margin-bottom: 18px;
-        box-shadow: 0 3px 14px rgba(15, 23, 42, .07);
+        border-radius: 7px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 7px rgba(15, 23, 42, .05);
         overflow: hidden;
     }
 
@@ -22,76 +26,78 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 14px 18px;
+        padding: 9px 13px;
         background: #f8fafc;
         border-bottom: 1px solid #dbe3ec;
         color: #172033;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 700;
     }
 
-    .poka-card-header .header-title {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-    }
+        .poka-card-header .header-title {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
 
     .header-icon {
-        width: 30px;
-        height: 30px;
+        width: 24px;
+        height: 24px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 6px;
+        border-radius: 5px;
         background: #fff7ed;
         color: #ea580c;
-        font-size: 14px;
+        font-size: 11px;
         border: 1px solid #fed7aa;
     }
 
     .poka-card-body {
-        padding: 20px;
+        padding: 12px;
     }
 
     .qr-search-box {
         background: #f8fafc;
         border: 1px solid #dbe3ec;
-        border-radius: 8px;
-        padding: 16px;
+        border-radius: 6px;
+        padding: 10px;
     }
 
     .poka-label {
         display: block;
-        margin-bottom: 7px;
+        margin-bottom: 4px;
         color: #334155;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .4px;
-    }
-
-    .qr-input {
-        height: 42px;
-        border: 1px solid #94a3b8;
-        border-radius: 6px;
-        color: #0f172a !important;
-        background: #fff !important;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .qr-input:focus {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
-    }
-
-    .btn-poka {
-        height: 42px;
-        border-radius: 6px;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: .3px;
+    }
+
+    .qr-input {
+        height: 34px;
+        padding: 6px 10px;
+        border: 1px solid #94a3b8;
+        border-radius: 5px;
+        color: #0f172a !important;
+        background: #fff !important;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+        .qr-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, .1);
+        }
+
+    .btn-poka {
+        height: 34px;
+        padding: 6px 12px;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .2px;
     }
 
     .btn-scan {
@@ -99,10 +105,10 @@
         border-color: #2563eb;
     }
 
-    .btn-scan:hover {
-        background: #1d4ed8;
-        border-color: #1d4ed8;
-    }
+        .btn-scan:hover {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+        }
 
     .hidden-section {
         display: none !important;
@@ -112,64 +118,66 @@
 
     .details-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
     }
 
     .detail-item {
-        padding: 13px 14px;
+        min-width: 0;
+        padding: 9px 10px;
         background: #f8fafc;
         border: 1px solid #dbe3ec;
-        border-radius: 7px;
+        border-radius: 5px;
     }
 
     .detail-label {
         display: block;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         color: #64748b;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: .35px;
+        letter-spacing: .25px;
     }
 
     .detail-value {
         display: block;
         color: #0f172a;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 700;
-        min-height: 18px;
+        min-height: 16px;
+        overflow-wrap: anywhere;
     }
 
-    .detail-value.code {
-        color: #334155;
-        font-family: Consolas, monospace;
-        font-size: 11px;
-    }
+        .detail-value.code {
+            color: #334155;
+            font-family: Consolas, monospace;
+            font-size: 11px;
+        }
 
     .received-section {
-        margin-top: 15px;
-        padding-top: 15px;
+        margin-top: 10px;
+        padding-top: 10px;
         border-top: 1px solid #e2e8f0;
     }
 
     .received-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
     }
 
     .received-box {
-        padding: 15px;
+        padding: 9px 11px;
         background: #eff6ff;
         border: 1px solid #bfdbfe;
-        border-radius: 7px;
+        border-radius: 5px;
     }
 
     .received-value {
         display: block;
         color: #1e40af;
-        font-size: 20px;
+        font-size: 16px;
         font-weight: 800;
     }
 
@@ -179,32 +187,33 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 20px;
+        gap: 12px;
     }
 
     .machine-info {
         color: #475569;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
     }
 
-    .machine-info span {
-        color: #b45309;
-        font-weight: 800;
-    }
+        .machine-info span {
+            margin-left: 5px;
+            color: #b45309;
+            font-weight: 800;
+        }
 
     .btn-fetch {
-        min-width: 190px;
+        min-width: 150px;
         background: #f59e0b;
         border-color: #f59e0b;
         color: #fff;
     }
 
-    .btn-fetch:hover {
-        background: #d97706;
-        border-color: #d97706;
-        color: #fff;
-    }
+        .btn-fetch:hover {
+            background: #d97706;
+            border-color: #d97706;
+            color: #fff;
+        }
 
     /* RESULT */
 
@@ -215,40 +224,42 @@
 
     .result-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
     }
 
     .result-item {
-        padding: 15px;
+        min-width: 0;
+        padding: 10px;
         background: #fff;
         border: 1px solid #dbe3ec;
-        border-radius: 7px;
+        border-radius: 5px;
     }
 
-    .result-item.actual {
-        background: #f0fdf4;
-        border-color: #bbf7d0;
-    }
+        .result-item.actual {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
 
-    .result-item.difference {
-        background: #fff7ed;
-        border-color: #fed7aa;
-    }
+        .result-item.difference {
+            background: #fff7ed;
+            border-color: #fed7aa;
+        }
 
     .result-label {
         display: block;
-        margin-bottom: 7px;
+        margin-bottom: 5px;
         color: #64748b;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 700;
         text-transform: uppercase;
     }
 
     .result-value {
         color: #0f172a;
-        font-size: 20px;
+        font-size: 17px;
         font-weight: 800;
+        overflow-wrap: anywhere;
     }
 
     .actual .result-value {
@@ -260,13 +271,13 @@
     }
 
     .qc-status {
-        margin-top: 16px;
-        padding: 17px;
-        border-radius: 8px;
+        margin-top: 10px;
+        padding: 11px;
+        border-radius: 6px;
         text-align: center;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 800;
-        letter-spacing: .4px;
+        letter-spacing: .3px;
     }
 
     .status-ok {
@@ -281,10 +292,12 @@
         border: 1px solid #fca5a5;
     }
 
+    /* RESPONSIVE */
+
     @@media (max-width: 900px) {
         .details-grid,
         .result-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
 
@@ -303,7 +316,12 @@
         .btn-fetch {
             width: 100%;
         }
+
+        .poka-card-body {
+            padding: 9px;
+        }
     }
+
 </style>
 
 <div class="poka-page">
@@ -461,13 +479,6 @@
                         0 PCS
                     </span>
                 </div>
-                <div class="result-item difference">
-                    <span class="result-label">Missing Quantity</span>
-                    <span id="lblMissingQuantity"
-                          class="result-value">
-                        0 PCS
-                    </span>
-                </div>
             </div>
             <div id="qcStatus" class="qc-status"></div>
         </div>
@@ -543,11 +554,8 @@
     }
 
   function fetchWeight() {
-    //if (!currentModel || !currentModel.TransactionId) {
-    //    alert("Please scan QR first.");
-    //    return;
-    //}
-      if (!$("#TransactionId").val()) {
+
+    if (!$("#TransactionId").val()) {
         alert("Please scan QR first.");
         return;
     }
@@ -566,27 +574,26 @@
                 alert(response.message);
                 return;
             }
-
             currentModel = response.data;
-
             $("#lblActualWeight").text(currentModel.ActualWeight + " KG");
             $("#lblActualQuantity").text(currentModel.ActualQuantity + " PCS");
             $("#lblWeightDifference").text(currentModel.WeightDifference + " KG");
             $("#lblQuantityDifference").text(currentModel.QuantityDifference + " PCS");
-            $("#lblMissingQuantity").text(currentModel.MissingQuantity + " PCS");
             $("#machineStatus").text(currentModel.MachineStatus);
 
             // QC Status
             var qcDiv = $("#qcStatus");
             qcDiv.removeClass("status-ok status-not-ok");
 
-            if (currentModel.QCStatus === "OK") {
+            if (currentModel.QCStatus === "ACCEPTED") {
                 qcDiv.addClass("status-ok").text("QC PASSED");
-            } else {
+            } else if (currentModel.QCStatus === "REJECTED") {
                 qcDiv.addClass("status-not-ok").text("QC FAILED");
-            }
-
+            } 
             $("#resultSection").removeClass("hidden-section");
+            setTimeout(function () {
+                location.reload();
+            }, 10000);
         },
         error: function () {
             alert("Error while fetching weight.");
@@ -597,117 +604,5 @@
     });
 }
 
-    @*function fetchWeight() {
-
-        if (!currentModel) {
-
-            alert("Please scan QR first.");
-            return;
-        }
-
-        $("#btnFetchWeight")
-            .prop("disabled", true)
-            .text("READING WEIGHT...");
-
-        $.ajax({
-
-            url: '@Url.Action("FetchWeight", "PokaYoka")',
-
-            type: 'POST',
-
-            data: currentModel,
-
-            success: function (response) {
-
-                if (!response.success) {
-
-                    alert(response.message);
-
-                    return;
-                }
-
-                currentModel = response.data;
-
-                $("#lblActualWeight")
-                    .text(
-                        currentModel.ActualWeight +
-                        " KG"
-                    );
-
-                $("#lblActualQuantity")
-                    .text(
-                        currentModel.ActualQuantity +
-                        " PCS"
-                    );
-
-                $("#lblWeightDifference")
-                    .text(
-                        currentModel.WeightDifference +
-                        " KG"
-                    );
-
-                $("#lblQuantityDifference")
-                    .text(
-                        currentModel.QuantityDifference +
-                        " PCS"
-                    );
-
-                $("#machineStatus")
-                    .html(
-                        "Machine: <b>" +
-                        currentModel.MachineStatus +
-                        "</b>"
-                    );
-
-                var status =
-                    currentModel.QCStatus;
-
-                var statusBox =
-                    $("#qcStatus");
-
-                statusBox
-                    .removeClass(
-                        "status-ok status-not-ok"
-                    );
-
-                if (status === "OK") {
-
-                    statusBox
-                        .addClass("status-ok")
-                        .text("QC OK");
-
-                }
-                else {
-
-                    statusBox
-                        .addClass("status-not-ok")
-                        .text("QC NOT OK");
-
-                }
-
-                $("#resultSection")
-                    .removeClass("hidden-section");
-
-            },
-
-            error: function () {
-
-                alert(
-                    "Error while fetching weight."
-                );
-
-            },
-
-            complete: function () {
-
-                $("#btnFetchWeight")
-                    .prop("disabled", false)
-                    .text("FETCH WEIGHT");
-
-            }
-
-        });
-
-    }*@
 
 </script>
