@@ -192,73 +192,113 @@ namespace S1947.Controllers
             }
         }
 
-        private List<GoodsExisiting> SelectPalletsForUnloading(List<GoodsExisiting> pallets, int requestedQty)
+
+
+        private List<GoodsExisiting> SelectPalletsForUnloading(
+    List<GoodsExisiting> pallets,
+    int requestedQty)
         {
-            var sequencePallets = pallets.OrderBy(x => x.CreatedOn).ToList();
-            //var sequencePallets = pallets.OrderBy(x => x.sequence).ToList();
-            bool normalPattern = IsNormalLoadingPattern(sequencePallets);
+            if (pallets == null || pallets.Count == 0)
+            {
+                return new List<GoodsExisiting>();
+            }
+
+            // Date priority first.
+            var datePriority = pallets
+                .OrderBy(x => x.CreatedOn.HasValue
+                    ? x.CreatedOn.Value.Date
+                    : DateTime.MaxValue)
+                .ThenBy(x => x.sequence)
+                .ToList();
+
+            // Shift priority within the date priority.
+            var dateAndShiftPriority = ApplyShiftPriority(datePriority);
+
+            // Check whether the pattern is normal after date and shift ordering.
+            bool normalPattern = IsNormalLoadingPattern(dateAndShiftPriority);
+
             if (normalPattern)
             {
-                return SelectUntilQuantity(sequencePallets, requestedQty);
+                // Normal unloading:
+                // 1, 2, 3, 4 sequence.
+                return SelectUntilQuantity(
+                    dateAndShiftPriority,
+                    requestedQty);
             }
-            else
-            {
-                //first check datewise list in that check shiftwise 
-                // STEP 1: Apply datewise priority first.
-                var datePriority = pallets.OrderBy(x => x.CreatedOn.HasValue
-                                    ? x.CreatedOn.Value.Date
-                                    : DateTime.MaxValue)
-                                    .ToList();
 
-                // STEP 2: Check alternative ends within the datewise list.
-                var dateAlternating = GetAlternatingEnds(datePriority);
+            // Non-normal unloading:
+            // Apply alternative ends.
+            var alternativeEndPriority = GetAlternatingEnds(
+                dateAndShiftPriority);
 
-                var dateSelected = SelectUntilQuantity(dateAlternating, requestedQty);
-
-                // If datewise selection satisfies the quantity, unload directly.
-                if (dateSelected.Sum(x => Convert.ToInt32(x.Quantity)) >= requestedQty)
-                {
-                    return dateSelected;
-                }
-
-                // STEP 3: Datewise alternative ends are insufficient.
-                // Apply shiftwise priority, then check alternative ends again.
-                var shiftPriority = ApplyShiftPriority(pallets);
-
-                var shiftAlternating = GetAlternatingEnds(shiftPriority);
-
-                return SelectUntilQuantity(shiftAlternating, requestedQty);
-
-            
-
-            }
+            return SelectUntilQuantity(
+                alternativeEndPriority,
+                requestedQty);
         }
 
-        private GoodsExisiting FindBlockingPallet(
-    S1947Entities db,
-    List<GoodsExisiting> unloadPallets)
+        //private List<GoodsExisiting> SelectPalletsForUnloading(List<GoodsExisiting> pallets, int requestedQty)
+        //{
+        //    var sequencePallets = pallets.OrderBy(x => x.CreatedOn).ToList();
+        //    //var sequencePallets = pallets.OrderBy(x => x.sequence).ToList();
+        //    bool normalPattern = IsNormalLoadingPattern(sequencePallets);
+        //    if (normalPattern)
+        //    {
+        //        return SelectUntilQuantity(sequencePallets, requestedQty);
+        //    }
+        //    else
+        //    {
+        //        //first check datewise list in that check shiftwise 
+        //        // STEP 1: Apply datewise priority first.
+        //        var datePriority = pallets.OrderBy(x => x.CreatedOn.HasValue
+        //                            ? x.CreatedOn.Value.Date
+        //                            : DateTime.MaxValue)
+        //                            .ToList();
+
+        //        // STEP 2: Check alternative ends within the datewise list.
+        //        var dateAlternating = GetAlternatingEnds(datePriority);
+
+        //        var dateSelected = SelectUntilQuantity(dateAlternating, requestedQty);
+
+        //        // If datewise selection satisfies the quantity, unload directly.
+        //        if (dateSelected.Sum(x => Convert.ToInt32(x.Quantity)) >= requestedQty)
+        //        {
+        //            return dateSelected;
+        //        }
+
+        //        // STEP 3: Datewise alternative ends are insufficient.
+        //        // Apply shiftwise priority, then check alternative ends again.
+        //        var shiftPriority = ApplyShiftPriority(pallets);
+
+        //        var shiftAlternating = GetAlternatingEnds(shiftPriority);
+
+        //        return SelectUntilQuantity(shiftAlternating, requestedQty);
+
+
+
+        //    }
+        //}
+
+
+        private GoodsExisiting FindBlockingPallet(S1947Entities db, List<GoodsExisiting> unloadPallets)
         {
             if (unloadPallets == null || unloadPallets.Count == 0)
             {
                 return null;
             }
 
-            var firstPallet = unloadPallets
+            var orderedPallets = unloadPallets
                 .OrderBy(x => x.Layer)
                 .ThenBy(x => x.Col)
                 .ThenBy(x => x.Row)
-                .First();
+                .ToList();
 
-            var lastPallet = unloadPallets
-                .OrderBy(x => x.Layer)
-                .ThenBy(x => x.Col)
-                .ThenBy(x => x.Row)
-                .Last();
+            var firstPallet = orderedPallets.First();
+            var lastPallet = orderedPallets.Last();
 
-            int minimumRow = Convert.ToInt32(firstPallet.Row);
-            int maximumRow = Convert.ToInt32(lastPallet.Row);
+            int minimumRow = firstPallet.Row;
+            int maximumRow = lastPallet.Row;
 
-            // Check the left side first.
+            // Check the nearest loaded pallet on the left side.
             var leftBlockingPallet = db.GoodsExisitings
                 .Where(x =>
                     x.LocaStatus == "LOADED" &&
@@ -274,7 +314,8 @@ namespace S1947.Controllers
                 return leftBlockingPallet;
             }
 
-            // If the left side is not blocked, check the right side.
+            // If the left side is clear, check the nearest loaded pallet
+            // on the right side.
             return db.GoodsExisitings
                 .Where(x =>
                     x.LocaStatus == "LOADED" &&
@@ -325,6 +366,8 @@ namespace S1947.Controllers
             }
             return true;
         }
+
+
 
 
         //sequnecial unloading normal
@@ -444,6 +487,38 @@ namespace S1947.Controllers
             return result;
         }
 
+
+        private UnloadTemp CreateMoveTemp(
+    GoodsExisiting blockingPallet,
+    int dockNo,
+    int stationNo,
+    string serialCode)
+        {
+            return new UnloadTemp
+            {
+                FGModel = blockingPallet.FGModel,
+                FGModelDesc = blockingPallet.FGDesc,
+                SAPFGCode = blockingPallet.FGCode,
+                PartQuantity = blockingPallet.Quantity,
+
+                PalletNo = blockingPallet.PalletNo,
+                PlalletQR = blockingPallet.PalletQr,
+                SerialCode = serialCode,
+
+                // Current pallet information only.
+                LocationId = blockingPallet.MTransNo.ToString(),
+                LocationName = blockingPallet.LocationName,
+
+                DockNo = dockNo,
+                Station = stationNo,
+                Status = "Pending",
+                UnloadType = "MOVE",
+                CreatedBy = "System",
+                CreatedOn = DateTime.Now,
+
+            };
+        }
+
         //toherefor unload 
         [HttpPost]
         public JsonResult SaveLoading(int DockNo, int VehicleSize, string VehicleNumber, string TransporterName, string VehicleSealNo, string InvoiceNo,
@@ -519,6 +594,7 @@ namespace S1947.Controllers
 
                         var pallets = SelectPalletsForUnloading(requiredPallets, Quantity);
                         int allocatedQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
+                        var blockingPallet = FindBlockingPallet(db, pallets);
 
                         if (allocatedQty < Quantity)
                         {
@@ -532,6 +608,17 @@ namespace S1947.Controllers
                         }
 
                         // Reserve the exact pallets selected for this save.
+                        //for (int i = 0; i < pallets.Count; i++)
+                        //{
+                        //    pallets[i].LocaStatus = "INPROCESS";
+                        //    pallets[i].UnloadSequence = i + 1;
+                        //}
+                        //db.SaveChanges();
+
+
+                        // Reserve only the pallets that will be unloaded.
+                        // The blocking pallet must remain LOADED because another
+                        // software component will process the MOVE task.
                         for (int i = 0; i < pallets.Count; i++)
                         {
                             pallets[i].LocaStatus = "INPROCESS";
@@ -539,6 +626,23 @@ namespace S1947.Controllers
                         }
 
                         db.SaveChanges();
+
+                        // Create a MOVE record for the blocking pallet.
+                        // No destination or buffer is assigned here.
+                        if (blockingPallet != null)
+                        {
+                            string moveSerialCode = GenerateOutboundSerialCode(db);
+
+                            UnloadTemp moveTemp = CreateMoveTemp(
+                                blockingPallet,
+                                DockNo,
+                                stationNo,
+                                moveSerialCode);
+
+                            db.UnloadTemps.Add(moveTemp);
+                            db.SaveChanges();
+                        }
+
 
                         string firstSerialCode = null;
                         foreach (var pallet in pallets)
@@ -579,9 +683,15 @@ namespace S1947.Controllers
                                 LocationId = pallet.MTransNo.ToString(),
                                 Station = stationNo,
                                 LocationName = pallet.LocationName,
+                                //Status = "Pending",
+                                //CreatedBy = "System",
+                                //CreatedOn = DateTime.Now
                                 Status = "Pending",
+                                UnloadType = "UNLOAD",
                                 CreatedBy = "System",
                                 CreatedOn = DateTime.Now
+
+
                             };
                             db.UnloadTemps.Add(temp);
                             db.SaveChanges(); 
@@ -895,35 +1005,128 @@ namespace S1947.Controllers
                 {
                     firstTaskNo = nextTaskNo;
                 }
-                // Create one task for each UnloadTemp transaction
-                //foreach (var pallet in tempData)
-                foreach (var pallet in submittedUnloadTemps)
-                {
-                        // Check whether a task already exists for this pallet
-                    bool taskExists = db.TaskDtls.Any(x =>x.TaskType == "UNLOADOPERATION" &&
-                        x.DestinationLocation == pallet.LocationName &&
-                        x.SourceLocation == "OUTBOUND" );
+                    // Create one task for each UnloadTemp transaction
+                    //foreach (var pallet in tempData)
+                    //foreach (var pallet in submittedUnloadTemps)
+                    //{
+                    //        // Check whether a task already exists for this pallet
+                    //    bool taskExists = db.TaskDtls.Any(x =>x.TaskType == "UNLOADOPERATION" &&
+                    //        x.DestinationLocation == pallet.LocationName &&
+                    //        x.SourceLocation == "OUTBOUND" );
+                    //        if (taskExists)
+                    //        {
+                    //            // Skip already submitted tasks
+                    //            continue;
+                    //        }
+
+                    //    //stored procedure
+                    //    db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PlalletQR, "OUTBOUND", pallet.LocationName, "TASKASSIGNED", pallet.Station, pallet.LocationId, nextPriority, DateTime.Now, DateTime.Now, null, null, pallet.SerialCode);
+                    //    db.TaskReports.Add(new TaskReport
+                    //    {
+                    //        TaskID = nextTaskNo,
+                    //        SerialCode = pallet.SerialCode,
+                    //        StatusCode = "100",
+                    //        StautusMessage = "Task Created",
+                    //        OperationType = "OUTBOUND"
+                    //    });
+                    //    // IMPORTANT
+                    //    nextTaskNo++;
+                    //    nextPriority++;
+                    //    db.SaveChanges();
+                    //}
+                    // Move tasks must be created before unload tasks.
+                    submittedUnloadTemps = submittedUnloadTemps
+                        .OrderBy(x => x.UnloadType == "MOVE" ? 0 : 1)
+                        .ThenBy(x => x.MTransNo)
+                        .ToList();
+
+                    foreach (var pallet in submittedUnloadTemps)
+                    {
+                        bool isMoveTask = pallet.UnloadType == "MOVE";
+
+                        string taskType = isMoveTask
+                            ? "MOVE"
+                            : "UNLOADOPERATION";
+
+                        bool taskExists;
+
+                        if (isMoveTask)
+                        {
+                            taskExists = db.TaskDtls.Any(x =>
+                                x.TaskType == "MOVE" &&
+                                x.SerialCode == pallet.SerialCode);
+                        }
+                        else
+                        {
+                            taskExists = db.TaskDtls.Any(x =>
+                                x.TaskType == "UNLOADOPERATION" &&
+                                x.SerialCode == pallet.SerialCode);
+                        }
+
                         if (taskExists)
                         {
-                            // Skip already submitted tasks
                             continue;
                         }
 
-                    //stored procedure
-                    db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PlalletQR, "OUTBOUND", pallet.LocationName, "TASKASSIGNED", pallet.Station, pallet.LocationId, nextPriority, DateTime.Now, DateTime.Now, null, null, pallet.SerialCode);
-                    db.TaskReports.Add(new TaskReport
-                    {
-                        TaskID = nextTaskNo,
-                        SerialCode = pallet.SerialCode,
-                        StatusCode = "100",
-                        StautusMessage = "Task Created",
-                        OperationType = "OUTBOUND"
-                    });
-                    // IMPORTANT
-                    nextTaskNo++;
-                    nextPriority++;
-                    db.SaveChanges();
-                }
+                        if (isMoveTask)
+                        {
+                            // Only identify the pallet to move.
+                            // Destination is intentionally not supplied.
+                            db.InsertTaskDtl(
+                                nextTaskNo,
+                                "UNLOADOPERATION",
+                                nextPriority,
+                                pallet.PlalletQR,
+                                "MOVE",
+                                pallet.LocationName,
+                                "TASKASSIGNED",
+                                pallet.Station,
+                                pallet.LocationId,
+                                nextPriority,
+                                DateTime.Now,
+                                DateTime.Now,
+                                null,
+                                null,
+                                pallet.SerialCode);
+                        }
+                        else
+                        {
+                            // Normal unload task.
+                            db.InsertTaskDtl(
+                                nextTaskNo,
+                                "UNLOADOPERATION",
+                                nextPriority,
+                                pallet.PlalletQR,
+                                "OUTBOUND",
+                                pallet.LocationName,
+                                "TASKASSIGNED",
+                                pallet.Station,
+                                pallet.LocationId,
+                                nextPriority,
+                                DateTime.Now,
+                                DateTime.Now,
+                                null,
+                                null,
+                                pallet.SerialCode);
+                        }
+
+                      
+                        db.TaskReports.Add(new TaskReport
+                        {
+                            TaskID = nextTaskNo,
+                            SerialCode = pallet.SerialCode,
+                            StatusCode = "100",
+                            StautusMessage = "Task Created",    
+         //? "Move task created"
+         //: "Unload task created",
+                            OperationType = taskType
+                        });
+
+                        nextTaskNo++;
+                        nextPriority++;
+
+                        db.SaveChanges();
+                    }
                     //update inprocess to occupied in goods existing table
                     var goods = db.GoodsExisitings.Where(x => x.LocaStatus == "INPROCESS").ToList();
                     foreach (var item in goods)
