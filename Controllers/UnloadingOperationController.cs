@@ -488,11 +488,7 @@ namespace S1947.Controllers
         }
 
 
-        private UnloadTemp CreateMoveTemp(
-    GoodsExisiting blockingPallet,
-    int dockNo,
-    int stationNo,
-    string serialCode)
+        private UnloadTemp CreateMoveTemp(GoodsExisiting blockingPallet,int dockNo,int stationNo,string serialCode)
         {
             return new UnloadTemp
             {
