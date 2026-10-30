@@ -79,7 +79,8 @@ namespace S1947.Controllers
                         PalletNo = x.PalletNo,
                         FGModel = x.FGModel,
                         PartQuantity = x.PartQuantity,
-                        Status = db.TaskReports
+                        
+                    Status = db.TaskReports
                     .Where(t => t.SerialCode == x.SerialCode)
                     .OrderByDescending(t => t.ID)
                     .Select(t => t.StautusMessage)
@@ -141,7 +142,6 @@ namespace S1947.Controllers
     
 
         public JsonResult GetPalletDetails(string fgCode, string description, string model, int qty)
-        
         {
             using (var db = new S1947Entities())
             {
@@ -206,9 +206,9 @@ namespace S1947.Controllers
                 //first check datewise list in that check shiftwise 
                 // STEP 1: Apply datewise priority first.
                 var datePriority = pallets.OrderBy(x => x.CreatedOn.HasValue
-                        ? x.CreatedOn.Value.Date
-                        : DateTime.MaxValue)
-                        .ToList();
+                                    ? x.CreatedOn.Value.Date
+                                    : DateTime.MaxValue)
+                                    .ToList();
 
                 // STEP 2: Check alternative ends within the datewise list.
                 var dateAlternating = GetAlternatingEnds(datePriority);
@@ -229,33 +229,62 @@ namespace S1947.Controllers
 
                 return SelectUntilQuantity(shiftAlternating, requestedQty);
 
-                ////// NON-NORMAL PATTERN: Apply shift priority and alternating ends.
-                ////var shiftPriority = ApplyShiftPriority(pallets);
-
-                ////var shiftAlternating = GetAlternatingEnds(shiftPriority);
-
-                //var selected = SelectUntilQuantity(shiftAlternating, requestedQty);
-
-                //if (selected.Sum(x => Convert.ToInt32(x.Quantity)) >= requestedQty)
-                //{
-                //    return selected;
-                //}
-
-                //// FALLBACK: Relax shift priority to date-wise priority.
-                //var datePriority = pallets
-                //    .OrderBy(x => x.CreatedOn.HasValue
-                //        ? x.CreatedOn.Value.Date
-                //        : DateTime.MaxValue)
-                //    .ThenBy(x => x.sequence)
-                //    .ToList();
-
-                //var dateAlternating = GetAlternatingEnds(datePriority);
-
-                //return SelectUntilQuantity(dateAlternating, requestedQty);
+            
 
             }
         }
 
+        private GoodsExisiting FindBlockingPallet(
+    S1947Entities db,
+    List<GoodsExisiting> unloadPallets)
+        {
+            if (unloadPallets == null || unloadPallets.Count == 0)
+            {
+                return null;
+            }
+
+            var firstPallet = unloadPallets
+                .OrderBy(x => x.Layer)
+                .ThenBy(x => x.Col)
+                .ThenBy(x => x.Row)
+                .First();
+
+            var lastPallet = unloadPallets
+                .OrderBy(x => x.Layer)
+                .ThenBy(x => x.Col)
+                .ThenBy(x => x.Row)
+                .Last();
+
+            int minimumRow = Convert.ToInt32(firstPallet.Row);
+            int maximumRow = Convert.ToInt32(lastPallet.Row);
+
+            // Check the left side first.
+            var leftBlockingPallet = db.GoodsExisitings
+                .Where(x =>
+                    x.LocaStatus == "LOADED" &&
+                    x.Quantity > 0 &&
+                    x.Layer == firstPallet.Layer &&
+                    x.Col == firstPallet.Col &&
+                    x.Row < minimumRow)
+                .OrderByDescending(x => x.Row)
+                .FirstOrDefault();
+
+            if (leftBlockingPallet != null)
+            {
+                return leftBlockingPallet;
+            }
+
+            // If the left side is not blocked, check the right side.
+            return db.GoodsExisitings
+                .Where(x =>
+                    x.LocaStatus == "LOADED" &&
+                    x.Quantity > 0 &&
+                    x.Layer == firstPallet.Layer &&
+                    x.Col == firstPallet.Col &&
+                    x.Row > maximumRow)
+                .OrderBy(x => x.Row)
+                .FirstOrDefault();
+        }
 
         //from here it check is normal loading patternis there 
         private bool IsNormalLoadingPattern(List<GoodsExisiting> pallets)
@@ -288,13 +317,6 @@ namespace S1947.Controllers
                 if (current.Cat != previous.Cat)
                     continue;
 
-                //apply condtion if smae column adn sme row & smae cat then its non normal
-
-                
-
-                //// Same layer and category, but different rows: normal
-                //if (previousRow != currentRow)
-                //    continue;
                 // Same layer and category, but different col: normal
                 if (previouscol != currentcol)
                     continue;
@@ -305,7 +327,7 @@ namespace S1947.Controllers
         }
 
 
-        //sequnecial unloading
+        //sequnecial unloading normal
         private List<GoodsExisiting> SelectUntilQuantity(IEnumerable<GoodsExisiting> pallets, int requestedQty)
         {
             var selected = new List<GoodsExisiting>();
@@ -322,15 +344,7 @@ namespace S1947.Controllers
             return selected;
         }
 
-      
-        private List<GoodsExisiting> ApplyDatePriority( List<GoodsExisiting> pallets)
-        {
-            return pallets.OrderBy(x => x.CreatedOn.HasValue
-                    ? x.CreatedOn.Value.Date
-                    : DateTime.MaxValue)
-                .ToList();
-        }
-
+     
         private List<GoodsExisiting> ApplyShiftPriority(List<GoodsExisiting> pallets)
         {
             using (var db = new S1947Entities())
@@ -467,25 +481,7 @@ namespace S1947.Controllers
                 {
                     try
                     {
-                        //var pallets = db.GoodsExisitings
-                        //    .Where(x =>
-                        //        x.LocaStatus == "INPROCESS" &&
-                        //        x.FGModel == Model &&
-                        //        x.FGCode == FGCode &&
-                        //        x.FGDesc == Description)
-                        //    .OrderBy(x => x.UnloadSequence)
-                        //    .ToList();
 
-                        //int allocatedQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
-                        //if (allocatedQty < Quantity)
-                        //{
-                        //    transaction.Rollback();
-                        //    return Json(new
-                        //    {
-                        //        Success = false,
-                        //        Message = "Insufficient stock available."
-                        //    });
-                        //}
                          var availablePallets = db.GoodsExisitings
                             .Where(x =>
                                 x.LocaStatus == "LOADED" &&
@@ -914,7 +910,7 @@ namespace S1947.Controllers
                         }
 
                     //stored procedure
-                    db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PlalletQR, "OUTBOUND", pallet.LocationName, "PENDING", pallet.Station, pallet.LocationId, nextPriority, DateTime.Now, DateTime.Now, null, null, pallet.SerialCode);
+                    db.InsertTaskDtl(nextTaskNo, "UNLOADOPERATION", nextPriority, pallet.PlalletQR, "OUTBOUND", pallet.LocationName, "TASKASSIGNED", pallet.Station, pallet.LocationId, nextPriority, DateTime.Now, DateTime.Now, null, null, pallet.SerialCode);
                     db.TaskReports.Add(new TaskReport
                     {
                         TaskID = nextTaskNo,
@@ -940,26 +936,17 @@ namespace S1947.Controllers
                     }
                 }
                 //triger the unloading api here
-                // SendTasksToWcs();
-                //// https://localhost:44341/api/MoveAPI/MoveTaskUnload  thsi url with no parameters post method 
-                // Trigger unloading API
-                //bool apiSuccess = await TriggerUnloadApi();
+                //Trigger unloading API
+                bool apiSuccess = await TriggerUnloadApi();
 
-                //if (!apiSuccess)
-                //{
-                //    return Json(new
-                //    {
-                //        Success = false,
-                //        Message = "Database submission completed, but unloading API failed."
-                //    });
-                //}
-
-                //return Json(new
-                //{
-                //    Success = true,
-                //    Message = "Unloading submitted and API triggered successfully."
-                //});
-
+                if (!apiSuccess)
+                {
+                    return Json(new
+                    {
+                        Success = false,
+                        Message = "Database submission completed, but unloading API failed."
+                    });
+                }
                 return Json(new
                 {
                     Success = true,
@@ -978,23 +965,15 @@ namespace S1947.Controllers
         }
     }
 
-
-
         //for outbound api method
         private async Task<bool> TriggerUnloadApi()
         {
             string apiUrl = ConfigurationManager.AppSettings["MoveTaskUnloadUrl"];
-
             using (HttpClient client = new HttpClient())
             {
                 client.Timeout = TimeSpan.FromSeconds(30);
-
                 // POST with no parameters and no request body
-                HttpResponseMessage response = await client.PostAsync(
-                    apiUrl,
-                    null
-                );
-
+                HttpResponseMessage response = await client.PostAsync(apiUrl, null);
                 return response.IsSuccessStatusCode;
             }
         }

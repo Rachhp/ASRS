@@ -283,12 +283,6 @@ namespace S1947.Controllers
         private static DateTime _lastUpdated = DateTime.MinValue;
 
     
-        public ActionResult UserManual()
-        {
-            // Path to your PDF inside wwwroot or Content folder
-            ViewBag.PdfPath = Url.Content("~/Content/designFlowChart.pdf");
-            return View();
-        }
         public JsonResult GetWeeklyOperationChart(DateTime fromDate, string operationType)
         {
             DateTime toDate = fromDate.AddDays(6);

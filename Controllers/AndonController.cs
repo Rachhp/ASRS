@@ -307,9 +307,6 @@ namespace S1947.Controllers
                 }, JsonRequestBehavior.AllowGet);
             }
         }
-
-
-
     }
 }
 

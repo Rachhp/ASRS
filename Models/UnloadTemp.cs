@@ -46,15 +46,6 @@ namespace S1947.Models
         public string CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public string SerialCode { get; set; }
-        public Nullable<int> MoveLogId { get; set; }
-        public Nullable<int> From_Layer { get; set; }
-        public Nullable<int> From_Column { get; set; }
-        public Nullable<int> From_Row { get; set; }
-        public Nullable<int> From_OrderRow { get; set; }
-        public Nullable<int> To_Layer { get; set; }
-        public Nullable<int> To_Column { get; set; }
-        public Nullable<int> To_Row { get; set; }
-        public Nullable<int> To_OrderRow { get; set; }
         public string UnloadType { get; set; }
     }
 }

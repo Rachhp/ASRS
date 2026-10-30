@@ -980,16 +980,12 @@
 
         updateDateTime();
         setInterval(updateDateTime, 1000);
-
         calculateTotal();
         createVehicleGrid();
-
         // Determine which dock this TV should display
         loadAndonDock();
-
         // Re-check dock assignment every 5 seconds
         setInterval(loadAndonDock, 5000);
-
         // Refresh status of currently displayed dock
         setInterval(loadVehicleStatus, 5000);
     });
@@ -1001,7 +997,6 @@
         url: '@Url.Action("GetCurrentShift", "Utility")',
         type: 'GET',
         success: function (response) {
-
             $('#shiftName').text(response);
         },
         error: function () {
@@ -1065,8 +1060,6 @@
         for (let r = 0; r < 4; r++) {
 
             html += "<tr>";
-
-
             for (let c = 0; c < cols; c++) {
 
                 let slot = 0;
@@ -1116,64 +1109,42 @@
         // Odd row
         html += "<tr>";
         for (let i = 0; i < halfRow; i++) {
-            html += `
-        <td data-slot="${odd}">
-            ${odd}
-        </td>
-        `;
+            html += `<td data-slot="${odd}"> ${odd}</td>`;
             odd += 2;
         }
         html += "</tr>";
 
-
-
         // Even row
-
         html += "<tr>";
         for (let i = 0; i < halfRow; i++) {
-            html += `
-        <td data-slot="${even}">
-            ${even}
-        </td>
-        `;
+            html += `<td data-slot="${even}">${even}</td>`;
             even += 2;
         }
-
         html += "</tr>";
-
-
-
         $(element).html(html);
 
     }
 
     //var dockNo = $("#DockNo").text().trim();
-    var currentDockNo = null;
+var currentDockNo = null;
 var screenId = @ViewBag.ScreenId;
 function loadAndonDock() {
-
     $.get('@Url.Action("GetAndonDock", "Andon")',
         {
             screenId: screenId
         },
         function (data) {
-
             if (!data || !data.DockNo) {
                 return;
             }
 
             var newDockNo = data.DockNo;
-
             // Dock has changed
             if (currentDockNo !== newDockNo) {
-
                 currentDockNo = newDockNo;
-
                 $("#DockNo").text(currentDockNo);
-
                 // Clear old vehicle status
-                $("#vehicleStatus")
-                    .removeClass()
+                $("#vehicleStatus").removeClass()
                     .addClass("statusBox statusRed")
                     .text("NOT YET STARTED");
 
@@ -1241,89 +1212,26 @@ function loadVehicleStatus() {
     );
 }
 
-
-    //function loadVehicleStatus() {
-
-    //    if (!dockNo) {   // null, undefined, or empty string
-    //        $("#vehicleStatus")
-    //            .removeClass()
-    //            .addClass("statusBox statusRed")
-    //            .text("NOT YET STARTED");
-    //        return;
-    //    }
-
-
-    //    $.get('GetVehicleLoadingStatus',
-    //        {
-    //            dockNo: dockNo
-    //        },
-    //        function (data) {
-    //            if (data.Status == "R") {
-
-    //                $("#vehicleStatus")
-    //                    .removeClass()
-    //                    .addClass("statusBox statusRed")
-    //                    .text("NOT YET STARTED");
-
-    //            }
-    //            else if (data.Status == "Y") {
-
-    //                $("#vehicleStatus")
-    //                    .removeClass()
-    //                    .addClass("statusBox statusYellow")
-    //                    .text("IN PROCESS");
-
-    //            }
-    //            else if (data.Status == "G") {
-
-    //                $("#vehicleStatus")
-    //                    .removeClass()
-    //                    .addClass("statusBox statusGreen")
-    //                    .text("COMPLETED");
-
-    //            } else {
-    //                $("#vehicleStatus")
-    //                    .removeClass()
-    //                    .addClass("statusBox statusRed")
-    //                    .text("NOT YET STARTED");
-
-
-    //            }
-
-    //            updateVehicleSlots(data.Status, data.ScannedCount);
-    //        });
-
-    //}
-
     function updateVehicleSlots(status, scannedCount) {
 
         $("#vehicleGrid td[data-slot]").removeClass("filled");
-
         // NOT STARTED
         if (status == "R") {
             return;
         }
-
         // MATERIAL SCANNED
         if (status == "Y") {
-
             for (let i = 1; i <= scannedCount; i++) {
-                $("#vehicleGrid td[data-slot='" + i + "']")
-                    .addClass("filled");
+                $("#vehicleGrid td[data-slot='" + i + "']").addClass("filled");
 
             }
         }
-
         // COMPLETED
         if (status == "G") {
-
-            $("#vehicleGrid td[data-slot]")
-                .addClass("filled");
+            $("#vehicleGrid td[data-slot]").addClass("filled");
 
         }
-
     }
-
     //================ PRINT =================
     function printLoadingSheet() {
         window.print();
