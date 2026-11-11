@@ -62,8 +62,6 @@ namespace S1947.Controllers
                  Value = x.ToString()
              })
              .ToList();
-
-
             return View(model);
         }
 

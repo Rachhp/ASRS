@@ -3178,7 +3178,6 @@
     <Content Include="Views\Home\UserManual.cshtml" />
     <Content Include="Views\Andon\AndonScreen.cshtml" />
     <Content Include="Views\Load\AddEdit.cshtml" />
-    <Content Include="Views\Unload\UnloadOperation.cshtml" />
     <Content Include="Views\MaterialMaster\AddEdit.cshtml" />
     <Content Include="Views\MaterialMaster\Index.cshtml" />
     <Content Include="Views\ShuttleMaster\AddEdit.cshtml" />
