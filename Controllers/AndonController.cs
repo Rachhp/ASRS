@@ -1,5 +1,4 @@
-﻿using Antlr.Runtime.Misc;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using S1947.Models;
 using System;
 using System.Collections.Generic;
@@ -25,7 +24,7 @@ namespace S1947.Controllers
             );
         }
 
-        
+
         private int GetAndonScreenId()
         {
             string clientIp = Request.UserHostAddress;
@@ -179,7 +178,8 @@ namespace S1947.Controllers
             }
         }
 
-      
+
+
         [HttpGet]
         public JsonResult GetVehicleLoadingStatus(int dockNo)
         {
