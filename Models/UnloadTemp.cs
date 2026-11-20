@@ -43,7 +43,7 @@ namespace S1947.Models
         public string SecurityName { get; set; }
         public string MobileNoSecurity { get; set; }
         public string Status { get; set; }
-        public string CreatedBy { get; set; }
+        public Nullable<short> CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public string SerialCode { get; set; }
         public string UnloadType { get; set; }

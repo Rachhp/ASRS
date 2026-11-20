@@ -246,9 +246,6 @@
     <Compile Include="Models\GELoadingView.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\GELoadingView_WAking_.cs">
-      <DependentUpon>S1947.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\GetFastMediumLocation_Result.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
@@ -374,9 +371,6 @@
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\sp_helpdiagrams_Result2.cs">
-      <DependentUpon>S1947.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>S1947.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TaskDtl.cs">

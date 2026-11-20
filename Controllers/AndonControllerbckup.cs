@@ -289,7 +289,7 @@ namespace S1947.Controllers
                                 LocationName =
                                 pallet.LocationName,
                                 Status = "Pending",
-                                CreatedBy = "System",
+                                CreatedBy = 1,
                                 CreatedOn = DateTime.Now
                             };
                             db.UnloadTemps.Add(temp);

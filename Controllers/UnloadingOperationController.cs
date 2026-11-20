@@ -279,53 +279,115 @@ namespace S1947.Controllers
         //}
 
 
-        private GoodsExisiting FindBlockingPallet(S1947Entities db, List<GoodsExisiting> unloadPallets)
+        private List<GoodsExisiting> FindBlockingPallets(
+    S1947Entities db,
+    List<GoodsExisiting> unloadPallets)
         {
-            if (unloadPallets == null || unloadPallets.Count == 0)
+            var movePallets = new List<GoodsExisiting>();
+
+            if (unloadPallets == null || !unloadPallets.Any())
+                return movePallets;
+
+            var groups = unloadPallets
+                .Where(x => x.Cat == "B" || x.Cat == "C")
+                .GroupBy(x => new { x.Layer, x.Col, x.Cat });
+
+            foreach (var group in groups)
             {
-                return null;
+                var positions = group.OrderBy(x => x.Row).ToList();
+
+                var first = positions.First();
+                var last = positions.Last();
+
+                var leftBlocking = db.GoodsExisitings
+                    .Where(x =>
+                        x.LocaStatus == "LOADED" &&
+                        x.Quantity > 0 &&
+                        x.Layer == first.Layer &&
+                        x.Col == first.Col &&
+                        x.Cat == first.Cat &&
+                        x.Row < first.Row)
+                    .OrderByDescending(x => x.Row)
+                    .FirstOrDefault();
+
+                var rightBlocking = db.GoodsExisitings
+                    .Where(x =>
+                        x.LocaStatus == "LOADED" &&
+                        x.Quantity > 0 &&
+                        x.Layer == last.Layer &&
+                        x.Col == last.Col &&
+                        x.Cat == last.Cat &&
+                        x.Row > last.Row)
+                    .OrderBy(x => x.Row)
+                    .FirstOrDefault();
+
+                // Only one MOVE pallet is selected per group.
+                if (leftBlocking != null && rightBlocking != null)
+                {
+                    // Tie-breaker: choose left.
+                    movePallets.Add(leftBlocking);
+                }
+                else if (leftBlocking != null)
+                {
+                    movePallets.Add(leftBlocking);
+                }
+                else if (rightBlocking != null)
+                {
+                    movePallets.Add(rightBlocking);
+                }
             }
 
-            var orderedPallets = unloadPallets
-                .OrderBy(x => x.Layer)
-                .ThenBy(x => x.Col)
-                .ThenBy(x => x.Row)
-                .ToList();
-
-            var firstPallet = orderedPallets.First();
-            var lastPallet = orderedPallets.Last();
-
-            int minimumRow = firstPallet.Row;
-            int maximumRow = lastPallet.Row;
-
-            // Check the nearest loaded pallet on the left side.
-            var leftBlockingPallet = db.GoodsExisitings
-                .Where(x =>
-                    x.LocaStatus == "LOADED" &&
-                    x.Quantity > 0 &&
-                    x.Layer == firstPallet.Layer &&
-                    x.Col == firstPallet.Col &&
-                    x.Row < minimumRow)
-                .OrderByDescending(x => x.Row)
-                .FirstOrDefault();
-
-            if (leftBlockingPallet != null)
-            {
-                return leftBlockingPallet;
-            }
-
-            // If the left side is clear, check the nearest loaded pallet
-            // on the right side.
-            return db.GoodsExisitings
-                .Where(x =>
-                    x.LocaStatus == "LOADED" &&
-                    x.Quantity > 0 &&
-                    x.Layer == firstPallet.Layer &&
-                    x.Col == firstPallet.Col &&
-                    x.Row > maximumRow)
-                .OrderBy(x => x.Row)
-                .FirstOrDefault();
+            return movePallets;
         }
+
+
+        //private GoodsExisiting FindBlockingPallet(S1947Entities db, List<GoodsExisiting> unloadPallets)
+        //{
+        //    if (unloadPallets == null || unloadPallets.Count == 0)
+        //    {
+        //        return null;
+        //    }
+
+        //    var orderedPallets = unloadPallets
+        //        .OrderBy(x => x.Layer)
+        //        .ThenBy(x => x.Col)
+        //        .ThenBy(x => x.Row)
+        //        .ToList();
+
+        //    var firstPallet = orderedPallets.First();
+        //    var lastPallet = orderedPallets.Last();
+
+        //    int minimumRow = firstPallet.Row;
+        //    int maximumRow = lastPallet.Row;
+
+        //    // Check the nearest loaded pallet on the left side.
+        //    var leftBlockingPallet = db.GoodsExisitings
+        //        .Where(x =>
+        //            x.LocaStatus == "LOADED" &&
+        //            x.Quantity > 0 &&
+        //            x.Layer == firstPallet.Layer &&
+        //            x.Col == firstPallet.Col &&
+        //            x.Row < minimumRow)
+        //        .OrderByDescending(x => x.Row)
+        //        .FirstOrDefault();
+
+        //    if (leftBlockingPallet != null)
+        //    {
+        //        return leftBlockingPallet;
+        //    }
+
+        //    // If the left side is clear, check the nearest loaded pallet
+        //    // on the right side.
+        //    return db.GoodsExisitings
+        //        .Where(x =>
+        //            x.LocaStatus == "LOADED" &&
+        //            x.Quantity > 0 &&
+        //            x.Layer == firstPallet.Layer &&
+        //            x.Col == firstPallet.Col &&
+        //            x.Row > maximumRow)
+        //        .OrderBy(x => x.Row)
+        //        .FirstOrDefault();
+        //}
 
         //from here it check is normal loading patternis there 
         private bool IsNormalLoadingPattern(List<GoodsExisiting> pallets)
@@ -509,7 +571,7 @@ namespace S1947.Controllers
                 Station = stationNo,
                 Status = "Pending",
                 UnloadType = "MOVE",
-                CreatedBy = "System",
+                CreatedBy = 1,
                 CreatedOn = DateTime.Now,
 
             };
@@ -590,7 +652,7 @@ namespace S1947.Controllers
 
                         var pallets = SelectPalletsForUnloading(requiredPallets, Quantity);
                         int allocatedQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
-                        var blockingPallet = FindBlockingPallet(db, pallets);
+                        var movePallets = FindBlockingPallets(db, pallets);
 
                         if (allocatedQty < Quantity)
                         {
@@ -625,7 +687,21 @@ namespace S1947.Controllers
 
                         // Create a MOVE record for the blocking pallet.
                         // No destination or buffer is assigned here.
-                        if (blockingPallet != null)
+                        //if (blockingPallet != null)
+                        //{
+                        //    string moveSerialCode = GenerateOutboundSerialCode(db);
+
+                        //    UnloadTemp moveTemp = CreateMoveTemp(
+                        //        blockingPallet,
+                        //        DockNo,
+                        //        stationNo,
+                        //        moveSerialCode);
+
+                        //    db.UnloadTemps.Add(moveTemp);
+                        //    db.SaveChanges();
+                        //}
+
+                        foreach (var blockingPallet in movePallets)
                         {
                             string moveSerialCode = GenerateOutboundSerialCode(db);
 
@@ -636,10 +712,9 @@ namespace S1947.Controllers
                                 moveSerialCode);
 
                             db.UnloadTemps.Add(moveTemp);
-                            db.SaveChanges();
                         }
 
-
+                        db.SaveChanges();
                         string firstSerialCode = null;
                         foreach (var pallet in pallets)
                         {
@@ -684,7 +759,7 @@ namespace S1947.Controllers
                                 //CreatedOn = DateTime.Now
                                 Status = "Pending",
                                 UnloadType = "UNLOAD",
-                                CreatedBy = "System",
+                                CreatedBy = 1,
                                 CreatedOn = DateTime.Now
 
 
@@ -1042,7 +1117,7 @@ namespace S1947.Controllers
 
                         string taskType = isMoveTask
                             ? "MOVE"
-                            : "UNLOADOPERATION";
+                            : "OUTBOUND";
 
                         bool taskExists;
 
@@ -1170,7 +1245,7 @@ namespace S1947.Controllers
             string apiUrl = ConfigurationManager.AppSettings["MoveTaskUnloadUrl"];
             using (HttpClient client = new HttpClient())
             {
-                client.Timeout = TimeSpan.FromSeconds(30);
+                client.Timeout = TimeSpan.FromSeconds(60);
                 // POST with no parameters and no request body
                 HttpResponseMessage response = await client.PostAsync(apiUrl, null);
                 return response.IsSuccessStatusCode;

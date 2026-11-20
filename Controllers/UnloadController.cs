@@ -72,7 +72,7 @@ namespace S1947.Controllers
         {
             // Get active invoice for the selected dock
             var invoiceNo = conn.UnloadedDatas
-                                .Where(x => x.DockNo == dockNo && x.Status== "MATERIALUNLOAD")
+                                .Where(x => x.DockNo == dockNo && x.Status == "MATERIALUNLOAD")
                                 .Select(x => x.InvoiceNo)
                                 .FirstOrDefault();
 
@@ -301,7 +301,7 @@ namespace S1947.Controllers
                                 TransporterName = model.TransporterName,
                                 DockNo = model.DockNo,
                                 VehicleSealNo = model.VehicleSealno,
-                               // BoxQty = model.BoxQty,
+                                // BoxQty = model.BoxQty,
                                 TotalQty = unloadQty,
                                 Status = "Added",
                                 SupervisiorName = model.SupervisiorName,
@@ -354,7 +354,7 @@ namespace S1947.Controllers
                                     LocationId = item.LocationId,
                                     LocationName = item.LocationName,
                                     DockNo = item.DockNo,
-                                   // BoxQty = item.BoxQty,
+                                    // BoxQty = item.BoxQty,
                                     TotalQty = item.TotalQty,
                                     SupervisiorName = item.SupervisiorName,
                                     MobileNoSupervisor = item.MobileNoSupervisor,
@@ -383,7 +383,7 @@ namespace S1947.Controllers
                                     VehicleNumber = item.VehicleNumber,
                                     TransporterName = item.TransporterName,
                                     DockNo = item.DockNo,
-                                   // BoxQty = item.BoxQty,
+                                    // BoxQty = item.BoxQty,
                                     TotalQty = item.TotalQty,
                                     VehicleSealNo = item.VehicleSealNo,
                                     PalletNo = item.PalletNo,
@@ -473,12 +473,12 @@ namespace S1947.Controllers
                             });
                         }
 
-                     
+
 
                         return Json(new { success = true, message = "Data Saved Successfully!" });
                     }
                 }
-                   
+
 
                 var firstError = ModelState.Values
                                    .SelectMany(v => v.Errors)
@@ -559,6 +559,8 @@ namespace S1947.Controllers
 
 
 
+
+
         [HttpPost]
         public JsonResult AutoUpdateStatus()
         {
@@ -606,7 +608,7 @@ namespace S1947.Controllers
                     {
                         success = true,
                     });
-  
+
                 }
 
 

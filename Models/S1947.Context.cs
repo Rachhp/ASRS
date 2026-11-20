@@ -56,7 +56,6 @@ namespace S1947.Models
         public virtual DbSet<PokaYokaQCHistory> PokaYokaQCHistories { get; set; }
         public virtual DbSet<shift_master> shift_master { get; set; }
         public virtual DbSet<ShuttleDtl> ShuttleDtls { get; set; }
-        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<TaskDtl> TaskDtls { get; set; }
         public virtual DbSet<TaskReport> TaskReports { get; set; }
         public virtual DbSet<TaskStatusCode> TaskStatusCodes { get; set; }
@@ -68,7 +67,6 @@ namespace S1947.Models
         public virtual DbSet<UserMaster> UserMasters { get; set; }
         public virtual DbSet<WcsApiLog> WcsApiLogs { get; set; }
         public virtual DbSet<GELoadingView> GELoadingViews { get; set; }
-        public virtual DbSet<GELoadingView_WAking_> GELoadingView_WAking_ { get; set; }
         public virtual DbSet<GEUnloadingView> GEUnloadingViews { get; set; }
         public virtual DbSet<vw_AgeingReport> vw_AgeingReport { get; set; }
         public virtual DbSet<vw_TransactionHistory> vw_TransactionHistory { get; set; }
