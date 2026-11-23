@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Windows.Interop;
 using static S1947.Models.AndonViewModel;
 namespace S1947.Controllers
 {
@@ -194,9 +195,7 @@ namespace S1947.Controllers
 
 
 
-        private List<GoodsExisiting> SelectPalletsForUnloading(
-    List<GoodsExisiting> pallets,
-    int requestedQty)
+        private List<GoodsExisiting> SelectPalletsForUnloading(List<GoodsExisiting> pallets,int requestedQty)
         {
             if (pallets == null || pallets.Count == 0)
             {
@@ -216,24 +215,18 @@ namespace S1947.Controllers
 
             // Check whether the pattern is normal after date and shift ordering.
             bool normalPattern = IsNormalLoadingPattern(dateAndShiftPriority);
-
             if (normalPattern)
             {
                 // Normal unloading:
                 // 1, 2, 3, 4 sequence.
-                return SelectUntilQuantity(
-                    dateAndShiftPriority,
-                    requestedQty);
+                return SelectUntilQuantity(dateAndShiftPriority,requestedQty);
             }
 
             // Non-normal unloading:
             // Apply alternative ends.
-            var alternativeEndPriority = GetAlternatingEnds(
-                dateAndShiftPriority);
+            var alternativeEndPriority = GetAlternatingEnds(dateAndShiftPriority);
 
-            return SelectUntilQuantity(
-                alternativeEndPriority,
-                requestedQty);
+            return SelectUntilQuantity(alternativeEndPriority,requestedQty);
         }
 
         //private List<GoodsExisiting> SelectPalletsForUnloading(List<GoodsExisiting> pallets, int requestedQty)
@@ -279,12 +272,9 @@ namespace S1947.Controllers
         //}
 
 
-        private List<GoodsExisiting> FindBlockingPallets(
-    S1947Entities db,
-    List<GoodsExisiting> unloadPallets)
+        private List<GoodsExisiting> FindBlockingPallets(S1947Entities db,List<GoodsExisiting> unloadPallets)
         {
             var movePallets = new List<GoodsExisiting>();
-
             if (unloadPallets == null || !unloadPallets.Any())
                 return movePallets;
 
@@ -340,63 +330,13 @@ namespace S1947.Controllers
             return movePallets;
         }
 
-
-        //private GoodsExisiting FindBlockingPallet(S1947Entities db, List<GoodsExisiting> unloadPallets)
-        //{
-        //    if (unloadPallets == null || unloadPallets.Count == 0)
-        //    {
-        //        return null;
-        //    }
-
-        //    var orderedPallets = unloadPallets
-        //        .OrderBy(x => x.Layer)
-        //        .ThenBy(x => x.Col)
-        //        .ThenBy(x => x.Row)
-        //        .ToList();
-
-        //    var firstPallet = orderedPallets.First();
-        //    var lastPallet = orderedPallets.Last();
-
-        //    int minimumRow = firstPallet.Row;
-        //    int maximumRow = lastPallet.Row;
-
-        //    // Check the nearest loaded pallet on the left side.
-        //    var leftBlockingPallet = db.GoodsExisitings
-        //        .Where(x =>
-        //            x.LocaStatus == "LOADED" &&
-        //            x.Quantity > 0 &&
-        //            x.Layer == firstPallet.Layer &&
-        //            x.Col == firstPallet.Col &&
-        //            x.Row < minimumRow)
-        //        .OrderByDescending(x => x.Row)
-        //        .FirstOrDefault();
-
-        //    if (leftBlockingPallet != null)
-        //    {
-        //        return leftBlockingPallet;
-        //    }
-
-        //    // If the left side is clear, check the nearest loaded pallet
-        //    // on the right side.
-        //    return db.GoodsExisitings
-        //        .Where(x =>
-        //            x.LocaStatus == "LOADED" &&
-        //            x.Quantity > 0 &&
-        //            x.Layer == firstPallet.Layer &&
-        //            x.Col == firstPallet.Col &&
-        //            x.Row > maximumRow)
-        //        .OrderBy(x => x.Row)
-        //        .FirstOrDefault();
-        //}
-
         //from here it check is normal loading patternis there 
         private bool IsNormalLoadingPattern(List<GoodsExisiting> pallets)
-        
         {
             if (pallets == null || pallets.Count <= 1)
                 return true;
 
-          //var ordered = pallets.OrderBy(x => x.sequence).ToList();
+            //var ordered = pallets.OrderBy(x => x.sequence).ToList();
             var ordered = pallets.OrderBy(x => x.CreatedOn).ToList();
 
             // Check consecutive pallets in sequence order.
@@ -428,9 +368,6 @@ namespace S1947.Controllers
             }
             return true;
         }
-
-
-
 
         //sequnecial unloading normal
         private List<GoodsExisiting> SelectUntilQuantity(IEnumerable<GoodsExisiting> pallets, int requestedQty)
@@ -485,11 +422,12 @@ namespace S1947.Controllers
                     };
                 });
 
+                
                 return prioritized
                     .OrderBy(x => x.LoadingDate)
                     .ThenBy(x => x.ShiftId)
                     .ThenBy(x => x.LoadingTime)
-                    .ThenBy(x => x.Pallet.sequence)
+                    //.ThenBy(x => x.Pallet.sequence)
                     .Select(x => x.Pallet)                                                        
                     .ToList();
             }
@@ -650,9 +588,48 @@ namespace S1947.Controllers
                                 break;
                         }
 
-                        var pallets = SelectPalletsForUnloading(requiredPallets, Quantity);
+                        //var pallets = SelectPalletsForUnloading(requiredPallets, Quantity);
+                        //int allocatedQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
+                        //var movePallets = FindBlockingPallets(db, pallets);
+
+
+                        // STEP 1: Apply date priority
+                        var datePriority = requiredPallets.OrderBy(x => x.CreatedOn.HasValue
+                                            ? x.CreatedOn.Value.Date
+                                            : DateTime.MaxValue)
+                                        .ThenBy(x => x.sequence)
+                                        .ToList();
+
+                        // Apply shift priority
+                        var dateAndShiftPriority = ApplyShiftPriority(datePriority);
+
+                        //  Check unloading pattern
+                        bool normalPattern = IsNormalLoadingPattern(dateAndShiftPriority);
+
+                        // Select pallets according to the pattern
+                        List<GoodsExisiting> pallets;
+
+                        if (normalPattern)
+                        {                  
+
+                            pallets = SelectUntilQuantity(dateAndShiftPriority, Quantity);
+                        }
+                        else
+                        {
+                            var alternativeEndPriority = GetAlternatingEnds(dateAndShiftPriority);
+                            pallets = SelectUntilQuantity(alternativeEndPriority, Quantity);
+                        }
+
+                        // STEP 5: Calculate allocated quantity
                         int allocatedQty = pallets.Sum(x => Convert.ToInt32(x.Quantity));
-                        var movePallets = FindBlockingPallets(db, pallets);
+
+                        // STEP 6: Find blocking pallets ONLY for non-normal unloading
+                        var movePallets = new List<GoodsExisiting>();
+
+                        if (!normalPattern)
+                        {
+                            movePallets = FindBlockingPallets(db, pallets);
+                        }
 
                         if (allocatedQty < Quantity)
                         {
@@ -665,18 +642,7 @@ namespace S1947.Controllers
                             });
                         }
 
-                        // Reserve the exact pallets selected for this save.
-                        //for (int i = 0; i < pallets.Count; i++)
-                        //{
-                        //    pallets[i].LocaStatus = "INPROCESS";
-                        //    pallets[i].UnloadSequence = i + 1;
-                        //}
-                        //db.SaveChanges();
-
-
                         // Reserve only the pallets that will be unloaded.
-                        // The blocking pallet must remain LOADED because another
-                        // software component will process the MOVE task.
                         for (int i = 0; i < pallets.Count; i++)
                         {
                             pallets[i].LocaStatus = "INPROCESS";
@@ -712,9 +678,9 @@ namespace S1947.Controllers
                                 moveSerialCode);
 
                             db.UnloadTemps.Add(moveTemp);
+                            db.SaveChanges();
                         }
-
-                        db.SaveChanges();
+                      
                         string firstSerialCode = null;
                         foreach (var pallet in pallets)
                         {
